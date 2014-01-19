@@ -1,10 +1,3 @@
-/*
-
-OpenImageIO bindings
-
-https://sites.google.com/site/openimageio/home
-
-*/
 package oiio
 
 /*
