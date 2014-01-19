@@ -56,6 +56,10 @@ bool ImageInput_close(ImageInput *in) {
 	return static_cast<OIIO::ImageInput*>(in)->close();	
 }
 
-
+bool ImageInput_read_image(ImageInput *in, float* data) {
+	return static_cast<OIIO::ImageInput*>(in)->read_image(data);	
+}
 
 } // extern "C"
+
+
