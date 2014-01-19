@@ -1,5 +1,7 @@
 # OpenImageIO bindings for Go
 
+Currently in development (incomplete API)
+
 Requirements
 ----------------------
 
