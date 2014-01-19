@@ -15,7 +15,7 @@ This package assumes that OpenImageIO is installed to the standard /usr/local lo
 
 Default install:
 
-    go get github.com/justinfx/opencolorigo
+    go get github.com/justinfx/openimageigo
 
 If you have installed OpenImageIO to a custom location, you will need to tell CGO where to find the headers and libs:
 
@@ -24,7 +24,7 @@ If you have installed OpenImageIO to a custom location, you will need to tell CG
 
 Or just prefixing the install:
 
-	CGO_CFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/opencolorigo
+	CGO_CFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo
 
 Documentation
 -------------
