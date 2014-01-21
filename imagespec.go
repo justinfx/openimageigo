@@ -42,7 +42,10 @@ func newImageSpec(i unsafe.Pointer) *ImageSpec {
 }
 
 func deleteImageSpec(i *ImageSpec) {
-	C.free(i.ptr)
+	if i.ptr != nil {
+		C.free(i.ptr)
+		i.ptr = nil
+	}
 }
 
 // given just the data format, set the default quantize and set all other channels to something reasonable.

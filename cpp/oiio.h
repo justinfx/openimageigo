@@ -53,12 +53,12 @@ bool ImageInput_close(ImageInput *in);
 // int ImageInput_current_miplevel(ImageInput *in);
 // bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec);
 // bool ImageInput_seek_subimage_mip(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec);
-// bool ImageInput_read_scanline(ImageInput *in, int y, int z, float* data);
+bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 // bool ImageInput_read_scanline_format(ImageInput *in, int y, int z, TypeDesc format, void* data, stride_t xstride);
 // bool ImageInput_read_tile(ImageInput *in, int x, int y, int z, float* data);
 // bool ImageInput_read_tile_format(ImageInput *in, int x, int y, int z, TypeDesc format, void* data, 
 // 									stride_t xstride, stride_t ystride, stride_t zstride);
-bool ImageInput_read_image(ImageInput *in, float* data);
+bool ImageInput_read_image_floats(ImageInput *in, float* data);
 
 // // TODO: Progress Callback?
 // bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, 

@@ -4,6 +4,12 @@ OpenImageIO bindings
 
 https://sites.google.com/site/openimageio/home
 
+OpenImageIO is a library for reading and writing images, and a bunch of related classes,
+utilities, and applications.  There is a particular emphasis on formats and functionality
+used in professional, large-scale animation and visual effects work for film.
+OpenImageIO is used extensively in animation and VFX studios all over the world, and is
+also incorporated into several commercial products.
+
 */
 package oiio
 
@@ -38,7 +44,10 @@ func newImageInput(i unsafe.Pointer) *ImageInput {
 }
 
 func deleteImageInput(i *ImageInput) {
-	C.free(i.ptr)
+	if i.ptr != nil {
+		C.free(i.ptr)
+		i.ptr = nil
+	}
 }
 
 // Create an ImageInput subclass instance that is able to read the given file and open it,
@@ -65,9 +74,20 @@ func (i *ImageInput) LastError() error {
 	return errors.New(err)
 }
 
-// Return the name of the format implemented by this image.
-func (i *ImageInput) FormatName() string {
-	return C.GoString(C.ImageInput_format_name(i.ptr))
+// Open file with given name. Return true if the file was found and opened okay.
+func (i *ImageInput) Open(filename string) error {
+	i.Close()
+
+	deleteImageInput(i)
+
+	c_str := C.CString(filename)
+	defer C.free(unsafe.Pointer(c_str))
+
+	cfg := unsafe.Pointer(nil)
+	ptr := C.ImageInput_Open(c_str, cfg)
+	i.ptr = ptr
+
+	return i.LastError()
 }
 
 // Close an image that we are totally done with.
@@ -76,6 +96,11 @@ func (i *ImageInput) Close() error {
 		return i.LastError()
 	}
 	return nil
+}
+
+// Return the name of the format implemented by this image.
+func (i *ImageInput) FormatName() string {
+	return C.GoString(C.ImageInput_format_name(i.ptr))
 }
 
 // Return true if the named file is file of the type for this ImageInput.
@@ -107,9 +132,42 @@ func (i *ImageInput) Supports(feature string) bool {
 // change with a call to SeekSubImage().
 func (i *ImageInput) Spec() (*ImageSpec, error) {
 	ptr := C.ImageInput_spec(i.ptr)
-	return newImageSpec(ptr), i.LastError()
+	err := i.LastError()
+	if err != nil {
+		return nil, err
+	}
+	return &ImageSpec{ptr}, nil
 }
 
-// func (i *ImageInput) ReadImage() ([]float32, error) {
+// Read the entire image of width * height * depth * channels into contiguous float32 pixels.
+// Read tiles or scanlines automatically.
+func (i *ImageInput) ReadImageFloats() ([]float32, error) {
+	spec, err := i.Spec()
+	if err != nil {
+		return nil, err
+	}
 
-// }
+	size := spec.Width() * spec.Height() * spec.Depth() * spec.NumChannels()
+	pixels := make([]float32, size)
+	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
+	C.ImageInput_read_image_floats(i.ptr, pixels_ptr)
+
+	return pixels, i.LastError()
+}
+
+// Read the scanline that includes pixels (*,y,z) into data, converting if necessary
+// from the native data format of the file into contiguous float32 pixels (z==0 for non-volume images).
+// The size of the slice is: width * depth * channels
+func (i *ImageInput) ReadScanlineFloats(y, z int) ([]float32, error) {
+	spec, err := i.Spec()
+	if err != nil {
+		return nil, err
+	}
+
+	size := spec.Width() * spec.Depth() * spec.NumChannels()
+	pixels := make([]float32, size)
+	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
+	C.ImageInput_read_scanline_floats(i.ptr, C.int(y), C.int(z), pixels_ptr)
+
+	return pixels, i.LastError()
+}

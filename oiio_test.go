@@ -23,16 +23,23 @@ func init() {
 
 	m := image.NewRGBA(image.Rect(0, 0, 128, 64))
 	blue := color.RGBA{0, 0, 255, 255}
-	draw.Draw(m, m.Bounds(), &image.Uniform{blue}, image.ZP, draw.Src)
+	gray := color.RGBA{128, 128, 128, 255}
+
+	draw.Draw(m, m.Bounds(), &image.Uniform{gray}, image.ZP, draw.Src)
+
+	r := m.Bounds().Inset(16)
+	draw.Draw(m, r, &image.Uniform{blue}, image.ZP, draw.Over)
 
 	png.Encode(tmpfile, m)
 	tmpfile.Close()
 
 	os.Rename(tmpfile.Name(), TEST_IMAGE)
-
 }
 
-func TestNewImageInput(t *testing.T) {
+// ImageInput
+//
+func TestOpenImageInput(t *testing.T) {
+	// Open New
 	in, err := OpenImageInput(TEST_IMAGE)
 	if err != nil {
 		t.Fatal(err.Error())
@@ -53,9 +60,53 @@ func TestNewImageInput(t *testing.T) {
 	if err = in.Close(); err != nil {
 		t.Fatal(err.Error())
 	}
+
+	// Re-open
+	if err = in.Open(TEST_IMAGE); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if actual = in.FormatName(); actual != "png" {
+		t.Errorf("Expected FormatName 'png' but got %q", actual)
+	}
+
+}
+
+func TestImageInputReadImage(t *testing.T) {
+	in, err := OpenImageInput(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var pixels []float32
+	pixels, err = in.ReadImageFloats()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+}
+
+func TestImageInputReadScanline(t *testing.T) {
+	in, err := OpenImageInput(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var pixels []float32
+	pixels, err = in.ReadScanlineFloats(0, 0)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	if pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+
 }
 
 // ImageSpec
+//
 func TestNewImageSpec(t *testing.T) {
 	spec := NewImageSpec(TYPE_FLOAT)
 	spec = NewImageSpecSize(512, 512, 3, TYPE_DOUBLE)
