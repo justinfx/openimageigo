@@ -79,7 +79,7 @@ func TestImageInputReadImage(t *testing.T) {
 	}
 
 	var pixels []float32
-	pixels, err = in.ReadImageFloats()
+	pixels, err = in.ReadImage()
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -95,7 +95,7 @@ func TestImageInputReadScanline(t *testing.T) {
 	}
 
 	var pixels []float32
-	pixels, err = in.ReadScanlineFloats(0, 0)
+	pixels, err = in.ReadScanline(0, 0)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

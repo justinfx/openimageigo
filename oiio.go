@@ -141,7 +141,7 @@ func (i *ImageInput) Spec() (*ImageSpec, error) {
 
 // Read the entire image of width * height * depth * channels into contiguous float32 pixels.
 // Read tiles or scanlines automatically.
-func (i *ImageInput) ReadImageFloats() ([]float32, error) {
+func (i *ImageInput) ReadImage() ([]float32, error) {
 	spec, err := i.Spec()
 	if err != nil {
 		return nil, err
@@ -158,7 +158,7 @@ func (i *ImageInput) ReadImageFloats() ([]float32, error) {
 // Read the scanline that includes pixels (*,y,z) into data, converting if necessary
 // from the native data format of the file into contiguous float32 pixels (z==0 for non-volume images).
 // The size of the slice is: width * depth * channels
-func (i *ImageInput) ReadScanlineFloats(y, z int) ([]float32, error) {
+func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
 	spec, err := i.Spec()
 	if err != nil {
 		return nil, err
