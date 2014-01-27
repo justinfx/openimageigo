@@ -5,7 +5,14 @@
 #include "oiio.h"
 
 
+extern OIIO::TypeDesc fromTypeDesc(TypeDesc fmt);
+extern TypeDesc toTypeDesc(OIIO::TypeDesc fmt);
+
+
+
 extern "C" {
+
+#include "_cgo_export.h"
 
 
 void deleteImageInput(ImageInput *in) {
@@ -58,6 +65,20 @@ bool ImageInput_close(ImageInput *in) {
 
 bool ImageInput_read_image_floats(ImageInput *in, float* data) {
 	return static_cast<OIIO::ImageInput*>(in)->read_image(data);	
+}
+
+bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data)
+{	
+	ProgressCallback cbk = &read_image_format_callback;
+
+	return static_cast<OIIO::ImageInput*>(in)->read_image(
+												fromTypeDesc(format), 
+												data,
+												OIIO::AutoStride,
+												OIIO::AutoStride,
+												OIIO::AutoStride,
+												cbk,
+												cbk_data);
 }
 
 bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data) {

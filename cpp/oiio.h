@@ -16,6 +16,8 @@ typedef void ImageInput;
 typedef void ImageOutput;
 typedef void DeepData;
 
+typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
+
 // TypeDesc
 // 
 
@@ -61,8 +63,7 @@ bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 bool ImageInput_read_image_floats(ImageInput *in, float* data);
 
 // // TODO: Progress Callback?
-// bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, 
-// 									stride_t xstride, stride_t ystride, stride_t zstride);
+bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data);
 
 // bool ImageInput_read_native_scanline(ImageInput *in, int y, int z, void *data);
 // bool ImageInput_read_native_tile(ImageInput *in, int x, int y, int z, void *data);

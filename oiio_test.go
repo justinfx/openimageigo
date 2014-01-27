@@ -78,6 +78,7 @@ func TestImageInputReadImage(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
+	// Simple read
 	var pixels []float32
 	pixels, err = in.ReadImage()
 	if err != nil {
@@ -86,6 +87,66 @@ func TestImageInputReadImage(t *testing.T) {
 	if pixels[0] == 0 {
 		t.Fatal("First pixel of test image was 0")
 	}
+}
+
+func TestImageInputReadImageFormat(t *testing.T) {
+	in, err := OpenImageInput(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var pixel_iface interface{}
+
+	// nil Callback read
+	//
+	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, nil)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	float_pixels, ok := pixel_iface.([]float32)
+	if !ok {
+		t.Fatal("Interface could not be converted to a []float21")
+	}
+
+	if float_pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+
+	// With callback
+	//
+	var progress ProgressCallback = func(done float32) bool {
+		// no cancel
+		return false
+	}
+
+	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, &progress)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	float_pixels, _ = pixel_iface.([]float32)
+	if float_pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+
+	// With callback
+	//
+	progress = func(done float32) bool {
+		// cancel
+		return true
+	}
+
+	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, &progress)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	float_pixels, _ = pixel_iface.([]float32)
+	if float_pixels[0] != 0 {
+		t.Fatal("First pixel of test image should be 0, since callback issued a cancel")
+	}
+
 }
 
 func TestImageInputReadScanline(t *testing.T) {

@@ -23,14 +23,19 @@ package oiio
 
 #include "cpp/oiio.h"
 
+extern bool read_image_format_callback(void* goCallback, float done);
+
 */
 import "C"
 
 import (
 	"errors"
+	"reflect"
 	"runtime"
 	"unsafe"
 )
+
+type ProgressCallback func(done float32) bool
 
 // ImageInput abstracts the reading of an image file in a file format-agnostic manner.
 type ImageInput struct {
@@ -153,6 +158,137 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 	C.ImageInput_read_image_floats(i.ptr, pixels_ptr)
 
 	return pixels, i.LastError()
+}
+
+// Read the entire image of width * height * depth * channels into contiguous pixels.
+// Read tiles or scanlines automatically.
+//
+// This call supports passing a callback pointer to both track the progress,
+// and to optionally abort the processing. The callback function will receive
+// a float32 value indicating the percentage done of the processing, and should
+// return true if the process should abort, and false if it should continue.
+//
+// The underlying type of data is determined by the given TypeDesc.
+// Returned interface{} will be:
+//     TYPE_UINT8   => []uint8
+//     TYPE_INT8    => []int8
+//     TYPE_UINT16  => []uint16
+//     TYPE_INT16   => []int16
+//     TYPE_UINT    => []uint
+//     TYPE_INT     => []int
+//     TYPE_UINT64  => []uint64
+//     TYPE_INT64   => []int64
+//     TYPE_HALF    => []float32
+//     TYPE_FLOAT   => []float32
+//     TYPE_DOUBLE  => []float64
+//
+// Example:
+//
+//     // Without a callback
+//     val, err := in.ReadImageFormat(TYPE_FLOAT, nil)
+//     if err != nil {
+//         panic(err.Error())
+//     }
+//     floatPixels := val.([]float32)
+//
+//     // With a callback
+//     var cbk ProgressCallback = func(done float32) bool {
+//         fmt.Printf("Progress: %0.2f\n", done)
+//         // Keep processing (return true to abort)
+//         return false
+//     }
+//     val, _ = in.ReadImageFormat(TYPE_FLOAT, &cbk)
+//     floatPixels = val.([]float32)
+//
+func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback) (interface{}, error) {
+	spec, err := i.Spec()
+	if err != nil {
+		return nil, err
+	}
+
+	size := spec.Width() * spec.Height() * spec.Depth() * spec.NumChannels()
+
+	var (
+		pixel_iface interface{}
+		ptr         unsafe.Pointer
+	)
+
+	switch format {
+
+	case TYPE_UINT8:
+		pixels := make([]uint8, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_INT8:
+		pixels := make([]int8, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_UINT16:
+		pixels := make([]uint16, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_INT16:
+		pixels := make([]int16, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_UINT:
+		pixels := make([]uint, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_INT:
+		pixels := make([]int, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_UINT64:
+		pixels := make([]uint64, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_INT64:
+		pixels := make([]int64, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_FLOAT, TYPE_HALF:
+		pixels := make([]float32, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	case TYPE_DOUBLE:
+		pixels := make([]float64, size)
+		pixel_iface = reflect.ValueOf(pixels).Interface()
+		ptr = unsafe.Pointer(&pixels[0])
+
+	default:
+		return nil, errors.New("TypeDesc is not valid for this operation")
+
+	}
+
+	var cbk unsafe.Pointer
+	if progress != nil {
+		cbk = unsafe.Pointer(progress)
+	}
+
+	C.ImageInput_read_image_format(i.ptr, (C.TypeDesc)(format), ptr, cbk)
+
+	return pixel_iface, i.LastError()
+}
+
+//export read_image_format_callback
+func read_image_format_callback(goCallback unsafe.Pointer, done C.float) C.bool {
+	if goCallback == nil {
+		return C.bool(false)
+	}
+
+	fn := *(*ProgressCallback)(goCallback)
+	cancel := fn(float32(done))
+	return C.bool(cancel)
 }
 
 // Read the scanline that includes pixels (*,y,z) into data, converting if necessary
