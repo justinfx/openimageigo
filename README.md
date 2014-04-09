@@ -5,7 +5,7 @@ Currently in development (incomplete API)
 Requirements
 ----------------------
 
-* [OpenImageIO](openimageio.org)
+* [OpenImageIO](https://github.com/OpenImageIO)
 
 
 Installation
