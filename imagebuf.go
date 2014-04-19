@@ -177,5 +177,103 @@ func (i *ImageBuf) NumChannels() int {
 	return int(C.ImageBuf_nchannels(i.ptr))
 }
 
+func (i *ImageBuf) Orientation() int {
+	return int(C.ImageBuf_orientation(i.ptr))
+}
+
+func (i *ImageBuf) OrientedWidth() int {
+	return int(C.ImageBuf_oriented_width(i.ptr))
+}
+
+func (i *ImageBuf) OrientedHeight() int {
+	return int(C.ImageBuf_oriented_height(i.ptr))
+}
+
+func (i *ImageBuf) OrientedX() int {
+	return int(C.ImageBuf_oriented_x(i.ptr))
+}
+
+func (i *ImageBuf) OrientedY() int {
+	return int(C.ImageBuf_oriented_y(i.ptr))
+}
+
+func (i *ImageBuf) OrientedFullWidth() int {
+	return int(C.ImageBuf_oriented_full_width(i.ptr))
+}
+
+func (i *ImageBuf) OrientedFullHeight() int {
+	return int(C.ImageBuf_oriented_full_height(i.ptr))
+}
+
+func (i *ImageBuf) OrientedFullX() int {
+	return int(C.ImageBuf_oriented_full_x(i.ptr))
+}
+
+func (i *ImageBuf) OrientedFullY() int {
+	return int(C.ImageBuf_oriented_full_y(i.ptr))
+}
+
+// Return the beginning (minimum) x coordinate of the defined image.
+func (i *ImageBuf) XBegin() int {
+	return int(C.ImageBuf_xbegin(i.ptr))
+}
+
+// Return the end (one past maximum) x coordinate of the defined image.
+func (i *ImageBuf) XEnd() int {
+	return int(C.ImageBuf_xend(i.ptr))
+}
+
+// Return the beginning (minimum) y coordinate of the defined image
+func (i *ImageBuf) YBegin() int {
+	return int(C.ImageBuf_ybegin(i.ptr))
+}
+
+// Return the end (one past maximum) y coordinate of the defined image. 
+func (i *ImageBuf) YEnd() int {
+	return int(C.ImageBuf_yend(i.ptr))
+}
+
+// Return the beginning (minimum) z coordinate of the defined image.
+func (i *ImageBuf) ZBegin() int {
+	return int(C.ImageBuf_zbegin(i.ptr))
+}
+
+// Return the end (one past maximum) z coordinate of the defined image.
+func (i *ImageBuf) ZEnd() int {
+	return int(C.ImageBuf_zend(i.ptr))
+}
+
+// Return the end (one past maximum) z coordinate of the defined image.
+func (i *ImageBuf) XMin() int {
+	return int(C.ImageBuf_xmin(i.ptr))
+}
+
+// Return the maximum x coordinate of the defined image.
+func (i *ImageBuf) XMax() int {
+	return int(C.ImageBuf_xmax(i.ptr))
+}
+
+// Return the minimum y coordinate of the defined image.
+func (i *ImageBuf) YMin() int {
+	return int(C.ImageBuf_ymin(i.ptr))
+}
+
+// Return the maximum y coordinate of the defined image.
+func (i *ImageBuf) YMax() int {
+	return int(C.ImageBuf_ymax(i.ptr))
+}
+
+// Return the minimum z coordinate of the defined image.
+func (i *ImageBuf) ZMin() int {
+	return int(C.ImageBuf_zmin(i.ptr))
+}
+
+// Return the maximum z coordinate of the defined image. 
+func (i *ImageBuf) ZMax() int {
+	return int(C.ImageBuf_zmax(i.ptr))
+}
+
+
+
 
 

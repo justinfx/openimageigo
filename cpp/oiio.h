@@ -190,7 +190,6 @@ void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int 
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache);
 void ImageBuf_reset_spec(ImageBuf* buf, ImageSpec* spec);
 void ImageBuf_reset_name_spec(ImageBuf* buf, const char* name, const ImageSpec* spec);
-// void ImageBuf_alloc(ImageBuf* buf, ImageSpec* spec);
 
 IBStorage ImageBuf_storage(ImageBuf* buf);
 bool ImageBuf_initialized(ImageBuf* buf);
@@ -228,28 +227,28 @@ int ImageBuf_nchannels(ImageBuf* buf);
 // bool ImageBuf_get_pixel_channels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend, TypeDesc format, void *result);
 // bool ImageBuf_get_pixels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, TypeDesc format, void *result);
 
-// int ImageBuf_orientation(ImageBuf* buf);
-// int ImageBuf_oriented_width(ImageBuf* buf);
-// int ImageBuf_oriented_height(ImageBuf* buf);
-// int ImageBuf_oriented_x(ImageBuf* buf);
-// int ImageBuf_oriented_y(ImageBuf* buf);
-// int ImageBuf_oriented_full_width(ImageBuf* buf);
-// int ImageBuf_oriented_full_height(ImageBuf* buf);
-// int ImageBuf_oriented_full_x(ImageBuf* buf);
-// int ImageBuf_oriented_full_y(ImageBuf* buf);
+int ImageBuf_orientation(ImageBuf* buf);
+int ImageBuf_oriented_width(ImageBuf* buf);
+int ImageBuf_oriented_height(ImageBuf* buf);
+int ImageBuf_oriented_x(ImageBuf* buf);
+int ImageBuf_oriented_y(ImageBuf* buf);
+int ImageBuf_oriented_full_width(ImageBuf* buf);
+int ImageBuf_oriented_full_height(ImageBuf* buf);
+int ImageBuf_oriented_full_x(ImageBuf* buf);
+int ImageBuf_oriented_full_y(ImageBuf* buf);
  
-// int ImageBuf_xbegin(ImageBuf* buf);
-// int ImageBuf_xend(ImageBuf* buf);
-// int ImageBuf_ybegin(ImageBuf* buf);
-// int ImageBuf_yend(ImageBuf* buf);
-// int ImageBuf_zbegin(ImageBuf* buf);
-// int ImageBuf_zend(ImageBuf* buf);
-// int ImageBuf_xmin(ImageBuf* buf);
-// int ImageBuf_xmax(ImageBuf* buf);
-// int ImageBuf_ymin(ImageBuf* buf);
-// int ImageBuf_ymax(ImageBuf* buf);
-// int ImageBuf_zmin(ImageBuf* buf);
-// int ImageBuf_zmax(ImageBuf* buf);
+int ImageBuf_xbegin(ImageBuf* buf);
+int ImageBuf_xend(ImageBuf* buf);
+int ImageBuf_ybegin(ImageBuf* buf);
+int ImageBuf_yend(ImageBuf* buf);
+int ImageBuf_zbegin(ImageBuf* buf);
+int ImageBuf_zend(ImageBuf* buf);
+int ImageBuf_xmin(ImageBuf* buf);
+int ImageBuf_xmax(ImageBuf* buf);
+int ImageBuf_ymin(ImageBuf* buf);
+int ImageBuf_ymax(ImageBuf* buf);
+int ImageBuf_zmin(ImageBuf* buf);
+int ImageBuf_zmax(ImageBuf* buf);
 
 // void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend);
 // void ImageBuf_set_full_border(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, const float *bordercolor);

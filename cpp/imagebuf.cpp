@@ -130,6 +130,91 @@ int ImageBuf_nchannels(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->nchannels();
 }
 
+int ImageBuf_orientation(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->orientation();
+}
+
+int ImageBuf_oriented_width(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_width();
+}
+
+int ImageBuf_oriented_height(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_height();
+}
+
+int ImageBuf_oriented_x(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_x();
+}
+
+int ImageBuf_oriented_y(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_y();
+}
+
+int ImageBuf_oriented_full_width(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_full_width();
+}
+
+int ImageBuf_oriented_full_height(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_full_height();
+}
+
+int ImageBuf_oriented_full_x(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_full_x();
+}
+
+int ImageBuf_oriented_full_y(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->oriented_full_y();
+}
+
+int ImageBuf_xbegin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->xbegin();
+}
+
+int ImageBuf_xend(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->xend();
+}
+
+int ImageBuf_ybegin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->ybegin();
+}
+
+int ImageBuf_yend(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->yend();
+}
+
+int ImageBuf_zbegin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->zbegin();
+}
+
+int ImageBuf_zend(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->zend();
+}
+
+int ImageBuf_xmin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->xmin();
+}
+
+int ImageBuf_xmax(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->xmax();
+}
+
+int ImageBuf_ymin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->ymin();
+}
+
+int ImageBuf_ymax(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->ymax();
+}
+
+int ImageBuf_zmin(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->zmin();
+}
+
+int ImageBuf_zmax(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->zmax();
+}
+
+
 
 
 } // extern "C"

@@ -334,6 +334,43 @@ func TestImageBufReadImage(t *testing.T) {
 		t.Errorf("Expected 3 channels in image, got %v", buf.NumChannels())
 	}
 
+	buf.Orientation()
+
+	width, height := buf.OrientedWidth(), buf.OrientedHeight()
+	if width != 128 || height != 64 {
+		t.Errorf("Expected width==128, height==64, got %v, %v", width, height)
+	}
+
+	width, height = buf.OrientedFullWidth(), buf.OrientedFullHeight()
+	if width != 128 || height != 64 {
+		t.Errorf("Expected width==128, height==64, got %v, %v", width, height)
+	}
+
+	x, y := buf.OrientedX(), buf.OrientedY()
+	if x != 0 || y != 0 {
+		t.Errorf("Expected orientation (0,0), got (%v,%v)", x, y)
+	}
+	x, y = buf.OrientedFullX(), buf.OrientedFullY()
+	if x != 0 || y != 0 {
+		t.Errorf("Expected orientation (0,0), got (%v,%v)", x, y)
+	}
+	x, y = buf.XMin(), buf.YMin()
+	if x != 0 || y != 0 {
+		t.Errorf("Expected origin (0,0), got (%v,%v)", x, y)
+	}
+	x, y = buf.XMax(), buf.YMax()
+	if x != width-1 || y != height-1 {
+		t.Errorf("Expected x/y max (%v,%v), got (%v,%v)", width-1, height-1, x, y)
+	}
+}
+
+func TestImageBufReadImageCallbacks(t *testing.T) {
+	// Open New
+	buf, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
 	// With success callback
 	//
 	buf.Clear()
@@ -346,7 +383,6 @@ func TestImageBufReadImage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
 
 	// With stop callback
 	//
