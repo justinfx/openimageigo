@@ -99,7 +99,7 @@ func TestImageInputReadImageFormat(t *testing.T) {
 
 	// nil Callback read
 	//
-	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, nil)
+	pixel_iface, err = in.ReadImageFormat(TypeFloat, nil)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -120,7 +120,7 @@ func TestImageInputReadImageFormat(t *testing.T) {
 		return false
 	}
 
-	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, &progress)
+	pixel_iface, err = in.ReadImageFormat(TypeFloat, &progress)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -137,7 +137,7 @@ func TestImageInputReadImageFormat(t *testing.T) {
 		return true
 	}
 
-	pixel_iface, err = in.ReadImageFormat(TYPE_FLOAT, &progress)
+	pixel_iface, err = in.ReadImageFormat(TypeFloat, &progress)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -169,10 +169,10 @@ func TestImageInputReadScanline(t *testing.T) {
 // ImageSpec
 //
 func TestNewImageSpec(t *testing.T) {
-	spec := NewImageSpec(TYPE_FLOAT)
-	spec = NewImageSpecSize(512, 512, 3, TYPE_DOUBLE)
+	spec := NewImageSpec(TypeFloat)
+	spec = NewImageSpecSize(512, 512, 3, TypeDouble)
 
-	spec.SetFormat(TYPE_HALF)
+	spec.SetFormat(TypeHalf)
 	spec.DefaultChannelNames()
 
 	expected := 2
@@ -224,8 +224,8 @@ func TestNewImageSpec(t *testing.T) {
 	spec.SizeSafe()
 
 	format := spec.ChannelFormat(0)
-	if format != TYPE_HALF {
-		t.Errorf("Expected TYPE_HALF (8), got %v", format)
+	if format != TypeHalf {
+		t.Errorf("Expected TypeHalf (8), got %v", format)
 	}
 }
 
@@ -251,8 +251,8 @@ func TestImageSpecProperties(t *testing.T) {
 	if spec.AlphaChannel() != -1 {
 		t.Errorf("Expected alpha index to be -1;  got %v", spec.AlphaChannel())
 	}
-	if spec.Format() != TYPE_UINT8 {
-		t.Errorf("Expected data format to be TYPE_UINT8; got %v", spec.Format())
+	if spec.Format() != TypeUint8 {
+		t.Errorf("Expected data format to be TypeUint8; got %v", spec.Format())
 	}
 
 	actual := spec.ChannelNames()

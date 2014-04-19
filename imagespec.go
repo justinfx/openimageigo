@@ -13,23 +13,26 @@ import (
 	"unsafe"
 )
 
+// Various representation formats for image data
 type TypeDesc int
 
 const (
-	TYPE_UNKNOWN TypeDesc = C.TYPE_UNKNOWN
-	TYPE_UINT8   TypeDesc = C.TYPE_UINT8
-	TYPE_INT8    TypeDesc = C.TYPE_INT8
-	TYPE_UINT16  TypeDesc = C.TYPE_UINT16
-	TYPE_INT16   TypeDesc = C.TYPE_INT16
-	TYPE_UINT    TypeDesc = C.TYPE_UINT
-	TYPE_INT     TypeDesc = C.TYPE_INT
-	TYPE_UINT64  TypeDesc = C.TYPE_UINT64
-	TYPE_INT64   TypeDesc = C.TYPE_INT64
-	TYPE_HALF    TypeDesc = C.TYPE_HALF
-	TYPE_FLOAT   TypeDesc = C.TYPE_FLOAT
-	TYPE_DOUBLE  TypeDesc = C.TYPE_DOUBLE
+	TypeUnknown TypeDesc = C.TYPE_UNKNOWN
+	TypeUint8   TypeDesc = C.TYPE_UINT8
+	TypeInt8    TypeDesc = C.TYPE_INT8
+	TypeUint16  TypeDesc = C.TYPE_UINT16
+	TypeInt16   TypeDesc = C.TYPE_INT16
+	TypeUint    TypeDesc = C.TYPE_UINT
+	TypeInt     TypeDesc = C.TYPE_INT
+	TypeUint64  TypeDesc = C.TYPE_UINT64
+	TypeInt64   TypeDesc = C.TYPE_INT64
+	TypeHalf    TypeDesc = C.TYPE_HALF
+	TypeFloat   TypeDesc = C.TYPE_FLOAT
+	TypeDouble  TypeDesc = C.TYPE_DOUBLE
 )
 
+// ImageSpec describes the data format of an image – dimensions, layout, 
+// number and meanings of image channels.
 type ImageSpec struct {
 	ptr unsafe.Pointer
 }

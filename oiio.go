@@ -170,22 +170,22 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 //
 // The underlying type of data is determined by the given TypeDesc.
 // Returned interface{} will be:
-//     TYPE_UINT8   => []uint8
-//     TYPE_INT8    => []int8
-//     TYPE_UINT16  => []uint16
-//     TYPE_INT16   => []int16
-//     TYPE_UINT    => []uint
-//     TYPE_INT     => []int
-//     TYPE_UINT64  => []uint64
-//     TYPE_INT64   => []int64
-//     TYPE_HALF    => []float32
-//     TYPE_FLOAT   => []float32
-//     TYPE_DOUBLE  => []float64
+//     TypeUint8   => []uint8
+//     TypeInt8    => []int8
+//     TypeUint16  => []uint16
+//     TypeInt16   => []int16
+//     TypeUint    => []uint
+//     TypeInt     => []int
+//     TypeUint64  => []uint64
+//     TypeInt64   => []int64
+//     TypeHalf    => []float32
+//     TypeFloat   => []float32
+//     TypeDouble  => []float64
 //
 // Example:
 //
 //     // Without a callback
-//     val, err := in.ReadImageFormat(TYPE_FLOAT, nil)
+//     val, err := in.ReadImageFormat(TypeFloat, nil)
 //     if err != nil {
 //         panic(err.Error())
 //     }
@@ -197,7 +197,7 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 //         // Keep processing (return true to abort)
 //         return false
 //     }
-//     val, _ = in.ReadImageFormat(TYPE_FLOAT, &cbk)
+//     val, _ = in.ReadImageFormat(TypeFloat, &cbk)
 //     floatPixels = val.([]float32)
 //
 func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback) (interface{}, error) {
@@ -215,52 +215,52 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 
 	switch format {
 
-	case TYPE_UINT8:
+	case TypeUint8:
 		pixels := make([]uint8, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_INT8:
+	case TypeInt8:
 		pixels := make([]int8, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_UINT16:
+	case TypeUint16:
 		pixels := make([]uint16, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_INT16:
+	case TypeInt16:
 		pixels := make([]int16, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_UINT:
+	case TypeUint:
 		pixels := make([]uint, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_INT:
+	case TypeInt:
 		pixels := make([]int, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_UINT64:
+	case TypeUint64:
 		pixels := make([]uint64, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_INT64:
+	case TypeInt64:
 		pixels := make([]int64, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_FLOAT, TYPE_HALF:
+	case TypeFloat, TypeHalf:
 		pixels := make([]float32, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
 
-	case TYPE_DOUBLE:
+	case TypeDouble:
 		pixels := make([]float64, size)
 		pixel_iface = reflect.ValueOf(pixels).Interface()
 		ptr = unsafe.Pointer(&pixels[0])
