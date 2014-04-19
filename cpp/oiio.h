@@ -8,17 +8,24 @@
 extern "C" {
 #endif
 
+
+
 typedef ptrdiff_t stride_t;
 typedef unsigned long long imagesize_t;
 
 typedef void ImageSpec;
 typedef void ImageInput;
 typedef void ImageOutput;
+typedef void ImageCache;
 typedef void DeepData;
+typedef void ImageBuf;
+typedef void ROI;
 
 typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
 
-// TypeDesc
+
+
+// Enums
 // 
 
 typedef enum TypeDesc {
@@ -35,6 +42,25 @@ typedef enum TypeDesc {
 	TYPE_FLOAT 		= 9,
 	TYPE_DOUBLE 	= 10
 } TypeDesc;
+
+
+typedef enum IBStorage {
+	IBSTORAGE_UNINITIALIZED,
+	IBSTORAGE_LOCALBUFFER, 	
+	IBSTORAGE_APPBUFFER, 		
+	IBSTORAGE_IMAGECACHE, 
+} IBStorage;
+
+
+typedef enum WrapMode {
+	WrapDefault,
+	WrapBlack,
+	WrapClamp,
+	WrapPeriodic,
+	WrapMirror,
+	_WrapLast
+} WrapMode;
+
 
 // ImageInput
 // 
@@ -61,8 +87,6 @@ bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 // bool ImageInput_read_tile_format(ImageInput *in, int x, int y, int z, TypeDesc format, void* data, 
 // 									stride_t xstride, stride_t ystride, stride_t zstride);
 bool ImageInput_read_image_floats(ImageInput *in, float* data);
-
-// // TODO: Progress Callback?
 bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data);
 
 // bool ImageInput_read_native_scanline(ImageInput *in, int y, int z, void *data);
@@ -76,6 +100,8 @@ bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, v
 // int ImageInput_send_to_client(ImageInput *in, const char *format,...);
  
 const char* ImageInput_geterror(ImageInput *in);
+
+
 
  
 // ImageSpec
@@ -99,23 +125,23 @@ imagesize_t	ImageSpec_image_pixels(ImageSpec *spec);
 imagesize_t	ImageSpec_image_bytes(ImageSpec *spec, bool native);
 bool ImageSpec_size_safe(ImageSpec *spec);
 
-// void 	attribute (const std::string &name, TypeDesc type, const void *value)
-// void 	attribute (const std::string &name, TypeDesc type, const std::string &value)
-// void 	attribute (const std::string &name, unsigned int value)
-// void 	attribute (const std::string &name, int value)
-// void 	attribute (const std::string &name, float value)
-// void 	attribute (const std::string &name, const char *value)
-// void 	attribute (const std::string &name, const std::string &value)
-// void 	erase_attribute (const std::string &name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
-// ImageIOParameter * 	find_attribute (const std::string &name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
-// const ImageIOParameter * 	find_attribute (const std::string &name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false) const
-// int 	get_int_attribute (const std::string &name, int defaultval=0) const
-// float 	get_float_attribute (const std::string &name, float defaultval=0) const
-// std::string 	get_string_attribute (const std::string &name, const std::string &defaultval=std::string()) const
-// std::string 	metadata_val (const ImageIOParameter &p, bool human=false) const
-// std::string 	to_xml () const
-// void 	from_xml (const char *xml)
-// bool 	valid_tile_range (int xbegin, int xend, int ybegin, int yend, int zbegin, int zend)
+// void attribute(const char* name, TypeDesc type, const void *value)
+// void attribute(const char* name, TypeDesc type, const char* value)
+// void attribute(const char* name, unsigned int value)
+// void attribute(const char* name, int value)
+// void attribute(const char* name, float value)
+// void attribute(const char* name, const char *value)
+// void attribute(const char* name, const char* value)
+// void erase_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
+// ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
+// const ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false);
+// int get_int_attribute(const char* name, int defaultval=0);
+// float get_float_attribute(const char* name, float defaultval=0);
+// std::string get_string_attribute(const char* name, const char* defaultval=std::string());
+// std::string metadata_val(const ImageIOParameter &p, bool human=false);
+// std::string to_xml();
+// void from_xml(const char *xml)
+// bool valid_tile_range(int xbegin, int xend, int ybegin, int yend, int zbegin, int zend)
 
 TypeDesc ImageSpec_channelformat(ImageSpec *spec, int chan);
 // void ImageSpec_get_channelformats(ImageSpec *spec, std::vector< TypeDesc > &formats);
@@ -148,6 +174,136 @@ int ImageSpec_quant_white(ImageSpec *spec);
 int ImageSpec_quant_min(ImageSpec *spec);
 int ImageSpec_quant_max(ImageSpec *spec);
 // extra_attribs?
+
+
+// ImageBuf
+// 
+
+ImageBuf* ImageBuf_New();
+ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache);
+ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer);
+ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache);
+ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec, void* buffer);
+ 
+void ImageBuf_clear(ImageBuf* buf);
+void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, ImageCache *imagecache);
+void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache);
+void ImageBuf_reset_spec(ImageBuf* buf, ImageSpec* spec);
+void ImageBuf_reset_name_spec(ImageBuf* buf, const char* name, const ImageSpec* spec);
+// void ImageBuf_alloc(ImageBuf* buf, ImageSpec* spec);
+
+IBStorage ImageBuf_storage(ImageBuf* buf);
+bool ImageBuf_initialized(ImageBuf* buf);
+bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data); 
+// bool ImageBuf_init_spec(ImageBuf* buf, const char* filename, int subimage, int miplevel);
+// bool ImageBuf_write(ImageBuf* buf, const char* filename, const char* fileformat, void *progress_callback_data);
+// bool ImageBuf_write(ImageBuf* buf, ImageOutput *out, void *progress_callback_data);
+// void ImageBuf_set_write_format(ImageBuf* buf, TypeDesc format);
+// void ImageBuf_set_write_tiles(ImageBuf* buf, int width, int height, int depth);
+// bool ImageBuf_save(ImageBuf* buf, const char* filename, const char* fileformat, void *progress_callback_data);
+// void ImageBuf_copy_metadata(ImageBuf* buf, const ImageBuf &src);
+// bool ImageBuf_copy_pixels(ImageBuf* buf, const ImageBuf &src);
+// bool ImageBuf_copy(ImageBuf* buf, const ImageBuf &src);
+// void ImageBuf_swap(ImageBuf* buf, ImageBuf &other);
+const char* ImageBuf_geterror(ImageBuf* buf);
+// const ImageSpec* ImageBuf_spec(ImageBuf* buf);
+// ImageSpec* ImageBuf_specmod(ImageBuf* buf);
+// const ImageSpec* ImageBuf_nativespec(ImageBuf* buf);
+const char* ImageBuf_name(ImageBuf* buf);
+const char* ImageBuf_file_format_name(ImageBuf* buf);
+int ImageBuf_subimage(ImageBuf* buf);
+int ImageBuf_nsubimages(ImageBuf* buf);
+int ImageBuf_miplevel(ImageBuf* buf);
+int ImageBuf_nmiplevels(ImageBuf* buf);
+int ImageBuf_nchannels(ImageBuf* buf);
+// float ImageBuf_getchannel(ImageBuf* buf, int x, int y, int z, int c, WrapMode wrap);
+// void ImageBuf_getpixel(ImageBuf* buf, int x, int y, float *pixel, int maxchannels);
+// void ImageBuf_getpixel_xyz(ImageBuf* buf, int x, int y, int z, float *pixel, int maxchannels, WrapMode wrap);
+// void ImageBuf_interppixel(ImageBuf* buf, float x, float y, float *pixel, WrapMode wrap);
+// void ImageBuf_interppixel_NDC(ImageBuf* buf, float s, float t, float *pixel, WrapMode wrap);
+// void ImageBuf_interppixel_NDC_full(ImageBuf* buf, float s, float t, float *pixel, WrapMode wrap);
+// void ImageBuf_setpixel(ImageBuf* buf, int x, int y, const float *pixel, int maxchannels);
+// void ImageBuf_setpixel_xyz(ImageBuf* buf, int x, int y, int z, const float *pixel, int maxchannels);
+// void ImageBuf_setpixel_index(ImageBuf* buf, int i, const float *pixel, int maxchannels);
+// bool ImageBuf_get_pixel_channels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend, TypeDesc format, void *result);
+// bool ImageBuf_get_pixels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, TypeDesc format, void *result);
+
+// int ImageBuf_orientation(ImageBuf* buf);
+// int ImageBuf_oriented_width(ImageBuf* buf);
+// int ImageBuf_oriented_height(ImageBuf* buf);
+// int ImageBuf_oriented_x(ImageBuf* buf);
+// int ImageBuf_oriented_y(ImageBuf* buf);
+// int ImageBuf_oriented_full_width(ImageBuf* buf);
+// int ImageBuf_oriented_full_height(ImageBuf* buf);
+// int ImageBuf_oriented_full_x(ImageBuf* buf);
+// int ImageBuf_oriented_full_y(ImageBuf* buf);
+ 
+// int ImageBuf_xbegin(ImageBuf* buf);
+// int ImageBuf_xend(ImageBuf* buf);
+// int ImageBuf_ybegin(ImageBuf* buf);
+// int ImageBuf_yend(ImageBuf* buf);
+// int ImageBuf_zbegin(ImageBuf* buf);
+// int ImageBuf_zend(ImageBuf* buf);
+// int ImageBuf_xmin(ImageBuf* buf);
+// int ImageBuf_xmax(ImageBuf* buf);
+// int ImageBuf_ymin(ImageBuf* buf);
+// int ImageBuf_ymax(ImageBuf* buf);
+// int ImageBuf_zmin(ImageBuf* buf);
+// int ImageBuf_zmax(ImageBuf* buf);
+
+// void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend);
+// void ImageBuf_set_full_border(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, const float *bordercolor);
+ 
+// ROI ImageBuf_roi(ImageBuf* buf);
+// ROI ImageBuf_roi_full(ImageBuf* buf);
+// void ImageBuf_set_roi_full(ImageBuf* buf, const ROI* newroi);
+ 
+// bool ImageBuf_pixels_valid(ImageBuf* buf);
+// TypeDesc ImageBuf_pixeltype(ImageBuf* buf);
+// void* ImageBuf_localpixels(ImageBuf* buf);
+// const void* ImageBuf_localpixels(ImageBuf* buf);
+// bool ImageBuf_cachedpixels(ImageBuf* buf);
+// ImageCache* ImageBuf_imagecache(ImageBuf* buf);
+// void* ImageBuf_pixeladdr(ImageBuf* buf, int x, int y);
+// void* ImageBuf_pixeladdr_z(ImageBuf* buf, int x, int y, int z);
+// bool ImageBuf_deep(ImageBuf* buf);
+// int ImageBuf_deep_samples(ImageBuf* buf, int x, int y, int z);
+// const void* ImageBuf_deep_pixel_ptr(ImageBuf* buf, int x, int y, int z, int c);
+// float ImageBuf_deep_value(ImageBuf* buf, int x, int y, int z, int c, int s);
+// DeepData* ImageBuf_deepdata(ImageBuf* buf);
+
+// ROI
+// 
+void deleteROI(ROI* roi);
+
+ROI* ROI_New();
+ROI* ROI_NewOptions(int xbeing, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend);
+
+bool ROI_defined(ROI* roi);
+int ROI_width(ROI* roi);
+int ROI_height(ROI* roi);
+int ROI_depth(ROI* roi);
+int ROI_nchannels(ROI* roi);
+imagesize_t ROI_npixels(ROI* roi);
+
+// Properties
+// int ROI_xbegin(ROI* roi);
+// void ROI_set_xbegin(ROI* roi, int val); 
+// int ROI_xend(ROI* roi);
+// void ROI_set_xend(ROI* roi, int val); 
+// int ROI_ybegin(ROI* roi);
+// void ROI_set_ybegin(ROI* roi, int val); 
+// int ROI_yend(ROI* roi);
+// void ROI_set_yend(ROI* roi, int val); 
+// int ROI_zbegin(ROI* roi);
+// void ROI_set_zbegin(ROI* roi, int val); 
+// int ROI_zend(ROI* roi);
+// void ROI_set_zend(ROI* roi, int val); 
+// int ROI_chbegin(ROI* roi);
+// void ROI_set_chbegin(ROI* roi, int val); 
+// int ROI_chend(ROI* roi);
+// void ROI_set_chend(ROI* roi, int val);
+
 
 #ifdef __cplusplus
 }

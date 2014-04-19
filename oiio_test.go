@@ -282,3 +282,83 @@ func TestImageSpecProperties(t *testing.T) {
 	spec.QuantMax()
 
 }
+
+// ImageBuf
+// 
+func TestNewImageBuf(t *testing.T) {
+	buf := NewImageBuf()
+	if buf.Initialized() {
+		t.Fatal("ImageBuf should not be considered initialized")
+	}
+}
+
+func TestImageBufReadImage(t *testing.T) {
+	// Open New
+	buf, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if !buf.Initialized() {
+		t.Fatal("ImageBuf was not initialized")
+	}
+
+	err = buf.Read(true)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	storage := buf.Storage()
+	if storage == IBStorageUninitialized {
+		t.Error("Got IBStorage value: Uninitialized")
+	}
+
+	if buf.Name() != TEST_IMAGE {
+		t.Errorf("Expected name %v; got %v", TEST_IMAGE, buf.Name())
+	}
+
+	if buf.FileFormatName() != "png" {
+		t.Errorf("Expected format png; got %v", buf.FileFormatName())
+	}
+
+	curr, total := buf.SubImage(), buf.NumSubImages()
+	if curr != 0 && total != 1 {
+		t.Errorf("Expected SubImage 0 and total of 1; got %v, %v", curr, total)
+	}
+	curr, total = buf.MipLevel(), buf.NumMipLevels()
+	if curr != 0 && total != 1 {
+		t.Errorf("Expected MipLevel 0 and total of 1; got %v, %v", curr, total)
+	}
+
+	if buf.NumChannels() != 3 {
+		t.Errorf("Expected 3 channels in image, got %v", buf.NumChannels())
+	}
+
+	// With success callback
+	//
+	buf.Clear()
+	var progress ProgressCallback = func(done float32) bool {
+		// no cancel
+		return false
+	}
+
+	err = buf.ReadCallback(true, &progress)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+
+	// With stop callback
+	//
+	buf.Clear()
+	progress = func(done float32) bool {
+		// cancel
+		return true
+	}
+
+	err = buf.ReadCallback(true, &progress)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+}

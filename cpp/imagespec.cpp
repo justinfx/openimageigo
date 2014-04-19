@@ -44,7 +44,7 @@ void deleteImageSpec(ImageSpec *spec) {
 }
 
 ImageSpec* ImageSpec_New(TypeDesc fmt) {
-	return (ImageSpec*) new OIIO::ImageSpec(fromTypeDesc(fmt));;
+	return (ImageSpec*) new OIIO::ImageSpec(fromTypeDesc(fmt));
 }
 
 ImageSpec* ImageSpec_New_Size(int xres, int yres, int nchans, TypeDesc fmt) {

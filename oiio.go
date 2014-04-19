@@ -35,6 +35,10 @@ import (
 	"unsafe"
 )
 
+// For image reading functions that accept a callback to monitor progress.
+// A function that will be passed a float value indicating the progress 
+// percentage of the current operation. If the functon returns true, then
+// the process should be aborted. Return false to allow processing to continue.
 type ProgressCallback func(done float32) bool
 
 // ImageInput abstracts the reading of an image file in a file format-agnostic manner.
