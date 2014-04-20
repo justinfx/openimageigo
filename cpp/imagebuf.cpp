@@ -87,20 +87,75 @@ bool ImageBuf_initialized(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->initialized();
 }
 
+bool ImageBuf_init_spec(ImageBuf* buf, const char* filename, int subimage, int miplevel) {
+	return static_cast<OIIO::ImageBuf*>(buf)->init_spec(filename, subimage, miplevel);
+}
 
 bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data) {
 	ProgressCallback cbk = &image_progress_callback;
 
-	return static_cast<OIIO::ImageBuf*>(buf)->read(
-												subimage,
-												miplevel,
-												force,
-												fromTypeDesc(convert), 
-												cbk,
-												cbk_data);
+	return static_cast<OIIO::ImageBuf*>(buf)->read(subimage,
+												   miplevel,
+												   force,
+												   fromTypeDesc(convert), 
+												   cbk,
+												   cbk_data);
 }
 
 
+bool ImageBuf_write_file(ImageBuf* buf, const char* filename, const char* fileformat, void *cbk_data) {
+	ProgressCallback cbk = &image_progress_callback;
+	return static_cast<OIIO::ImageBuf*>(buf)->write(filename, fileformat, cbk, cbk_data);
+}
+
+bool ImageBuf_write_output(ImageBuf* buf, ImageOutput *out, void *cbk_data) {
+	OIIO::ImageOutput *out_ptr = static_cast<OIIO::ImageOutput*>(out);
+	ProgressCallback cbk = &image_progress_callback;
+	return static_cast<OIIO::ImageBuf*>(buf)->write(out_ptr, cbk, cbk_data);
+}
+
+void ImageBuf_set_write_format(ImageBuf* buf, TypeDesc format) {
+	static_cast<OIIO::ImageBuf*>(buf)->set_write_format(fromTypeDesc(format));
+}
+
+void ImageBuf_set_write_tiles(ImageBuf* buf, int width, int height, int depth) {
+	static_cast<OIIO::ImageBuf*>(buf)->set_write_tiles(width, height, depth);
+}
+
+void ImageBuf_copy_metadata(ImageBuf* dst, const ImageBuf* src) {
+	const OIIO::ImageBuf *src_ptr = static_cast<const OIIO::ImageBuf*>(src);
+	static_cast<OIIO::ImageBuf*>(dst)->copy_metadata(*src_ptr);
+}
+
+bool ImageBuf_copy_pixels(ImageBuf* dst, const ImageBuf* src) {
+	const OIIO::ImageBuf *src_ptr = static_cast<const OIIO::ImageBuf*>(src);
+	return static_cast<OIIO::ImageBuf*>(dst)->copy_pixels(*src_ptr);
+}
+
+bool ImageBuf_copy(ImageBuf* dst, const ImageBuf* src) {
+	const OIIO::ImageBuf *src_ptr = static_cast<const OIIO::ImageBuf*>(src);
+	return static_cast<OIIO::ImageBuf*>(dst)->copy(*src_ptr);
+}
+
+void ImageBuf_swap(ImageBuf* buf, ImageBuf* other) {
+	OIIO::ImageBuf *other_ptr = static_cast<OIIO::ImageBuf*>(other);
+	static_cast<OIIO::ImageBuf*>(buf)->swap(*other_ptr);
+}
+
+const ImageSpec* ImageBuf_spec(ImageBuf* buf) {
+	OIIO::ImageSpec *spec = new OIIO::ImageSpec(static_cast<OIIO::ImageBuf*>(buf)->spec());
+	return static_cast<const ImageSpec*>(spec);
+}
+
+ImageSpec* ImageBuf_specmod(ImageBuf* buf) {
+	OIIO::ImageSpec *spec = &(static_cast<OIIO::ImageBuf*>(buf)->specmod());
+	return static_cast<ImageSpec*>(spec);
+}
+
+const ImageSpec* ImageBuf_nativespec(ImageBuf* buf) {
+	OIIO::ImageSpec *spec = new OIIO::ImageSpec(static_cast<OIIO::ImageBuf*>(buf)->nativespec());
+	return static_cast<const ImageSpec*>(spec);
+}
 
 const char* ImageBuf_name(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->name().c_str();
