@@ -148,31 +148,57 @@ TypeDesc ImageSpec_channelformat(ImageSpec *spec, int chan);
 
 // Properties
 int ImageSpec_x(ImageSpec *spec);
+void ImageSpec_set_x(ImageSpec *spec, int val);
 int ImageSpec_y(ImageSpec *spec);
+void ImageSpec_set_y(ImageSpec *spec, int val);
 int ImageSpec_z(ImageSpec *spec);
+void ImageSpec_set_z(ImageSpec *spec, int val);
 int ImageSpec_width(ImageSpec *spec);
+void ImageSpec_set_width(ImageSpec *spec, int val);
 int ImageSpec_height(ImageSpec *spec);
+void ImageSpec_set_height(ImageSpec *spec, int val);
 int ImageSpec_depth(ImageSpec *spec);
+void ImageSpec_set_depth(ImageSpec *spec, int val);
 int ImageSpec_full_x(ImageSpec *spec);
+void ImageSpec_set_full_x(ImageSpec *spec, int val);
 int ImageSpec_full_y(ImageSpec *spec);
+void ImageSpec_set_full_y(ImageSpec *spec, int val);
 int ImageSpec_full_z(ImageSpec *spec);
+void ImageSpec_set_full_z(ImageSpec *spec, int val);
 int ImageSpec_full_width(ImageSpec *spec);
+void ImageSpec_set_full_width(ImageSpec *spec, int val);
 int ImageSpec_full_height(ImageSpec *spec);
+void ImageSpec_set_full_height(ImageSpec *spec, int val);
 int ImageSpec_full_depth(ImageSpec *spec);
+void ImageSpec_set_full_depth(ImageSpec *spec, int val);
 int ImageSpec_tile_width(ImageSpec *spec);
+void ImageSpec_set_tile_width(ImageSpec *spec, int val);
 int ImageSpec_tile_height(ImageSpec *spec);
+void ImageSpec_set_tile_height(ImageSpec *spec, int val);
 int ImageSpec_tile_depth(ImageSpec *spec);
+void ImageSpec_set_tile_depth(ImageSpec *spec, int val);
 int ImageSpec_nchannels(ImageSpec *spec);
+void ImageSpec_set_nchannels(ImageSpec *spec, int val);
 TypeDesc ImageSpec_format(ImageSpec *spec);
+void ImageSpec_set_format(ImageSpec *spec, TypeDesc format);
 void ImageSpec_channelformats(ImageSpec *spec, TypeDesc *out);
+void ImageSpec_set_channelformats(ImageSpec *spec, TypeDesc *formats);
 void ImageSpec_channelnames(ImageSpec *spec, char** out);
+void ImageSpec_set_channelnames(ImageSpec *spec, char** names);
 int ImageSpec_alpha_channel(ImageSpec *spec);
+void ImageSpec_set_alpha_channel(ImageSpec *spec, int val);
 int ImageSpec_z_channel(ImageSpec *spec);
+void ImageSpec_set_z_channel(ImageSpec *spec, int val);
 bool ImageSpec_deep(ImageSpec *spec);
+void ImageSpec_set_deep(ImageSpec *spec, bool val);
 int ImageSpec_quant_black(ImageSpec *spec);
+void ImageSpec_set_quant_black(ImageSpec *spec, int val);
 int ImageSpec_quant_white(ImageSpec *spec);
+void ImageSpec_set_quant_white(ImageSpec *spec, int val);
 int ImageSpec_quant_min(ImageSpec *spec);
+void ImageSpec_set_quant_min(ImageSpec *spec, int val);
 int ImageSpec_quant_max(ImageSpec *spec);
+void ImageSpec_set_quant_max(ImageSpec *spec, int val);
 // extra_attribs?
 
 

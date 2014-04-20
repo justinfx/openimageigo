@@ -51,10 +51,6 @@ ImageSpec* ImageSpec_New_Size(int xres, int yres, int nchans, TypeDesc fmt) {
 	return (ImageSpec*) new OIIO::ImageSpec(xres, yres, nchans, fromTypeDesc(fmt));
 }
 
-void ImageSpec_set_format(ImageSpec *spec, TypeDesc fmt) {
-	static_cast<OIIO::ImageSpec*>(spec)->set_format(fromTypeDesc(fmt));
-}
-
 void ImageSpec_default_channel_names(ImageSpec *spec) {
 	static_cast<OIIO::ImageSpec*>(spec)->default_channel_names();
 }
@@ -105,73 +101,141 @@ TypeDesc ImageSpec_channelformat(ImageSpec *spec, int chan) {
 }
 
 // Properties
-int ImageSpec_x(ImageSpec *spec){
+int ImageSpec_x(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->x;
 }
 
-int ImageSpec_y(ImageSpec *spec){
+void ImageSpec_set_x(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->x = val;
+}
+
+int ImageSpec_y(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->y;
 }
 
-int ImageSpec_z(ImageSpec *spec){
+void ImageSpec_set_y(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->y = val;
+}
+
+int ImageSpec_z(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->z;
 }
 
-int ImageSpec_width(ImageSpec *spec){
+void ImageSpec_set_z(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->z = val;
+}
+
+int ImageSpec_width(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->width;
 }
 
-int ImageSpec_height(ImageSpec *spec){
+void ImageSpec_set_width(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->width = val;
+}
+
+int ImageSpec_height(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->height;
 }
 
-int ImageSpec_depth(ImageSpec *spec){
+void ImageSpec_set_height(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->height = val;
+}
+
+int ImageSpec_depth(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->depth;
 }
 
-int ImageSpec_full_x(ImageSpec *spec){
+void ImageSpec_set_depth(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->depth = val;
+}
+
+int ImageSpec_full_x(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_x;
 }
 
-int ImageSpec_full_y(ImageSpec *spec){
+void ImageSpec_set_full_x(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_x = val;
+}
+
+int ImageSpec_full_y(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_y;
 }
 
-int ImageSpec_full_z(ImageSpec *spec){
+void ImageSpec_set_full_y(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_y = val;
+}
+
+int ImageSpec_full_z(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_z;
 }
 
-int ImageSpec_full_width(ImageSpec *spec){
+void ImageSpec_set_full_z(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_z = val;
+}
+
+int ImageSpec_full_width(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_width;
 }
 
-int ImageSpec_full_height(ImageSpec *spec){
+void ImageSpec_set_full_width(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_width = val;
+}
+
+int ImageSpec_full_height(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_height;
 }
 
-int ImageSpec_full_depth(ImageSpec *spec){
+void ImageSpec_set_full_height(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_height = val;
+}
+
+int ImageSpec_full_depth(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->full_depth;
 }
 
-int ImageSpec_tile_width(ImageSpec *spec){
+void ImageSpec_set_full_depth(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->full_depth = val;
+}
+
+int ImageSpec_tile_width(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->tile_width;
 }
 
-int ImageSpec_tile_height(ImageSpec *spec){
+void ImageSpec_set_tile_width(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->tile_width = val;
+}
+
+int ImageSpec_tile_height(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->tile_height;
 }
 
-int ImageSpec_tile_depth(ImageSpec *spec){
+void ImageSpec_set_tile_height(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->tile_height = val;
+}
+
+int ImageSpec_tile_depth(ImageSpec *spec ){
 	return static_cast<OIIO::ImageSpec*>(spec)->tile_depth;
 }
 
-int ImageSpec_nchannels(ImageSpec *spec){
+void ImageSpec_set_tile_depth(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->tile_depth = val;
+}
+
+int ImageSpec_nchannels(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->nchannels;
+}
+
+void ImageSpec_set_nchannels(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->nchannels = val;
 }
 
 TypeDesc ImageSpec_format(ImageSpec *spec){
 	OIIO::TypeDesc c_typ = static_cast<OIIO::ImageSpec*>(spec)->format;
 	return toTypeDesc(c_typ);
+}
+
+void ImageSpec_set_format(ImageSpec *spec, TypeDesc fmt) {
+	static_cast<OIIO::ImageSpec*>(spec)->set_format(fromTypeDesc(fmt));
 }
 
 void ImageSpec_channelformats(ImageSpec *spec, TypeDesc* out) {
@@ -181,6 +245,15 @@ void ImageSpec_channelformats(ImageSpec *spec, TypeDesc* out) {
 	}
 }
 
+void ImageSpec_set_channelformats(ImageSpec *spec, TypeDesc* formats){
+	OIIO::ImageSpec *ptr = static_cast<OIIO::ImageSpec*>(spec);
+	std::vector<OIIO::TypeDesc> vec = ptr->channelformats;
+	for (std::vector<std::string>::size_type i = 0; i != vec.size(); i++) {
+		vec[i] = fromTypeDesc(formats[i]);
+	}
+	ptr->channelformats = vec;
+}
+
 void ImageSpec_channelnames(ImageSpec *spec, char** out) {
 	std::vector<std::string> vec = static_cast<OIIO::ImageSpec*>(spec)->channelnames;
 	for (std::vector<std::string>::size_type i = 0; i != vec.size(); i++) {
@@ -188,32 +261,69 @@ void ImageSpec_channelnames(ImageSpec *spec, char** out) {
 	}
 }
 
+void ImageSpec_set_channelnames(ImageSpec *spec, char** names) {
+	OIIO::ImageSpec *ptr = static_cast<OIIO::ImageSpec*>(spec);
+	std::vector<std::string> vec = ptr->channelnames;
+	for (std::vector<std::string>::size_type i = 0; i != vec.size(); i++) {
+		vec[i] = std::string(names[i]);
+	}
+	ptr->channelnames = vec;
+}
+
 int ImageSpec_alpha_channel(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->alpha_channel;
+}
+
+void ImageSpec_set_alpha_channel(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->alpha_channel = val;
 }
 
 int ImageSpec_z_channel(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->z_channel;
 }
 
+void ImageSpec_set_z_channel(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->z_channel = val;
+}
+
 bool ImageSpec_deep(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->deep;
+}
+
+void ImageSpec_set_deep(ImageSpec *spec, bool val) {
+	static_cast<OIIO::ImageSpec*>(spec)->deep = val;
 }
 
 int ImageSpec_quant_black(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->quant_black;
 }
 
+void ImageSpec_set_quant_black(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->quant_black = val;
+}
+
 int ImageSpec_quant_white(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->quant_white;
+}
+
+void ImageSpec_set_quant_white(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->quant_white = val;
 }
 
 int ImageSpec_quant_min(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->quant_min;
 }
 
+void ImageSpec_set_quant_min(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->quant_min = val;
+}
+
 int ImageSpec_quant_max(ImageSpec *spec){
 	return static_cast<OIIO::ImageSpec*>(spec)->quant_max;
+}
+
+void ImageSpec_set_quant_max(ImageSpec *spec, int val) {
+	static_cast<OIIO::ImageSpec*>(spec)->quant_max = val;
 }
 
 // extra_attribs?

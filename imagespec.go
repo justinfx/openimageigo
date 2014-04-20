@@ -63,11 +63,6 @@ func NewImageSpecSize(x, y, chans int, format TypeDesc) *ImageSpec {
 	return newImageSpec(spec)
 }
 
-// Set the data format, and as a side effect set quantize to good defaults for that format
-func (s *ImageSpec) SetFormat(format TypeDesc) {
-	C.ImageSpec_set_format(s.ptr, (C.TypeDesc)(format))
-}
-
 // Set the channelnames to reasonable defaults ("R", "G", "B", "A"),
 // and alpha_channel, based on the number of channels.
 func (s *ImageSpec) DefaultChannelNames() {
@@ -163,8 +158,16 @@ func (s *ImageSpec) X() int {
 	return int(C.ImageSpec_x(s.ptr))
 }
 
+func (s *ImageSpec) SetX(val int) {
+	C.ImageSpec_set_x(s.ptr, C.int(val))
+}
+
 func (s *ImageSpec) Y() int {
 	return int(C.ImageSpec_y(s.ptr))
+}
+
+func (s *ImageSpec) SetY(val int) {
+	C.ImageSpec_set_y(s.ptr, C.int(val))
 }
 
 // origin (upper left corner) of pixel data
@@ -172,9 +175,17 @@ func (s *ImageSpec) Z() int {
 	return int(C.ImageSpec_z(s.ptr))
 }
 
+func (s *ImageSpec) SetZ(val int) {
+	C.ImageSpec_set_z(s.ptr, C.int(val))
+}
+
 // width of the pixel data window
 func (s *ImageSpec) Width() int {
 	return int(C.ImageSpec_width(s.ptr))
+}
+
+func (s *ImageSpec) SetWidth(val int) {
+	C.ImageSpec_set_width(s.ptr, C.int(val))
 }
 
 // height of the pixel data window
@@ -182,9 +193,17 @@ func (s *ImageSpec) Height() int {
 	return int(C.ImageSpec_height(s.ptr))
 }
 
+func (s *ImageSpec) SetHeight(val int) {
+	C.ImageSpec_set_height(s.ptr, C.int(val))
+}
+
 // depth of pixel data, >1 indicates a "volume"
 func (s *ImageSpec) Depth() int {
 	return int(C.ImageSpec_depth(s.ptr))
+}
+
+func (s *ImageSpec) SetDepth(val int) {
+	C.ImageSpec_set_depth(s.ptr, C.int(val))
 }
 
 // origin of the full (display) window
@@ -192,9 +211,17 @@ func (s *ImageSpec) FullX() int {
 	return int(C.ImageSpec_full_x(s.ptr))
 }
 
+func (s *ImageSpec) SetFullX(val int) {
+	C.ImageSpec_set_full_x(s.ptr, C.int(val))
+}
+
 // origin of the full (display) window
 func (s *ImageSpec) FullY() int {
 	return int(C.ImageSpec_full_y(s.ptr))
+}
+
+func (s *ImageSpec) SetFullY(val int) {
+	C.ImageSpec_set_full_y(s.ptr, C.int(val))
 }
 
 // origin of the full (display) window
@@ -202,9 +229,17 @@ func (s *ImageSpec) FullZ() int {
 	return int(C.ImageSpec_full_z(s.ptr))
 }
 
+func (s *ImageSpec) SetFullZ(val int) {
+	C.ImageSpec_set_full_z(s.ptr, C.int(val))
+}
+
 // width of the full (display) window
 func (s *ImageSpec) FullWidth() int {
 	return int(C.ImageSpec_full_width(s.ptr))
+}
+
+func (s *ImageSpec) SetFullWidth(val int) {
+	C.ImageSpec_set_full_width(s.ptr, C.int(val))
 }
 
 // height of the full (display) window
@@ -212,9 +247,17 @@ func (s *ImageSpec) FullHeight() int {
 	return int(C.ImageSpec_full_height(s.ptr))
 }
 
+func (s *ImageSpec) SetFullHeight(val int) {
+	C.ImageSpec_set_full_height(s.ptr, C.int(val))
+}
+
 // depth of the full (display) window
 func (s *ImageSpec) FullDepth() int {
 	return int(C.ImageSpec_full_depth(s.ptr))
+}
+
+func (s *ImageSpec) SetFullDepth(val int) {
+	C.ImageSpec_set_full_depth(s.ptr, C.int(val))
 }
 
 // tile width (0 for a non-tiled image)
@@ -222,13 +265,25 @@ func (s *ImageSpec) TileWidth() int {
 	return int(C.ImageSpec_tile_width(s.ptr))
 }
 
+func (s *ImageSpec) SetTileWidth(val int) {
+	C.ImageSpec_set_tile_width(s.ptr, C.int(val))
+}
+
 // tile height (0 for a non-tiled image)
 func (s *ImageSpec) TileHeight() int {
 	return int(C.ImageSpec_tile_height(s.ptr))
 }
 
+func (s *ImageSpec) SetTileHeight(val int) {
+	C.ImageSpec_set_tile_height(s.ptr, C.int(val))
+}
+
 func (s *ImageSpec) TileDepth() int {
 	return int(C.ImageSpec_tile_depth(s.ptr))
+}
+
+func (s *ImageSpec) SetTileDepth(val int) {
+	C.ImageSpec_set_tile_depth(s.ptr, C.int(val))
 }
 
 // number of image channels, e.g., 4 for RGBA
@@ -236,9 +291,18 @@ func (s *ImageSpec) NumChannels() int {
 	return int(C.ImageSpec_nchannels(s.ptr))
 }
 
+func (s *ImageSpec) SetNumChannels(val int) {
+	C.ImageSpec_set_nchannels(s.ptr, C.int(val))
+}
+
 // data format of the channels
 func (s *ImageSpec) Format() TypeDesc {
 	return (TypeDesc)(C.ImageSpec_format(s.ptr))
+}
+
+// Set the data format, and as a side effect set quantize to good defaults for that format
+func (s *ImageSpec) SetFormat(format TypeDesc) {
+	C.ImageSpec_set_format(s.ptr, (C.TypeDesc)(format))
 }
 
 // Optional per-channel formats.
@@ -249,6 +313,12 @@ func (s *ImageSpec) ChannelFormats() []TypeDesc {
 	return formats
 }
 
+func (s *ImageSpec) SetChannelFormats(formats []TypeDesc) {
+	formats_ptr := (*C.TypeDesc)(unsafe.Pointer(&formats[0]))
+	C.ImageSpec_set_channelformats(s.ptr, formats_ptr)
+}
+
+// String name of each channel
 func (s *ImageSpec) ChannelNames() []string {
 	names := make([]string, s.NumChannels())
 	c_names := make([]*C.char, s.NumChannels())
@@ -260,9 +330,23 @@ func (s *ImageSpec) ChannelNames() []string {
 	return names
 }
 
+func (s *ImageSpec) SetChannelNames(names []string) {
+	c_names := make([]*C.char, len(names))
+	for i, n := range names {
+		c_names[i] = C.CString(n)
+		defer C.free(unsafe.Pointer(c_names[i]))
+	}
+	c_names_ptr := (**C.char)(unsafe.Pointer(&c_names[0]))
+	C.ImageSpec_set_channelnames(s.ptr, c_names_ptr)
+}
+
 // Index of alpha channel, or -1 if not known.
 func (s *ImageSpec) AlphaChannel() int {
 	return int(C.ImageSpec_alpha_channel(s.ptr))
+}
+
+func (s *ImageSpec) SetAlphaChannel(val int) {
+	C.ImageSpec_set_alpha_channel(s.ptr, C.int(val))
 }
 
 // Index of depth channel, or -1 if not known.
@@ -270,9 +354,17 @@ func (s *ImageSpec) ZChannel() int {
 	return int(C.ImageSpec_z_channel(s.ptr))
 }
 
+func (s *ImageSpec) SetZChannel(val int) {
+	C.ImageSpec_set_z_channel(s.ptr, C.int(val))
+}
+
 // Contains deep data.
 func (s *ImageSpec) Deep() bool {
 	return bool(C.ImageSpec_deep(s.ptr))
+}
+
+func (s *ImageSpec) SetDeep(val bool) {
+	C.ImageSpec_set_deep(s.ptr, C.bool(val))
 }
 
 // quantization of black (0.0) level
@@ -280,9 +372,17 @@ func (s *ImageSpec) QuantBlack() int {
 	return int(C.ImageSpec_quant_black(s.ptr))
 }
 
+func (s *ImageSpec) SetQuantBlack(val int) {
+	C.ImageSpec_set_quant_black(s.ptr, C.int(val))
+}
+
 // quantization of white (1.0) level
 func (s *ImageSpec) QuantWhite() int {
 	return int(C.ImageSpec_quant_white(s.ptr))
+}
+
+func (s *ImageSpec) SetQuantWhite(val int) {
+	C.ImageSpec_set_quant_white(s.ptr, C.int(val))
 }
 
 // quantization minimum clamp value
@@ -290,7 +390,17 @@ func (s *ImageSpec) QuantMin() int {
 	return int(C.ImageSpec_quant_min(s.ptr))
 }
 
+func (s *ImageSpec) SetQuantMin(val int) {
+	C.ImageSpec_set_quant_min(s.ptr, C.int(val))
+}
+
 // quantization maximum clamp value
 func (s *ImageSpec) QuantMax() int {
 	return int(C.ImageSpec_quant_max(s.ptr))
 }
+
+func (s *ImageSpec) SetQuantMax(val int) {
+	C.ImageSpec_set_quant_max(s.ptr, C.int(val))
+}
+
+
