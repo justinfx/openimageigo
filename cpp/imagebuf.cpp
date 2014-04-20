@@ -89,7 +89,7 @@ bool ImageBuf_initialized(ImageBuf* buf) {
 
 
 bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data) {
-	ProgressCallback cbk = &read_image_format_callback;
+	ProgressCallback cbk = &image_progress_callback;
 
 	return static_cast<OIIO::ImageBuf*>(buf)->read(
 												subimage,

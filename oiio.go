@@ -23,7 +23,7 @@ package oiio
 
 #include "cpp/oiio.h"
 
-extern bool read_image_format_callback(void* goCallback, float done);
+extern bool image_progress_callback(void* goCallback, float done);
 
 */
 import "C"
@@ -36,7 +36,7 @@ import (
 )
 
 // For image reading functions that accept a callback to monitor progress.
-// A function that will be passed a float value indicating the progress 
+// A function that will be passed a float value indicating the progress
 // percentage of the current operation. If the functon returns true, then
 // the process should be aborted. Return false to allow processing to continue.
 type ProgressCallback func(done float32) bool
@@ -284,8 +284,8 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 	return pixel_iface, i.LastError()
 }
 
-//export read_image_format_callback
-func read_image_format_callback(goCallback unsafe.Pointer, done C.float) C.bool {
+//export image_progress_callback
+func image_progress_callback(goCallback unsafe.Pointer, done C.float) C.bool {
 	if goCallback == nil {
 		return C.bool(false)
 	}

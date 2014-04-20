@@ -69,7 +69,7 @@ bool ImageInput_read_image_floats(ImageInput *in, float* data) {
 
 bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data)
 {	
-	ProgressCallback cbk = &read_image_format_callback;
+	ProgressCallback cbk = &image_progress_callback;
 
 	return static_cast<OIIO::ImageInput*>(in)->read_image(
 												fromTypeDesc(format), 
