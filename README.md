@@ -1,12 +1,20 @@
 # OpenImageIO bindings for Go
 
-Currently in development (incomplete API)
+API Status
+-----------
+
+* ImageInput - __Partial__
+* ImageSpec - __Partial__
+* ImageOuput - _Not started_
+* ImageBuf - __Partial__
+* ImageCache - _Not started_
+* ImageBufAlgo - _Not started_
+* TextureSystem - _Not started_
 
 Requirements
 ----------------------
 
 * [OpenImageIO](https://github.com/OpenImageIO)
-
 
 Installation
 ------------
@@ -19,7 +27,7 @@ Default install:
 
 If you have installed OpenImageIO to a custom location, you will need to tell CGO where to find the headers and libs:
 
-	export CGO_CFLAGS="-I/path/to/include" 
+    export CGO_CFLAGS="-I/path/to/include" 
 	export CGO_LDFLAGS="-L/path/to/lib"
 
 Or just prefixing the install:
