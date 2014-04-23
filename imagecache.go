@@ -56,7 +56,7 @@ func (i *ImageCache) LastError() error {
 	return errors.New(err)
 }
 
-// Create an ImageCache. This should be freed by calling ImageCache.destroy()
+// Create an ImageCache. This should be freed by calling ImageCache.Destroy()
 //
 // If shared==true, it's intended to be shared with other like-minded owners
 // in the same process who also ask for a shared cache.
@@ -80,10 +80,22 @@ func (i *ImageCache) GetStats(level int) string {
 	return stats
 }
 
+// Reset most statistics to be as they were with a fresh ImageCache.
+// Caveat emptor: this does not flush the cache itelf, so the resulting
+// statistics from the next set of texture requests will not match the number
+// of tile reads, etc., that would have resulted from a new ImageCache.
 func (i *ImageCache) ResetStats() {
 	C.ImageCache_reset_stats(i.ptr)
 }
 
+// Invalidate any loaded tiles or open file handles associated with the filename,
+// so that any subsequent queries will be forced to re-open the file or re-load
+// any tiles (even those that were previously loaded and would ordinarily be reused).
+// A client might do this if, for example, they are aware that an image being held
+// in the cache has been updated on disk. This is safe to do even if other procedures
+// are currently holding reference-counted tile pointers from the named image,
+// but those procedures will not get updated pixels until they release the tiles they
+// are holding.
 func (i *ImageCache) Invalidate(filename string) {
 	c_str := C.CString(filename)
 	defer C.free(unsafe.Pointer(c_str))
@@ -91,6 +103,13 @@ func (i *ImageCache) Invalidate(filename string) {
 	C.ImageCache_invalidate(i.ptr, c_str)
 }
 
+// Invalidate all loaded tiles and open file handles. This is safe to do even if other
+// procedures are currently holding reference-counted tile pointers from the named
+// image, but those procedures will not get updated pixels until they release the tiles
+// they are holding.
+// If force is true, everything will be invalidated, no matter how wasteful it is, but
+// if force is false, in actuality files will only be invalidated if their modification
+// times have been changed since they were first opened.
 func (i *ImageCache) InvalidateAll(force bool) {
 	C.ImageCache_invalidate_all(i.ptr, C.bool(force))
 }
