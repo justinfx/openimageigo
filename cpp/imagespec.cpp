@@ -18,6 +18,7 @@ OIIO::TypeDesc fromTypeDesc(TypeDesc fmt) {
 	case TYPE_HALF: 	return OIIO::TypeDesc::HALF; 
 	case TYPE_FLOAT: 	return OIIO::TypeDesc::FLOAT; 
 	case TYPE_DOUBLE: 	return OIIO::TypeDesc::DOUBLE; 
+	case TYPE_UNKNOWN: 	return OIIO::TypeDesc::UNKNOWN; 
 	}
 	return OIIO::TypeDesc::UNKNOWN;
 }

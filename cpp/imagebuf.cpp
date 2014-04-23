@@ -7,8 +7,8 @@ OIIO::ImageBuf::IBStorage fromIBStorage(IBStorage s) {
 	case IBSTORAGE_LOCALBUFFER: return OIIO::ImageBuf::LOCALBUFFER;
 	case IBSTORAGE_APPBUFFER: 	return OIIO::ImageBuf::APPBUFFER;
 	case IBSTORAGE_IMAGECACHE: 	return OIIO::ImageBuf::IMAGECACHE;	
+	case IBSTORAGE_UNINITIALIZED: 	return OIIO::ImageBuf::UNINITIALIZED;	
 	}
-	return OIIO::ImageBuf::UNINITIALIZED;
 }
 
 IBStorage toIBStorage(OIIO::ImageBuf::IBStorage s) {
