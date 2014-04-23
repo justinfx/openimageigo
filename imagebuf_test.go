@@ -33,7 +33,9 @@ func TestNewImageBufInitSpec(t *testing.T) {
 
 func TestImageBufReadImage(t *testing.T) {
 	// Open New
-	buf, err := NewImageBufPath(TEST_IMAGE)
+	cache := CreateImageCache(true)
+
+	buf, err := NewImageBufPathCache(TEST_IMAGE, cache)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -105,7 +107,9 @@ func TestImageBufReadImage(t *testing.T) {
 
 func TestImageBufSpec(t *testing.T) {
 	// Open New
-	buf, err := NewImageBufPath(TEST_IMAGE)
+	cache := CreateImageCache(true)
+
+	buf, err := NewImageBufPathCache(TEST_IMAGE, cache)
 	if err != nil {
 		t.Fatal(err.Error())
 	}

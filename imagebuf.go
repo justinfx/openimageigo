@@ -65,12 +65,27 @@ func NewImageBuf() *ImageBuf {
 // Construct an ImageBuf to read the named image – but don't actually read it yet!
 // The image will actually be read when other methods need to access the spec and/or pixels,
 // or when an explicit call to init_spec() or read() is made, whichever comes first.
+//
 // Uses the global/shared ImageCache.
 func NewImageBufPath(path string) (*ImageBuf, error) {
+	return NewImageBufPathCache(path, nil)
+}
+
+// Construct an ImageBuf to read the named image – but don't actually read it yet!
+// The image will actually be read when other methods need to access the spec and/or pixels,
+// or when an explicit call to init_spec() or read() is made, whichever comes first.
+//
+// Uses an explicitely passed ImageCache
+func NewImageBufPathCache(path string, cache *ImageCache) (*ImageBuf, error) {
 	c_str := C.CString(path)
 	defer C.free(unsafe.Pointer(c_str))
 
-	buf := newImageBuf(C.ImageBuf_New_WithCache(c_str, nil))
+	var ptr unsafe.Pointer = nil
+	if cache != nil {
+		ptr = cache.ptr
+	}
+
+	buf := newImageBuf(C.ImageBuf_New_WithCache(c_str, ptr))
 	err := buf.LastError()
 	if err != nil {
 		return nil, err
