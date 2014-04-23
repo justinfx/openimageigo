@@ -9,10 +9,10 @@ package oiio
 import "C"
 
 import (
-	"runtime"
-	"reflect"
-	"unsafe"
 	"errors"
+	"reflect"
+	"runtime"
+	"unsafe"
 )
 
 // ImageInput abstracts the reading of an image file in a file format-agnostic manner.

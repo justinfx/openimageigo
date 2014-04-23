@@ -30,4 +30,3 @@ func deleteImageOutput(i *ImageOutput) {
 		i.ptr = nil
 	}
 }
-
