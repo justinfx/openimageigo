@@ -13,7 +13,7 @@ API Status
 * ImageSpec - __Partial__
 * ImageOuput - _Not started_
 * ImageBuf - __Partial__
-* ImageCache - _Not started_
+* ImageCache - __Partial__
 * ImageBufAlgo - _Not started_
 * TextureSystem - _Not started_
 

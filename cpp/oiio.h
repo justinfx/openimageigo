@@ -20,6 +20,7 @@ typedef void ImageCache;
 typedef void DeepData;
 typedef void ImageBuf;
 typedef void ROI;
+typedef void Tile; 
 
 typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
 
@@ -327,6 +328,66 @@ imagesize_t ROI_npixels(ROI* roi);
 // void ROI_set_chbegin(ROI* roi, int val); 
 // int ROI_chend(ROI* roi);
 // void ROI_set_chend(ROI* roi, int val);
+
+
+// ImageCache
+//
+ImageCache* ImageCache_Create(bool shared);
+void ImageCache_Destroy(ImageCache *x, bool teardown);
+
+void ImageCache_clear(ImageCache *x);
+
+// bool ImageCache_attribute(ImageCache *x, const char *name, TypeDesc type, const void *val);
+
+// bool ImageCache_attribute_int(ImageCache *x, const char *name, int val);
+// bool ImageCache_attribute_float(ImageCache *x, const char *name, float val);
+// bool ImageCache_attribute_double(ImageCache *x, const char *name, double val);
+// bool ImageCache_attribute_char(ImageCache *x, const char *name, const char **val);
+
+// bool ImageCache_getattribute(ImageCache *x, const char *name, TypeDesc type, void *val);
+// bool ImageCache_getattribute_int(ImageCache *x, const char *name, int *val);
+// bool ImageCache_getattribute_float(ImageCache *x, const char *name, float *val);
+// bool ImageCache_getattribute_double(ImageCache *x, const char *name, double *val);
+// bool ImageCache_getattribute_char(ImageCache *x, const char *name, char **val);
+
+// char* ImageCache_resolve_filename(ImageCache *x, const char *filename);
+
+// bool ImageCache_get_image_info(ImageCache *x, char *filename, int subimage, int miplevel,
+//                      			char *dataname, TypeDesc datatype, void *data);
+
+// bool ImageCache_get_imagespec(ImageCache *x, char *filename, ImageSpec &spec,
+//                             int subimage=0, int miplevel=0,
+//                             bool native=false);
+
+// const ImageSpec* ImageCache_imagespec(ImageCache *x, char *filename, int subimage, int miplevel, bool native);
+
+// bool get_pixels(ImageCache *x, char *filename, int subimage, int miplevel,
+//                          int xbegin, int xend, int ybegin, int yend,
+//                          int zbegin, int zend,
+//                          TypeDesc format, void *result);
+
+// bool get_pixels(ImageCache *x, char *filename,
+//                 int subimage, int miplevel, int xbegin, int xend,
+//                 int ybegin, int yend, int zbegin, int zend,
+//                 int chbegin, int chend, TypeDesc format, void *result,
+//                 stride_t xstride=AutoStride, stride_t ystride=AutoStride,
+//                 stride_t zstride=AutoStride);
+
+// Tile* ImageCache_get_tile(ImageCache *x, char *filename, int subimage, int miplevel,
+//                             int x, int y, int z);
+
+// void ImageCache_release_tile(ImageCache *x, Tile *tile);
+// const void* ImageCache_tile_pixels(ImageCache *x, Tile *tile, TypeDesc *format);
+// bool ImageCache_add_file(ImageCache *x, char *filename, ImageInput::Creator creator);
+// bool ImageCache_add_tile(ImageCache *x, char *filename, int subimage, int miplevel,
+// 		                 int x, int y, int z, TypeDesc format, const void *buffer,
+// 		                 stride_t xstride=AutoStride, stride_t ystride=AutoStride,
+// 		                 stride_t zstride=AutoStride);
+const char* ImageCache_geterror(ImageCache *x);
+const char* ImageCache_getstats(ImageCache *x, int level);
+void ImageCache_reset_stats(ImageCache *x);
+void ImageCache_invalidate(ImageCache *x, const char *filename);
+void ImageCache_invalidate_all(ImageCache *x, bool force);
 
 
 #ifdef __cplusplus
