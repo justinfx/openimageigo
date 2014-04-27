@@ -340,6 +340,18 @@ func (i *ImageBuf) NumChannels() int {
 	return int(C.ImageBuf_nchannels(i.ptr))
 }
 
+// By default, image pixels are ordered from the top of the display to the bottom, and within
+// each scanline, from left to right (i.e., the same ordering as English text and scan progression
+// on a CRT). But the "Orientation" field can suggest that it should be displayed
+// with a different orientation, according to the TIFF/EXIF conventions:
+//   1 normal (top to bottom, left to right)
+//   2 flipped horizontally (top to botom, right to left)
+//   3 rotate 180 (bottom to top, right to left)
+//   4 flipped vertically (bottom to top, left to right)
+//   5 transposed (left to right, top to bottom)
+//   6 rotated 90 clockwise (right to left, top to bottom)
+//   7 transverse (right to left, bottom to top)
+//   8 rotated 90 counter-clockwise (left to right, bottom to top)
 func (i *ImageBuf) Orientation() int {
 	return int(C.ImageBuf_orientation(i.ptr))
 }

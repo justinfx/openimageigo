@@ -14,6 +14,7 @@ API Status
 * ImageOuput - _Not started_
 * ImageBuf - __Partial__
 * ImageCache - __Partial__
+* ROI - Done
 * ImageBufAlgo - _Not started_
 * TextureSystem - _Not started_
 
