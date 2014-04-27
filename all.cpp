@@ -2,3 +2,4 @@
 #include "cpp/imagespec.cpp"
 #include "cpp/imagebuf.cpp"
 #include "cpp/imagecache.cpp"
+#include "cpp/roi.cpp"

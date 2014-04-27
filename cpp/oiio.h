@@ -312,22 +312,22 @@ int ROI_nchannels(ROI* roi);
 imagesize_t ROI_npixels(ROI* roi);
 
 // Properties
-// int ROI_xbegin(ROI* roi);
-// void ROI_set_xbegin(ROI* roi, int val); 
-// int ROI_xend(ROI* roi);
-// void ROI_set_xend(ROI* roi, int val); 
-// int ROI_ybegin(ROI* roi);
-// void ROI_set_ybegin(ROI* roi, int val); 
-// int ROI_yend(ROI* roi);
-// void ROI_set_yend(ROI* roi, int val); 
-// int ROI_zbegin(ROI* roi);
-// void ROI_set_zbegin(ROI* roi, int val); 
-// int ROI_zend(ROI* roi);
-// void ROI_set_zend(ROI* roi, int val); 
-// int ROI_chbegin(ROI* roi);
-// void ROI_set_chbegin(ROI* roi, int val); 
-// int ROI_chend(ROI* roi);
-// void ROI_set_chend(ROI* roi, int val);
+int ROI_xbegin(ROI* roi);
+void ROI_set_xbegin(ROI* roi, int val); 
+int ROI_xend(ROI* roi);
+void ROI_set_xend(ROI* roi, int val); 
+int ROI_ybegin(ROI* roi);
+void ROI_set_ybegin(ROI* roi, int val); 
+int ROI_yend(ROI* roi);
+void ROI_set_yend(ROI* roi, int val); 
+int ROI_zbegin(ROI* roi);
+void ROI_set_zbegin(ROI* roi, int val); 
+int ROI_zend(ROI* roi);
+void ROI_set_zend(ROI* roi, int val); 
+int ROI_chbegin(ROI* roi);
+void ROI_set_chbegin(ROI* roi, int val); 
+int ROI_chend(ROI* roi);
+void ROI_set_chend(ROI* roi, int val);
 
 
 // ImageCache
