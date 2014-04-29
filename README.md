@@ -9,24 +9,25 @@ also incorporated into several commercial products.
 API Status
 -----------
 
+* TextureSystem - _Not started_
+* ImageOuput - __Started__
 * ImageInput - __Partial__
 * ImageSpec - __Partial__
-* ImageOuput - _Not started_
 * ImageBuf - __Partial__
 * ImageCache - __Partial__
+* ImageBufAlgo - __Partial__
 * ROI - Done
-* ImageBufAlgo - _Not started_
-* TextureSystem - _Not started_
 
 Requirements
 ----------------------
 
 * [OpenImageIO](https://github.com/OpenImageIO)
+* [Boost (For ImageBufAlgo)](http://www.boost.org/)
 
 Installation
 ------------
 
-This package assumes that OpenImageIO is installed to the standard /usr/local location. 
+This package assumes that OpenImageIO/Boost is installed to the standard /usr/local location. 
 
 Default install:
 

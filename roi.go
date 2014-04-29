@@ -20,6 +20,12 @@ type ROI struct {
 	ptr unsafe.Pointer
 }
 
+var roi_all *ROI
+
+func init() {
+	roi_all = NewROI()
+}
+
 func newROI(i unsafe.Pointer) *ROI {
 	in := &ROI{i}
 	runtime.SetFinalizer(in, deleteROI)
@@ -31,6 +37,13 @@ func deleteROI(i *ROI) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+}
+
+func validOrAllROIPtr(roi *ROI) unsafe.Pointer {
+	if roi == nil || roi.ptr == nil {
+		return roi_all.ptr
+	}
+	return roi.ptr
 }
 
 // Default constructor is an undefined region.
@@ -72,6 +85,13 @@ func NewROIRegion3D(xbegin, xend, ybegin, yend, zbegin, zend, chbegin, chend int
 		C.int(chend),
 	)
 	return newROI(ptr)
+}
+
+func (r *ROI) validOrAllPtr() unsafe.Pointer {
+	if r == nil || r.ptr == nil {
+		return roi_all.ptr
+	}
+	return r.ptr
 }
 
 // Is a region defined?

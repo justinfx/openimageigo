@@ -3,3 +3,4 @@
 #include "cpp/imagebuf.cpp"
 #include "cpp/imagecache.cpp"
 #include "cpp/roi.cpp"
+#include "cpp/imagebufalgo.cpp"

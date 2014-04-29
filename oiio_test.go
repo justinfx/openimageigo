@@ -8,6 +8,7 @@ import (
 	"image/png"
 	"io/ioutil"
 	"os"
+	"testing"
 )
 
 var TEST_IMAGE string
@@ -47,4 +48,16 @@ func createOutputFile() string {
 	name := fmt.Sprintf("%s.png", tmpfile.Name())
 	os.Rename(tmpfile.Name(), name)
 	return name
+}
+
+func checkError(t *testing.T, err error) {
+	if err != nil {
+		t.Error(err.Error())
+	}
+}
+
+func checkFataError(t *testing.T, err error) {
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 }

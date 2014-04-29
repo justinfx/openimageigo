@@ -18,6 +18,9 @@ import (
 type IBStorage int
 
 const (
+	// Derive the file format from the file path name (empty string)
+	FileFormatAuto = ""
+
 	IBStorageLocalBuffer   IBStorage = C.IBSTORAGE_LOCALBUFFER
 	IBStorageAppBuffer     IBStorage = C.IBSTORAGE_APPBUFFER
 	IBStorageImageCache    IBStorage = C.IBSTORAGE_IMAGECACHE
