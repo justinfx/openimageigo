@@ -10,6 +10,7 @@ API Status
 -----------
 
 * TextureSystem - _Not started_
+* ColorProcessor - _Not started_
 * ImageOuput - __Started__
 * ImageInput - __Partial__
 * ImageSpec - __Partial__
