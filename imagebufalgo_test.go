@@ -35,7 +35,23 @@ func TestAlgoColorConvert(t *testing.T) {
 
 	dst := NewImageBuf()
 
-	err = ColorConvert(dst, src, "linear", "sRGB", false, nil, GlobalThreads)
+	err = ColorConvert(dst, src, "lnf", "srgb8", false, nil, GlobalThreads)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	cfg, err := NewColorConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cp, err := cfg.CreateColorProcessor("lnf", "srgb8")
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	dst = NewImageBuf()
+	err = ColorConvertProcessor(dst, src, cp, false, nil, GlobalThreads)
 	if err != nil {
 		t.Error(err.Error())
 	}

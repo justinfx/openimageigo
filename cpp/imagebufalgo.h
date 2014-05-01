@@ -2,6 +2,7 @@
 #define _OPENIMAGEIGO_IMAGEBUFALGO_H_
 
 #include "oiio.h"
+#include "color.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,8 +80,8 @@ bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const ch
 // 				  const char *from=NULL, const char *looks=NULL, bool unpremult=false, 
 // 				  const char *key=NULL, const char *value=NULL, ROI* roi, int nthreads);
 
-// bool colorconvert(ImageBuf *dst, const ImageBuf *src, const ColorProcessor *processor, 
-// 				   bool unpremult, ROI* roi, int nthreads);
+bool colorconvert_processor(ImageBuf *dst, const ImageBuf *src, const ColorProcessor *processor, 
+				   			bool unpremult, ROI* roi, int nthreads);
 
 // bool colorconvert(float *color, int nchannels, const ColorProcessor *processor, bool unpremult);
 

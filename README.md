@@ -10,13 +10,13 @@ API Status
 -----------
 
 * TextureSystem - _Not started_
-* ColorProcessor - _Not started_
 * ImageOuput - __Started__
 * ImageInput - __Partial__
 * ImageSpec - __Partial__
 * ImageBuf - __Partial__
 * ImageCache - __Partial__
 * ImageBufAlgo - __Partial__
+* ColorConfig - __Partial__
 * ROI - Done
 
 Requirements

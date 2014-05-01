@@ -1,8 +1,10 @@
 #include <OpenImageIO/imagebufalgo.h>
+#include <OpenImageIO/color.h>
 
 #include <string>
 
 #include "oiio.h"
+#include "color.h"
 
 extern "C" {
 
@@ -31,6 +33,18 @@ bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const ch
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 
+}
+
+bool colorconvert_processor(ImageBuf *dst, const ImageBuf *src, const ColorProcessor *processor, 
+				   			bool unpremult, ROI* roi, int nthreads) {
+
+	return OIIO::ImageBufAlgo::colorconvert(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			static_cast<const OIIO::ColorProcessor*>(processor),
+			unpremult,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername, 

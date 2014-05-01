@@ -74,9 +74,22 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, roi *ROI,
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
 	return nil
+}
 
+// Copy pixels within the ROI from src to dst, applying a color transform.
+// If dst is not yet initialized, it will be allocated to the same size as specified by roi.
+// If roi is not defined it will be all of dst, if dst is defined, or all of src, if dst is not yet defined.
+// In-place operations (dst == src) are supported.
+// If unpremult is true, unpremultiply before color conversion, then premultiply after the color conversion.
+// You may want to use this flag if your image contains an alpha channel.
+// Works with all data types.
+func ColorConvertProcessor(dst, src *ImageBuf, cp *ColorProcessor, unpremult bool, roi *ROI, nthreads int) error {
+	ok := C.colorconvert_processor(dst.ptr, src.ptr, cp.ptr, C.bool(unpremult), validOrAllROIPtr(roi), C.int(nthreads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
 }
 
 // Set dst, over the region of interest, to be a resized version of the corresponding portion of src
