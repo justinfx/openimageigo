@@ -37,8 +37,8 @@ ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache) {
 	return (ImageBuf*) new OIIO::ImageBuf(s_name, static_cast<OIIO::ImageCache*>(imagecache));
 }
 
-ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec, void* buffer) {
-	return (ImageBuf*) new OIIO::ImageBuf( *(static_cast<const OIIO::ImageSpec*>(spec)), buffer );
+ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
+	return (ImageBuf*) new OIIO::ImageBuf(*(static_cast<const OIIO::ImageSpec*>(spec)));
 }
 
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer) {

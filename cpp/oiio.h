@@ -210,7 +210,7 @@ ImageBuf* ImageBuf_New();
 ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache);
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer);
 ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache);
-ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec, void* buffer);
+ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec);
  
 void ImageBuf_clear(ImageBuf* buf);
 void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, ImageCache *imagecache);

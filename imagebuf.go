@@ -96,6 +96,17 @@ func NewImageBufPathCache(path string, cache *ImageCache) (*ImageBuf, error) {
 	return buf, nil
 }
 
+// Construct an Imagebuf given a proposed spec describing the image size and type,
+// and allocate storage for the pixels of the image (whose values will be uninitialized).
+func NewImageBufSpec(spec *ImageSpec) (*ImageBuf, error) {
+	buf := newImageBuf(C.ImageBuf_New_Spec(spec.ptr))
+	err := buf.LastError()
+	if err != nil {
+		return nil, err
+	}
+	return buf, nil
+}
+
 // Is this ImageBuf object initialized?
 func (i *ImageBuf) Initialized() bool {
 	return bool(C.ImageBuf_initialized(i.ptr))
