@@ -29,7 +29,6 @@ func newColorProcessor(i unsafe.Pointer) *ColorProcessor {
 func deleteColorProcessor(i *ColorProcessor) {
 	if i.ptr != nil {
 		C.deleteColorProcessor(i.ptr)
-		C.free(i.ptr)
 		i.ptr = nil
 	}
 }
