@@ -322,6 +322,11 @@ func (s *ImageSpec) SetChannelNames(names []string) {
 	C.ImageSpec_set_channelnames(s.ptr, c_names_ptr)
 }
 
+// Convert ImageSpec class into XML string.
+func (s *ImageSpec) ToXml() string {
+	return C.GoString(C.ImageSpec_to_xml(s.ptr))
+}
+
 // Index of alpha channel, or -1 if not known.
 func (s *ImageSpec) AlphaChannel() int {
 	return int(C.ImageSpec_alpha_channel(s.ptr))

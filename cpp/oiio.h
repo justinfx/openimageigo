@@ -140,7 +140,7 @@ bool ImageSpec_size_safe(ImageSpec *spec);
 // float get_float_attribute(const char* name, float defaultval=0);
 // std::string get_string_attribute(const char* name, const char* defaultval=std::string());
 // std::string metadata_val(const ImageIOParameter &p, bool human=false);
-// std::string to_xml();
+const char* ImageSpec_to_xml(ImageSpec *spec);
 // void from_xml(const char *xml)
 // bool valid_tile_range(int xbegin, int xend, int ybegin, int yend, int zbegin, int zend)
 
