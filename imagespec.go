@@ -349,38 +349,3 @@ func (s *ImageSpec) SetDeep(val bool) {
 	C.ImageSpec_set_deep(s.ptr, C.bool(val))
 }
 
-// quantization of black (0.0) level
-func (s *ImageSpec) QuantBlack() int {
-	return int(C.ImageSpec_quant_black(s.ptr))
-}
-
-func (s *ImageSpec) SetQuantBlack(val int) {
-	C.ImageSpec_set_quant_black(s.ptr, C.int(val))
-}
-
-// quantization of white (1.0) level
-func (s *ImageSpec) QuantWhite() int {
-	return int(C.ImageSpec_quant_white(s.ptr))
-}
-
-func (s *ImageSpec) SetQuantWhite(val int) {
-	C.ImageSpec_set_quant_white(s.ptr, C.int(val))
-}
-
-// quantization minimum clamp value
-func (s *ImageSpec) QuantMin() int {
-	return int(C.ImageSpec_quant_min(s.ptr))
-}
-
-func (s *ImageSpec) SetQuantMin(val int) {
-	C.ImageSpec_set_quant_min(s.ptr, C.int(val))
-}
-
-// quantization maximum clamp value
-func (s *ImageSpec) QuantMax() int {
-	return int(C.ImageSpec_quant_max(s.ptr))
-}
-
-func (s *ImageSpec) SetQuantMax(val int) {
-	C.ImageSpec_set_quant_max(s.ptr, C.int(val))
-}

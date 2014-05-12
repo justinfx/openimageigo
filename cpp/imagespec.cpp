@@ -295,36 +295,6 @@ void ImageSpec_set_deep(ImageSpec *spec, bool val) {
 	static_cast<OIIO::ImageSpec*>(spec)->deep = val;
 }
 
-int ImageSpec_quant_black(ImageSpec *spec){
-	return static_cast<OIIO::ImageSpec*>(spec)->quant_black;
-}
-
-void ImageSpec_set_quant_black(ImageSpec *spec, int val) {
-	static_cast<OIIO::ImageSpec*>(spec)->quant_black = val;
-}
-
-int ImageSpec_quant_white(ImageSpec *spec){
-	return static_cast<OIIO::ImageSpec*>(spec)->quant_white;
-}
-
-void ImageSpec_set_quant_white(ImageSpec *spec, int val) {
-	static_cast<OIIO::ImageSpec*>(spec)->quant_white = val;
-}
-
-int ImageSpec_quant_min(ImageSpec *spec){
-	return static_cast<OIIO::ImageSpec*>(spec)->quant_min;
-}
-
-void ImageSpec_set_quant_min(ImageSpec *spec, int val) {
-	static_cast<OIIO::ImageSpec*>(spec)->quant_min = val;
-}
-
-int ImageSpec_quant_max(ImageSpec *spec){
-	return static_cast<OIIO::ImageSpec*>(spec)->quant_max;
-}
-
-void ImageSpec_set_quant_max(ImageSpec *spec, int val) {
-	static_cast<OIIO::ImageSpec*>(spec)->quant_max = val;
 }
 
 // extra_attribs?

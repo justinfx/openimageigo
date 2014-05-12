@@ -242,9 +242,5 @@ func TestImageSpecProperties(t *testing.T) {
 	spec.TileDepth()
 	spec.ZChannel()
 	spec.Deep()
-	spec.QuantBlack()
-	spec.QuantWhite()
-	spec.QuantMin()
-	spec.QuantMax()
 
 }

@@ -192,14 +192,6 @@ int ImageSpec_z_channel(ImageSpec *spec);
 void ImageSpec_set_z_channel(ImageSpec *spec, int val);
 bool ImageSpec_deep(ImageSpec *spec);
 void ImageSpec_set_deep(ImageSpec *spec, bool val);
-int ImageSpec_quant_black(ImageSpec *spec);
-void ImageSpec_set_quant_black(ImageSpec *spec, int val);
-int ImageSpec_quant_white(ImageSpec *spec);
-void ImageSpec_set_quant_white(ImageSpec *spec, int val);
-int ImageSpec_quant_min(ImageSpec *spec);
-void ImageSpec_set_quant_min(ImageSpec *spec, int val);
-int ImageSpec_quant_max(ImageSpec *spec);
-void ImageSpec_set_quant_max(ImageSpec *spec, int val);
 // extra_attribs?
 
 
