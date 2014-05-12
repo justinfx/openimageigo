@@ -461,3 +461,14 @@ func (i *ImageBuf) ZMin() int {
 func (i *ImageBuf) ZMax() int {
 	return int(C.ImageBuf_zmax(i.ptr))
 }
+
+// Set the "full" (a.k.a. display) window to [xbegin,xend) x [ybegin,yend) x [zbegin,zend).
+func (i *ImageBuf) SetFull(xbegin, xend, ybegin, yend, zbegin, zend int) {
+	C.ImageBuf_set_full(
+		i.ptr, 
+		C.int(xbegin), C.int(xend), 
+		C.int(ybegin), C.int(yend), 
+		C.int(zbegin), C.int(zend))
+}
+
+

@@ -269,6 +269,9 @@ int ImageBuf_zmax(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->zmax();
 }
 
+void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend) {
+	static_cast<OIIO::ImageBuf*>(buf)->set_full(xbegin, xend, ybegin, yend, zbegin, zend);
+}
 
 
 

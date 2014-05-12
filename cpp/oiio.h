@@ -268,7 +268,7 @@ int ImageBuf_ymax(ImageBuf* buf);
 int ImageBuf_zmin(ImageBuf* buf);
 int ImageBuf_zmax(ImageBuf* buf);
 
-// void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend);
+void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend);
 // void ImageBuf_set_full_border(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, const float *bordercolor);
  
 // ROI ImageBuf_roi(ImageBuf* buf);
