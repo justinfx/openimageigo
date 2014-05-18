@@ -273,6 +273,23 @@ void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend
 	static_cast<OIIO::ImageBuf*>(buf)->set_full(xbegin, xend, ybegin, yend, zbegin, zend);
 }
 
+ROI* ImageBuf_roi(ImageBuf* buf) {
+	OIIO::ROI roi(static_cast<OIIO::ImageBuf*>(buf)->roi());
+	OIIO::ROI *ptr = new OIIO::ROI();
+	*ptr = roi;
+	return static_cast<ROI*>(ptr);
+}
+
+ROI* ImageBuf_roi_full(ImageBuf* buf) {
+	OIIO::ROI roi(static_cast<OIIO::ImageBuf*>(buf)->roi_full());
+	OIIO::ROI *ptr = new OIIO::ROI();
+	*ptr = roi;
+	return static_cast<ROI*>(ptr);
+}
+
+void ImageBuf_set_roi_full(ImageBuf* buf, ROI* newroi) {
+	static_cast<OIIO::ImageBuf*>(buf)->set_roi_full(*(static_cast<OIIO::ROI*>(newroi)));
+}
 
 
 } // extern "C"

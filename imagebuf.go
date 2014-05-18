@@ -465,10 +465,25 @@ func (i *ImageBuf) ZMax() int {
 // Set the "full" (a.k.a. display) window to [xbegin,xend) x [ybegin,yend) x [zbegin,zend).
 func (i *ImageBuf) SetFull(xbegin, xend, ybegin, yend, zbegin, zend int) {
 	C.ImageBuf_set_full(
-		i.ptr, 
-		C.int(xbegin), C.int(xend), 
-		C.int(ybegin), C.int(yend), 
+		i.ptr,
+		C.int(xbegin), C.int(xend),
+		C.int(ybegin), C.int(yend),
 		C.int(zbegin), C.int(zend))
 }
 
+// Return pixel data window for this ImageBuf as a ROI.
+func (i *ImageBuf) ROI() *ROI {
+	return newROI(C.ImageBuf_roi(i.ptr))
+}
 
+// Return full/display window for this ImageBuf as a ROI.
+func (i *ImageBuf) ROIFull() *ROI {
+	return newROI(C.ImageBuf_roi_full(i.ptr))
+}
+
+// Set full/display window for this ImageBuf to a ROI. Does NOT change the channels of the spec,
+// regardless of newroi.
+func (i *ImageBuf) SetROIFull(roi *ROI) error {
+	C.ImageBuf_set_roi_full(i.ptr, roi.ptr)
+	return i.LastError()
+}

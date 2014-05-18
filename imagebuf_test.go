@@ -135,6 +135,26 @@ func TestImageBufSpec(t *testing.T) {
 		t.Errorf("Expected %v names; got %v", expected, names)
 	}
 
+	roi := buf.ROI()
+	width, height = roi.Width(), roi.Height()
+	if width != 128 || height != 64 {
+		t.Errorf("Expected ROI width==128, height==64, got %v, %v", width, height)
+	}
+
+	roi = buf.ROIFull()
+	width, height = roi.Width(), roi.Height()
+	if width != 128 || height != 64 {
+		t.Errorf("Expected ROI width==128, height==64, got %v, %v", width, height)
+	}
+
+	roi.SetXEnd(64)
+	roi.SetYEnd(32)
+	buf.SetROIFull(roi)
+	roi = buf.ROIFull()
+	width, height = roi.Width(), roi.Height()
+	if width != 64 || height != 32 {
+		t.Errorf("Expected ROI width==64, height==32, got %v, %v", width, height)
+	}
 }
 
 func TestImageBufReadImageCallbacks(t *testing.T) {
