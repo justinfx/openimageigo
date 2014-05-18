@@ -91,9 +91,19 @@ func (c *ColorConfig) NumColorSpaces() int {
 	return int(C.ColorConfig_getNumColorSpaces(c.ptr))
 }
 
+// Return the name of the colorspace at a given index
+func (c *ColorConfig) ColorSpaceNameByIndex(index int) string {
+	return C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.ptr, C.int(index)))
+}
+
 // Get the number of Looks defined in this configuration
 func (c *ColorConfig) NumLooks() int {
 	return int(C.ColorConfig_getNumLooks(c.ptr))
+}
+
+// Return the name of the look at a given index
+func (c *ColorConfig) LookNameByIndex(index int) string {
+	return C.GoString(C.ColorConfig_getLookNameByIndex(c.ptr, C.int(index)))
 }
 
 // Get the number of displays defined in this configuration
@@ -101,11 +111,23 @@ func (c *ColorConfig) NumDisplays() int {
 	return int(C.ColorConfig_getNumDisplays(c.ptr))
 }
 
+// Return the name of the display at a given index
+func (c *ColorConfig) DisplayNameByIndex(index int) string {
+	return C.GoString(C.ColorConfig_getDisplayNameByIndex(c.ptr, C.int(index)))
+}
+
 // Get the number of displays defined in this configuration
 func (c *ColorConfig) NumViews(displayName string) int {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
 	return int(C.ColorConfig_getNumViews(c.ptr, c_str))
+}
+
+// Get the name of a view at a specific index of a display
+func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
+	c_str := C.CString(displayName)
+	defer C.free(unsafe.Pointer(c_str))
+	return C.GoString(C.ColorConfig_getViewNameByIndex(c.ptr, c_str, C.int(index)))
 }
 
 // Get the name of the color space representing the named role,

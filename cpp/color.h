@@ -19,13 +19,13 @@ const char* ColorConfig_geterror(ColorConfig* c);
 
 int ColorConfig_getNumColorSpaces(ColorConfig* c);
 
-// const char * getColorSpaceNameByIndex(ColorConfig* c, int index);
+const char * ColorConfig_getColorSpaceNameByIndex(ColorConfig* c, int index);
 
 const char * ColorConfig_getColorSpaceNameByRole(ColorConfig* c, const char *role);
 
 int ColorConfig_getNumLooks(ColorConfig* c);
 
-// const char * getLookNameByIndex(ColorConfig* c, int index);
+const char * ColorConfig_getLookNameByIndex(ColorConfig* c, int index);
 
 ColorProcessor* ColorConfig_createColorProcessor(ColorConfig* c, const char * inputColorSpace,
                                      				const char * outputColorSpace);
@@ -39,11 +39,11 @@ ColorProcessor* ColorConfig_createColorProcessor(ColorConfig* c, const char * in
 
 int ColorConfig_getNumDisplays(ColorConfig* c);
 
-// const char * getDisplayNameByIndex(ColorConfig* c, int index);
+const char * ColorConfig_getDisplayNameByIndex(ColorConfig* c, int index);
 
 int ColorConfig_getNumViews(ColorConfig* c, const char * display);
 
-// const char * getViewNameByIndex(ColorConfig* c, const char * display, int index);
+const char * ColorConfig_getViewNameByIndex(ColorConfig* c, const char * display, int index);
 
 // const char * getDefaultDisplayName(ColorConfig* c);
 

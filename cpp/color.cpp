@@ -27,16 +27,32 @@ int ColorConfig_getNumColorSpaces(ColorConfig* c) {
 	return static_cast<OIIO::ColorConfig*>(c)->getNumColorSpaces();
 }
 
+const char * ColorConfig_getColorSpaceNameByIndex(ColorConfig* c, int index) {
+	return static_cast<OIIO::ColorConfig*>(c)->getColorSpaceNameByIndex(index);
+}
+
 int ColorConfig_getNumLooks(ColorConfig* c) {
 	return static_cast<OIIO::ColorConfig*>(c)->getNumLooks();
+}
+
+const char * ColorConfig_getLookNameByIndex(ColorConfig* c, int index) {
+	return static_cast<OIIO::ColorConfig*>(c)->getLookNameByIndex(index);
 }
 
 int ColorConfig_getNumDisplays(ColorConfig* c) {
 	return static_cast<OIIO::ColorConfig*>(c)->getNumDisplays();	
 }
 
+const char * ColorConfig_getDisplayNameByIndex(ColorConfig* c, int index) {
+	return static_cast<OIIO::ColorConfig*>(c)->getDisplayNameByIndex(index);
+}
+
 int ColorConfig_getNumViews(ColorConfig* c, const char * display) {
 	return static_cast<OIIO::ColorConfig*>(c)->getNumViews(display);	
+}
+
+const char * ColorConfig_getViewNameByIndex(ColorConfig* c, const char * display, int index) {
+	return static_cast<OIIO::ColorConfig*>(c)->getViewNameByIndex(display, index);
 }
 
 const char * ColorConfig_getColorSpaceNameByRole(ColorConfig* c, const char *role) {

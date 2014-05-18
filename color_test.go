@@ -75,6 +75,34 @@ func checkConfig(t *testing.T, cfg *ColorConfig) {
 	if cs_expect != cs_actual {
 		t.Errorf("Expected ColorSpace for role 'matte_paint' == %v; got %v", cs_expect, cs_actual)
 	}
+
+	for i, cs_expect := range []string{"lnf", "lnh", "ln16", "lg16"} {
+		cs_actual = cfg.ColorSpaceNameByIndex(i)
+		if cs_expect != cs_actual {
+			t.Errorf("Expected ColorSpace for index %d == %v; got %v", i, cs_expect, cs_actual)
+		}
+	}
+
+	look_expect := "di"
+	look_actual := cfg.LookNameByIndex(0)
+	if look_actual != look_expect {
+		t.Errorf("Expected Look for index 0 == %v; got %v", look_expect, look_actual)
+	}
+
+	for i, disp_expect := range []string{"DCIP3", "sRGB"} {
+		disp_actual := cfg.DisplayNameByIndex(i)
+		if disp_expect != disp_actual {
+			t.Errorf("Expected Display for index %d == %v; got %v", i, disp_expect, disp_actual)
+		}
+	}
+
+	for i, view_expect := range []string{"Film", "Log", "Raw"} {
+		view_actual := cfg.ViewNameByIndex("sRGB", i)
+		if view_actual != view_expect {
+			t.Errorf("Expected Look for display sRGB at index %d == %v; got %v", i, view_expect, view_actual)
+		}
+	}
+
 }
 
 func TestNewColorProcessor(t *testing.T) {
