@@ -126,6 +126,22 @@ func TestImageBufSpec(t *testing.T) {
 		t.Errorf("Expected ImageSpec width==128, height==64, got %v, %v", width, height)
 	}
 
+	if spec.Format() != buf.PixelType() {
+		t.Errorf("Expected TypeDesc %v, got %v", spec.Format(), buf.PixelType())
+	}
+
+	if !buf.PixelsValid() {
+		t.Error("Expected ImageBuf.PixelsValid() == true")
+	}
+
+	if !buf.CachedPixels() {
+		t.Error("Expected ImageBuf.CachedPixels() == true")
+	}
+
+	if cache.ptr != buf.ImageCache().ptr {
+		t.Error("Expected ImageBuf.ImageCache() to return the same ImageCache as originally used")
+	}
+
 	names := specmod.ChannelNames()
 	expected := []string{"B", "G", "A"}
 	specmod.SetChannelNames(expected)
@@ -154,6 +170,10 @@ func TestImageBufSpec(t *testing.T) {
 	width, height = roi.Width(), roi.Height()
 	if width != 64 || height != 32 {
 		t.Errorf("Expected ROI width==64, height==32, got %v, %v", width, height)
+	}
+
+	if buf.Deep() {
+		t.Error("Expected ImageBuf.Deep() == false")
 	}
 }
 

@@ -487,3 +487,25 @@ func (i *ImageBuf) SetROIFull(roi *ROI) error {
 	C.ImageBuf_set_roi_full(i.ptr, roi.ptr)
 	return i.LastError()
 }
+
+func (i *ImageBuf) PixelsValid() bool {
+	return bool(C.ImageBuf_pixels_valid(i.ptr))
+}
+
+func (i *ImageBuf) PixelType() TypeDesc {
+	return TypeDesc(C.ImageBuf_pixeltype(i.ptr))
+}
+
+func (i *ImageBuf) CachedPixels() bool {
+	return bool(C.ImageBuf_cachedpixels(i.ptr))
+}
+
+// Return the ImageCache in which backs this ImageBuf
+func (i *ImageBuf) ImageCache() *ImageCache {
+	return newImageCache(C.ImageBuf_imagecache(i.ptr))
+}
+
+// Does this ImageBuf store deep data?
+func (i *ImageBuf) Deep() bool {
+	return bool(C.ImageBuf_deep(i.ptr))
+}

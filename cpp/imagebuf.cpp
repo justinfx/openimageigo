@@ -291,6 +291,42 @@ void ImageBuf_set_roi_full(ImageBuf* buf, ROI* newroi) {
 	static_cast<OIIO::ImageBuf*>(buf)->set_roi_full(*(static_cast<OIIO::ROI*>(newroi)));
 }
 
+bool ImageBuf_pixels_valid(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->pixels_valid();
+}
+
+TypeDesc ImageBuf_pixeltype(ImageBuf* buf) {
+	return toTypeDesc(static_cast<OIIO::ImageBuf*>(buf)->pixeltype());
+}
+
+// void* ImageBuf_localpixels(ImageBuf* buf);
+
+// const void* ImageBuf_localpixels(ImageBuf* buf);
+
+bool ImageBuf_cachedpixels(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->cachedpixels();
+}
+
+ImageCache* ImageBuf_imagecache(ImageBuf* buf) {
+	OIIO::ImageCache *cache = static_cast<OIIO::ImageBuf*>(buf)->imagecache();
+	return static_cast<ImageCache*>(cache);
+}
+
+// void* ImageBuf_pixeladdr(ImageBuf* buf, int x, int y);
+
+// void* ImageBuf_pixeladdr_z(ImageBuf* buf, int x, int y, int z);
+
+bool ImageBuf_deep(ImageBuf* buf) {
+	return static_cast<OIIO::ImageBuf*>(buf)->deep();
+}
+
+// int ImageBuf_deep_samples(ImageBuf* buf, int x, int y, int z);
+
+// const void* ImageBuf_deep_pixel_ptr(ImageBuf* buf, int x, int y, int z, int c);
+
+// float ImageBuf_deep_value(ImageBuf* buf, int x, int y, int z, int c, int s);
+
+// DeepData* ImageBuf_deepdata(ImageBuf* buf);
 
 } // extern "C"
 
