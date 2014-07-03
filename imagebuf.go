@@ -354,6 +354,133 @@ func (i *ImageBuf) NumChannels() int {
 	return int(C.ImageBuf_nchannels(i.ptr))
 }
 
+// GetFloatPixels retrieves the rectangle of pixels spanning the entire image,
+// at the current subimage and MIP-map level, storing the float pixel values in
+// a []float32
+func (i *ImageBuf) GetFloatPixels() ([]float32, error) {
+	spec := i.Spec()
+	size := spec.Width() * spec.Height() * spec.Depth() * spec.NumChannels()
+	pixels := make([]float32, size)
+	ptr := unsafe.Pointer(&pixels[0])
+
+	roi := i.ROI()
+
+	ok := bool(C.ImageBuf_get_pixel_channels(
+		i.ptr,
+		C.int(roi.XBegin()), C.int(roi.XEnd()),
+		C.int(roi.YBegin()), C.int(roi.YEnd()),
+		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
+		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		(C.TypeDesc)(TypeFloat), ptr),
+	)
+
+	if !ok {
+		return nil, i.LastError()
+	}
+
+	return pixels, nil
+}
+
+// GetPixels retrieves the rectangle of pixels spanning the entire image,
+// at the current subimage and MIP-map level, storing the pixel values in
+// a slice that has been casted to an interface, and in the pixel format type
+// described by 'format'.
+//
+// The underlying type of data is determined by the given TypeDesc.
+// Returned interface{} will be:
+//     TypeUint8   => []uint8
+//     TypeInt8    => []int8
+//     TypeUint16  => []uint16
+//     TypeInt16   => []int16
+//     TypeUint    => []uint
+//     TypeInt     => []int
+//     TypeUint64  => []uint64
+//     TypeInt64   => []int64
+//     TypeHalf    => []float32
+//     TypeFloat   => []float32
+//     TypeDouble  => []float64
+//
+// Example:
+//
+//     val, err := buf.GetPixels(TypeFloat)
+//     if err != nil {
+//         panic(err.Error())
+//     }
+//     floatPixels := val.([]float32)
+//
+func (i *ImageBuf) GetPixels(format TypeDesc) (interface{}, error) {
+	pixel_iface, ptr, err := allocatePixelBuffer(i.Spec(), format)
+	if err != nil {
+		return nil, err
+	}
+
+	roi := i.ROI()
+
+	ok := bool(C.ImageBuf_get_pixel_channels(
+		i.ptr,
+		C.int(roi.XBegin()), C.int(roi.XEnd()),
+		C.int(roi.YBegin()), C.int(roi.YEnd()),
+		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
+		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		(C.TypeDesc)(format), ptr),
+	)
+
+	if !ok {
+		return nil, i.LastError()
+	}
+
+	return pixel_iface, nil
+}
+
+// GetPixelRegion retrieves the rectangle of pixels defined by an ROI,
+// at the current subimage and MIP-map level, storing the pixel values in
+// a slice that has been casted to an interface, and in the pixel format type
+// described by 'format'.
+//
+// The underlying type of data is determined by the given TypeDesc.
+// Returned interface{} will be:
+//     TypeUint8   => []uint8
+//     TypeInt8    => []int8
+//     TypeUint16  => []uint16
+//     TypeInt16   => []int16
+//     TypeUint    => []uint
+//     TypeInt     => []int
+//     TypeUint64  => []uint64
+//     TypeInt64   => []int64
+//     TypeHalf    => []float32
+//     TypeFloat   => []float32
+//     TypeDouble  => []float64
+//
+// Example:
+//
+//     val, err := buf.GetPixelRegion(roi, TypeFloat)
+//     if err != nil {
+//         panic(err.Error())
+//     }
+//     floatPixels := val.([]float32)
+//
+func (i *ImageBuf) GetPixelRegion(roi *ROI, format TypeDesc) (interface{}, error) {
+	pixel_iface, ptr, err := allocatePixelBufferSize(roi.NumPixels()*roi.NumChannels(), format)
+	if err != nil {
+		return nil, err
+	}
+
+	ok := bool(C.ImageBuf_get_pixel_channels(
+		i.ptr,
+		C.int(roi.XBegin()), C.int(roi.XEnd()),
+		C.int(roi.YBegin()), C.int(roi.YEnd()),
+		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
+		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		(C.TypeDesc)(format), ptr),
+	)
+
+	if !ok {
+		return nil, i.LastError()
+	}
+
+	return pixel_iface, nil
+}
+
 // By default, image pixels are ordered from the top of the display to the bottom, and within
 // each scanline, from left to right (i.e., the same ordering as English text and scan progression
 // on a CRT). But the "Orientation" field can suggest that it should be displayed

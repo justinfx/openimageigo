@@ -242,7 +242,7 @@ int ImageBuf_nchannels(ImageBuf* buf);
 // void ImageBuf_setpixel(ImageBuf* buf, int x, int y, const float *pixel, int maxchannels);
 // void ImageBuf_setpixel_xyz(ImageBuf* buf, int x, int y, int z, const float *pixel, int maxchannels);
 // void ImageBuf_setpixel_index(ImageBuf* buf, int i, const float *pixel, int maxchannels);
-// bool ImageBuf_get_pixel_channels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend, TypeDesc format, void *result);
+bool ImageBuf_get_pixel_channels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend, TypeDesc format, void *result);
 // bool ImageBuf_get_pixels(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, TypeDesc format, void *result);
 
 int ImageBuf_orientation(ImageBuf* buf);

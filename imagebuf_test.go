@@ -272,3 +272,89 @@ func TestImageBufCopySwap(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 }
+
+func TestImageBufGetPixels(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var pixel_iface interface{}
+
+	pixel_iface, err = src.GetPixels(TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	float_pixels, ok := pixel_iface.([]float32)
+	if !ok {
+		t.Fatal("Interface could not be converted to a []float21")
+	}
+
+	if float_pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+
+	expected := src.OrientedWidth() * src.OrientedHeight() * src.Spec().Depth() * src.NumChannels()
+	actual := len(float_pixels)
+	if expected != actual {
+		t.Fatalf("Expected to get a total of %d pixels; Got %d", expected, actual)
+	}
+}
+
+func TestImageBufGetFloatPixels(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	pixels, err := src.GetFloatPixels()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	if pixels[0] == 0 {
+		t.Fatal("First pixel of test image was 0")
+	}
+
+	expected := src.OrientedWidth() * src.OrientedHeight() * src.Spec().Depth() * src.NumChannels()
+	actual := len(pixels)
+	if expected != actual {
+		t.Fatalf("Expected to get a total of %d pixels; Got %d", expected, actual)
+	}
+}
+
+func TestImageBufGetPixelRegion(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	all_pixels, err := src.GetFloatPixels()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	roi := src.ROI()
+	roi.SetXEnd(10)
+	roi.SetYEnd(10)
+	pixel_iface, err := src.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	some_pixels := pixel_iface.([]float32)
+
+	spec := src.Spec()
+	expected := 10 * 10 * spec.Depth() * spec.NumChannels()
+	actual := len(some_pixels)
+	if expected != actual {
+		t.Fatalf("Expected to get a total of %d pixels; Got %d", expected, actual)
+	}
+
+	for i := 0; i < len(some_pixels); i++ {
+		if some_pixels[i] != all_pixels[i] {
+			t.Fatalf("Pixel values do not match; Expected %v. got %v", all_pixels[i], some_pixels[i])
+		}
+	}
+}
