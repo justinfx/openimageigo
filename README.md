@@ -28,7 +28,7 @@ Requirements
 Installation
 ------------
 
-This package assumes that OpenImageIO/Boost is installed to the standard /usr/local location. 
+This package assumes that OpenImageIO/Boost is installed to the standard /usr/local location.
 
 Default install:
 
@@ -36,12 +36,12 @@ Default install:
 
 If you have installed OpenImageIO to a custom location, you will need to tell CGO where to find the headers and libs:
 
-    export CGO_CFLAGS="-I/path/to/include" 
+    export CGO_CPPFLAGS="-I/path/to/include"
 	export CGO_LDFLAGS="-L/path/to/lib"
 
 Or just prefixing the install:
 
-	CGO_CFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo
+	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo
 
 Documentation
 -------------
