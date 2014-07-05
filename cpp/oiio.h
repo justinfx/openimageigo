@@ -20,14 +20,14 @@ typedef void ImageCache;
 typedef void DeepData;
 typedef void ImageBuf;
 typedef void ROI;
-typedef void Tile; 
+typedef void Tile;
 
 typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
 
 
 
 // Enums
-// 
+//
 
 typedef enum TypeDesc {
 	TYPE_UNKNOWN 	= -1,
@@ -47,9 +47,9 @@ typedef enum TypeDesc {
 
 typedef enum IBStorage {
 	IBSTORAGE_UNINITIALIZED,
-	IBSTORAGE_LOCALBUFFER, 	
-	IBSTORAGE_APPBUFFER, 		
-	IBSTORAGE_IMAGECACHE, 
+	IBSTORAGE_LOCALBUFFER,
+	IBSTORAGE_APPBUFFER,
+	IBSTORAGE_IMAGECACHE,
 } IBStorage;
 
 
@@ -62,9 +62,14 @@ typedef enum WrapMode {
 	_WrapLast
 } WrapMode;
 
+typedef enum OpenMode {
+	Create,
+	AppendSubimage,
+	AppendMIPLevel
+} OpenMode;
 
 // ImageInput
-// 
+//
 
 void deleteImageInput(ImageInput *in);
 
@@ -85,7 +90,7 @@ bool ImageInput_close(ImageInput *in);
 bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 // bool ImageInput_read_scanline_format(ImageInput *in, int y, int z, TypeDesc format, void* data, stride_t xstride);
 // bool ImageInput_read_tile(ImageInput *in, int x, int y, int z, float* data);
-// bool ImageInput_read_tile_format(ImageInput *in, int x, int y, int z, TypeDesc format, void* data, 
+// bool ImageInput_read_tile_format(ImageInput *in, int x, int y, int z, TypeDesc format, void* data,
 // 									stride_t xstride, stride_t ystride, stride_t zstride);
 bool ImageInput_read_image_floats(ImageInput *in, float* data);
 bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data);
@@ -94,19 +99,70 @@ bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, v
 // bool ImageInput_read_native_tile(ImageInput *in, int x, int y, int z, void *data);
 // bool ImageInput_read_native_tiles(ImageInput *in, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, void *data);
 // bool ImageInput_read_native_deep_scanlines(ImageInput *in, int ybegin, int yend, int z, int chbegin, int chend, DeepData* deepdata);
-// bool ImageInput_read_native_deep_tiles(ImageInput *in, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, 
+// bool ImageInput_read_native_deep_tiles(ImageInput *in, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend,
 // 											int chbegin, int chend, DeepData &deepdata);
 // bool ImageInput_read_native_deep_image(ImageInput *in, DeepData* deepdata);
 // int ImageInput_send_to_input(ImageInput *in, const char *format,...);
 // int ImageInput_send_to_client(ImageInput *in, const char *format,...);
- 
+
 const char* ImageInput_geterror(ImageInput *in);
 
 
+// ImageOutput
+//
 
- 
+ImageOutput* ImageOutput_Create();
+ImageOutput* ImageOutput_Create_filename(const char* filename, const char* plugin_searchpath);
+
+bool ImageOutput_open(ImageOutput* out, const char* name, const ImageSpec* newspec, OpenMode mode);
+// bool ImageOutput_open_subimages(ImageOutput* out, const char* name, int subimages, const ImageSpec* newspec);
+bool ImageOutput_close(ImageOutput *out);
+bool ImageOutput_supports(ImageOutput* out, const char* feature);
+
+const char* ImageOutput_format_name(ImageOutput* out);
+
+const ImageSpec* ImageOutput_spec(ImageOutput *out);
+
+// bool ImageOutput_write_scanline(ImageOutput* out, int y, int z, TypeDesc format,
+//                              	const void *data, stride_t xstride);
+
+// bool ImageOutput_write_scanlines(ImageOutput* out, int ybegin, int yend, int z,
+// 	                              TypeDesc format, const void *data,
+// 	                              stride_t xstride, stride_t ystride);
+
+// bool ImageOutput_write_tile(ImageOutput* out, int x, int y, int z, TypeDesc format,
+// 	                         const void *data, stride_t xstride,
+// 	                         stride_t ystride, stride_t zstride);
+
+// bool ImageOutput_write_tiles(ImageOutput* out, int xbegin, int xend, int ybegin, int yend,
+// 	                          int zbegin, int zend, TypeDesc format,
+// 	                          const void *data, stride_t xstride,
+// 	                          stride_t ystride, stride_t zstride);
+
+// bool ImageOutput_write_rectangle(ImageOutput* out, int xbegin, int xend, int ybegin, int yend,
+// 	                              int zbegin, int zend, TypeDesc format,
+// 	                              const void *data, stride_t xstride,
+// 	                              stride_t ystride, stride_t zstride);
+
+bool ImageOutput_write_image(ImageOutput* out, TypeDesc format, const void *data, void *cbk_data);
+
+// bool ImageOutput_write_deep_scanlines(ImageOutput* out, int ybegin, int yend, int z,
+//                                    		const DeepData* deepdata);
+
+// bool ImageOutput_write_deep_tiles(ImageOutput* out, int xbegin, int xend, int ybegin, int yend,
+// 	                               int zbegin, int zend, const DeepData* deepdata);
+
+// bool ImageOutput_write_deep_image(ImageOutput* out, const DeepData* deepdata);
+
+// bool ImageOutput_copy_image(ImageOutput* out, ImageInput *in);
+
+// int ImageOutput_send_to_output(ImageOutput* out, const char *format, ...);
+// int ImageOutput_send_to_client(ImageOutput* out, const char *format, ...);
+
+const char* ImageOutput_geterror(ImageOutput *out);
+
 // ImageSpec
-// 
+//
 
 void deleteImageSpec(ImageSpec *spec);
 
@@ -196,14 +252,14 @@ void ImageSpec_set_deep(ImageSpec *spec, bool val);
 
 
 // ImageBuf
-// 
+//
 
 ImageBuf* ImageBuf_New();
 ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache);
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer);
 ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache);
 ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec);
- 
+
 void ImageBuf_clear(ImageBuf* buf);
 void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, ImageCache *imagecache);
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache);
@@ -212,7 +268,7 @@ void ImageBuf_reset_name_spec(ImageBuf* buf, const char* name, const ImageSpec* 
 
 IBStorage ImageBuf_storage(ImageBuf* buf);
 bool ImageBuf_initialized(ImageBuf* buf);
-bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data); 
+bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data);
 bool ImageBuf_init_spec(ImageBuf* buf, const char* filename, int subimage, int miplevel);
 bool ImageBuf_write_file(ImageBuf* buf, const char* filename, const char* fileformat, void *cbk_data);
 bool ImageBuf_write_output(ImageBuf* buf, ImageOutput *out, void *cbk_data);
@@ -254,7 +310,7 @@ int ImageBuf_oriented_full_width(ImageBuf* buf);
 int ImageBuf_oriented_full_height(ImageBuf* buf);
 int ImageBuf_oriented_full_x(ImageBuf* buf);
 int ImageBuf_oriented_full_y(ImageBuf* buf);
- 
+
 int ImageBuf_xbegin(ImageBuf* buf);
 int ImageBuf_xend(ImageBuf* buf);
 int ImageBuf_ybegin(ImageBuf* buf);
@@ -270,11 +326,11 @@ int ImageBuf_zmax(ImageBuf* buf);
 
 void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend);
 // void ImageBuf_set_full_border(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend, int zbegin, int zend, const float *bordercolor);
- 
+
 ROI* ImageBuf_roi(ImageBuf* buf);
 ROI* ImageBuf_roi_full(ImageBuf* buf);
 void ImageBuf_set_roi_full(ImageBuf* buf, ROI* newroi);
- 
+
 bool ImageBuf_pixels_valid(ImageBuf* buf);
 TypeDesc ImageBuf_pixeltype(ImageBuf* buf);
 // void* ImageBuf_localpixels(ImageBuf* buf);
@@ -290,7 +346,7 @@ bool ImageBuf_deep(ImageBuf* buf);
 // DeepData* ImageBuf_deepdata(ImageBuf* buf);
 
 // ROI
-// 
+//
 void deleteROI(ROI* roi);
 
 ROI* ROI_New();
@@ -305,19 +361,19 @@ imagesize_t ROI_npixels(ROI* roi);
 
 // Properties
 int ROI_xbegin(ROI* roi);
-void ROI_set_xbegin(ROI* roi, int val); 
+void ROI_set_xbegin(ROI* roi, int val);
 int ROI_xend(ROI* roi);
-void ROI_set_xend(ROI* roi, int val); 
+void ROI_set_xend(ROI* roi, int val);
 int ROI_ybegin(ROI* roi);
-void ROI_set_ybegin(ROI* roi, int val); 
+void ROI_set_ybegin(ROI* roi, int val);
 int ROI_yend(ROI* roi);
-void ROI_set_yend(ROI* roi, int val); 
+void ROI_set_yend(ROI* roi, int val);
 int ROI_zbegin(ROI* roi);
-void ROI_set_zbegin(ROI* roi, int val); 
+void ROI_set_zbegin(ROI* roi, int val);
 int ROI_zend(ROI* roi);
-void ROI_set_zend(ROI* roi, int val); 
+void ROI_set_zend(ROI* roi, int val);
 int ROI_chbegin(ROI* roi);
-void ROI_set_chbegin(ROI* roi, int val); 
+void ROI_set_chbegin(ROI* roi, int val);
 int ROI_chend(ROI* roi);
 void ROI_set_chend(ROI* roi, int val);
 
