@@ -2,9 +2,23 @@ package oiio
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"unsafe"
 )
+
+var supportedSliceKinds = []reflect.Kind{
+	reflect.Uint8,
+	reflect.Int8,
+	reflect.Uint16,
+	reflect.Int16,
+	reflect.Int,
+	reflect.Uint,
+	reflect.Uint64,
+	reflect.Int64,
+	reflect.Float32,
+	reflect.Float64,
+}
 
 // Given an ImageSpec, a slice is allocated to the size that
 // is able to contain the pixels of the ImageSpec dimensions.
@@ -83,4 +97,36 @@ func allocatePixelBufferSize(size int, format TypeDesc) (interface{}, unsafe.Poi
 	}
 
 	return pixel_iface, ptr, nil
+}
+
+// Takes a slice, passed in generically as an interface, and returns
+// the underlying pointer to the data.
+// The slice type must be one of the supported slice types to contain pixel data.
+func pixelsToPtr(slice interface{}) (unsafe.Pointer, error) {
+	slice_t := reflect.TypeOf(slice)
+	if slice_t.Kind() != reflect.Slice {
+		return nil, fmt.Errorf("Not a slice. Received type %s", slice_t.Kind().String())
+	}
+
+	elem := slice_t.Elem().Kind()
+	ok := false
+	for _, okElem := range supportedSliceKinds {
+		ok = elem == okElem
+		if ok {
+			break
+		}
+	}
+
+	if !ok {
+		return nil, fmt.Errorf("Slice type is not one of the supported pixel data types %q", supportedSliceKinds)
+	}
+
+	val := reflect.ValueOf(slice)
+	ptr := val.Pointer()
+
+	if ptr == 0 {
+		return unsafe.Pointer(nil), nil
+	}
+
+	return unsafe.Pointer(ptr), nil
 }

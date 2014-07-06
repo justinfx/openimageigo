@@ -111,8 +111,7 @@ const char* ImageInput_geterror(ImageInput *in);
 // ImageOutput
 //
 
-ImageOutput* ImageOutput_Create();
-ImageOutput* ImageOutput_Create_filename(const char* filename, const char* plugin_searchpath);
+ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchpath);
 
 bool ImageOutput_open(ImageOutput* out, const char* name, const ImageSpec* newspec, OpenMode mode);
 // bool ImageOutput_open_subimages(ImageOutput* out, const char* name, int subimages, const ImageSpec* newspec);

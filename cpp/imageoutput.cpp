@@ -5,33 +5,43 @@
 #include "oiio.h"
 
 
+OIIO::ImageOutput::OpenMode fromOpenMode(OpenMode mode) {
+	switch (mode) {
+	case Create: 			return OIIO::ImageOutput::Create;
+	case AppendSubimage: 	return OIIO::ImageOutput::AppendSubimage;
+	case AppendMIPLevel: 	return OIIO::ImageOutput::AppendMIPLevel;
+	}
+	return OIIO::ImageOutput::Create;
+}
+
+OpenMode toOpenMode(OIIO::ImageOutput::OpenMode mode) {
+	if (mode == OIIO::ImageOutput::Create) 			return Create;
+	if (mode == OIIO::ImageOutput::AppendSubimage) 	return AppendSubimage;
+	if (mode == OIIO::ImageOutput::AppendMIPLevel) 	return AppendMIPLevel;
+	return Create;
+}
+
 extern OIIO::TypeDesc fromTypeDesc(TypeDesc fmt);
 extern TypeDesc toTypeDesc(OIIO::TypeDesc fmt);
 
 
-
 extern "C" {
-
-#include "_cgo_export.h"
-
 
 void deleteImageOutput(ImageOutput *out) {
 	delete static_cast<OIIO::ImageOutput*>(out);
 }
 
-ImageOutput* ImageOutput_Create() {
-	return (ImageOutput*) OIIO::ImageOutput();
-}
-
-ImageOutput* ImageOutput_Create_filename(const char* filename, const char* plugin_searchpath) {
+ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchpath) {
 	std::string s_filename(filename);
 	std::string s_path(plugin_searchpath);
 	return (ImageOutput*) OIIO::ImageOutput::create(s_filename, s_path);
 }
 
-bool ImageOutput_open(ImageOutput *out, const char* name, ImageSpec* newspec, OpenMode mode) {
+bool ImageOutput_open(ImageOutput *out, const char* name, const ImageSpec* newspec, OpenMode mode=Create) {
 	std::string s_name(name);
-	return static_cast<OIIO::ImageOutput*>(out)->open(s_name, *(static_cast<OIIO::ImageSpec*>(newspec)), mode);
+	return static_cast<OIIO::ImageOutput*>(out)->open(s_name, 
+													  *(static_cast<const OIIO::ImageSpec*>(newspec)), 
+													  fromOpenMode(mode));
 }
 
 // bool ImageOutput_open_subimages(ImageOutput* out, const char* name, int subimages, const ImageSpec* newspec);
@@ -79,10 +89,11 @@ bool ImageOutput_close(ImageOutput *out) {
 // 	                              const void *data, stride_t xstride,
 // 	                              stride_t ystride, stride_t zstride);
 
-bool ImageOutput_write_image(ImageOutput* out, TypeDesc format, const void *data, void *cbk_data)
-{
-	ProgressCallback cbk = &image_progress_callback;
-
+bool ImageOutput_write_image(ImageOutput* out, TypeDesc format, const void *data, void *cbk_data) {
+	ProgressCallback cbk = NULL;
+	if (cbk_data != NULL) {
+		cbk = &image_progress_callback;
+	}
 	return static_cast<OIIO::ImageOutput*>(out)->write_image(
 												fromTypeDesc(format),
 												data,
