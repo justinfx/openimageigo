@@ -10,7 +10,6 @@ import "C"
 
 import (
 	"errors"
-	"runtime"
 	"unsafe"
 )
 
@@ -22,19 +21,18 @@ type ImageCache struct {
 }
 
 func newImageCache(i unsafe.Pointer) *ImageCache {
-	x := new(ImageCache)
-	x.ptr = i
-	runtime.SetFinalizer(x, destroyImageCache)
-	return x
+	return &ImageCache{i}
 }
 
-// Finalizer that makes sure to destroy the ImageCache, in case
-// the user forgets.
-func destroyImageCache(i *ImageCache) {
-	if i.ptr != nil {
-		C.ImageCache_Destroy(i.ptr, C.bool(false))
-		i.ptr = nil
-	}
+// Create an ImageCache. *This should be freed by calling ImageCache.Destroy()*
+//
+// If shared==true, it's intended to be shared with other like-minded owners
+// in the same process who also ask for a shared cache.
+//
+// If false, a private image cache will be created.
+func CreateImageCache(shared bool) *ImageCache {
+	ptr := C.ImageCache_Create(C.bool(false))
+	return newImageCache(ptr)
 }
 
 // Destroy a ImageCache that was created using CreateImageCache().
@@ -54,17 +52,6 @@ func (i *ImageCache) LastError() error {
 		return nil
 	}
 	return errors.New(err)
-}
-
-// Create an ImageCache. This should be freed by calling ImageCache.Destroy()
-//
-// If shared==true, it's intended to be shared with other like-minded owners
-// in the same process who also ask for a shared cache.
-//
-// If false, a private image cache will be created.
-func CreateImageCache(shared bool) *ImageCache {
-	ptr := C.ImageCache_Create(C.bool(false))
-	return newImageCache(ptr)
 }
 
 // Close everything, free resources, start from scratch.
