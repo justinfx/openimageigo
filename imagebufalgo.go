@@ -1,7 +1,7 @@
 package oiio
 
 /*
-#cgo LDFLAGS: -lboost_thread -lboost_system
+#cgo LDFLAGS: -lboost_thread-mt -lboost_system-mt
 
 #include "stdlib.h"
 
