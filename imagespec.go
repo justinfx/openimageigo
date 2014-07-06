@@ -20,8 +20,7 @@ type ImageSpec struct {
 }
 
 func newImageSpec(i unsafe.Pointer) *ImageSpec {
-	spec := new(ImageSpec)
-	spec.ptr = i
+	spec := &ImageSpec{ptr: i}
 	runtime.SetFinalizer(spec, deleteImageSpec)
 	return spec
 }

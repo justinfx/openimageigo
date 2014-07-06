@@ -301,21 +301,21 @@ func (i *ImageBuf) Swap(other *ImageBuf) error {
 
 // Return a reference to the image spec that describes the buffer.
 func (i *ImageBuf) Spec() *ImageSpec {
-	return newImageSpec(C.ImageBuf_spec(i.ptr))
+	return &ImageSpec{C.ImageBuf_spec(i.ptr)}
 }
 
 // Return a reference to the "native" image spec (that describes the file, which may be slightly
 // different than the spec of the ImageBuf, particularly if the IB is backed by an ImageCache
 // that is imposing some particular data format or tile size).
 func (i *ImageBuf) NativeSpec() *ImageSpec {
-	return newImageSpec(C.ImageBuf_nativespec(i.ptr))
+	return &ImageSpec{C.ImageBuf_nativespec(i.ptr)}
 }
 
 // Return a writable reference to the image spec that describes the buffer.
 // Use with extreme caution! If you use this for anything other than adding
 // attribute metadata, you are really taking your chances!
 func (i *ImageBuf) SpecMod() *ImageSpec {
-	return newImageSpec(C.ImageBuf_specmod(i.ptr))
+	return &ImageSpec{C.ImageBuf_specmod(i.ptr)}
 }
 
 // Return the name of this image.
@@ -629,7 +629,7 @@ func (i *ImageBuf) CachedPixels() bool {
 
 // Return the ImageCache in which backs this ImageBuf
 func (i *ImageBuf) ImageCache() *ImageCache {
-	return newImageCache(C.ImageBuf_imagecache(i.ptr))
+	return &ImageCache{C.ImageBuf_imagecache(i.ptr)}
 }
 
 // Does this ImageBuf store deep data?
