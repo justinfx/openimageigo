@@ -92,8 +92,10 @@ bool ImageBuf_init_spec(ImageBuf* buf, const char* filename, int subimage, int m
 }
 
 bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDesc convert, void *cbk_data) {
-	ProgressCallback cbk = &image_progress_callback;
-
+	ProgressCallback cbk = NULL;
+	if (cbk_data != NULL) {
+		cbk = &image_progress_callback;
+	}
 	return static_cast<OIIO::ImageBuf*>(buf)->read(subimage,
 												   miplevel,
 												   force,
@@ -104,13 +106,19 @@ bool ImageBuf_read(ImageBuf* buf, int subimage, int miplevel, bool force, TypeDe
 
 
 bool ImageBuf_write_file(ImageBuf* buf, const char* filename, const char* fileformat, void *cbk_data) {
-	ProgressCallback cbk = &image_progress_callback;
+	ProgressCallback cbk = NULL;
+	if (cbk_data != NULL) {
+		cbk = &image_progress_callback;
+	}
 	return static_cast<OIIO::ImageBuf*>(buf)->write(filename, fileformat, cbk, cbk_data);
 }
 
 bool ImageBuf_write_output(ImageBuf* buf, ImageOutput *out, void *cbk_data) {
 	OIIO::ImageOutput *out_ptr = static_cast<OIIO::ImageOutput*>(out);
-	ProgressCallback cbk = &image_progress_callback;
+	ProgressCallback cbk = NULL;
+	if (cbk_data != NULL) {
+		cbk = &image_progress_callback;
+	}
 	return static_cast<OIIO::ImageBuf*>(buf)->write(out_ptr, cbk, cbk_data);
 }
 
