@@ -1,8 +1,6 @@
 package oiio
 
 /*
-#cgo LDFLAGS: -lboost_thread-mt -lboost_system-mt
-
 #include "stdlib.h"
 
 #include "cpp/imagebufalgo.h"

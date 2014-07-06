@@ -17,7 +17,6 @@ package oiio
 #cgo CPPFLAGS: -I./cpp
 #cgo CPPFLAGS: -I/usr/local/include
 #cgo LDFLAGS: -lstdc++
-#cgo LDFLAGS: -L/usr/local/lib -lOpenImageIO
 
 #include "stdlib.h"
 
