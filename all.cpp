@@ -1,3 +1,4 @@
+#include "cpp/oiio.cpp"
 #include "cpp/imageinput.cpp"
 #include "cpp/imageoutput.cpp"
 #include "cpp/imagespec.cpp"
@@ -6,3 +7,4 @@
 #include "cpp/roi.cpp"
 #include "cpp/imagebufalgo.cpp"
 #include "cpp/color.cpp"
+

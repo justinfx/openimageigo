@@ -12,9 +12,6 @@ extern TypeDesc toTypeDesc(OIIO::TypeDesc fmt);
 
 extern "C" {
 
-#include "_cgo_export.h"
-
-
 void deleteImageInput(ImageInput *in) {
 	delete static_cast<OIIO::ImageInput*>(in);
 }
@@ -69,7 +66,10 @@ bool ImageInput_read_image_floats(ImageInput *in, float* data) {
 
 bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data)
 {	
-	ProgressCallback cbk = &image_progress_callback;
+	ProgressCallback cbk = NULL;
+	if (cbk_data != NULL) {
+		cbk = &image_progress_callback;
+	}
 
 	return static_cast<OIIO::ImageInput*>(in)->read_image(
 												fromTypeDesc(format), 

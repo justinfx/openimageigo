@@ -97,12 +97,47 @@ func (i *ImageInput) ValidFile(filename string) bool {
 	return bool(C.ImageInput_valid_file(i.ptr, c_str))
 }
 
-// Given the name of a 'feature', return whether this ImageInput supports input of images
-// with the given properties. Feature names that ImageIO plugins are expected to recognize
-// include: none at this time.
-// Note that main advantage of this approach, versus having separate individual supports_foo()
-// methods, is that this allows future expansion of the set of possible queries without changing
-// the API, adding new entry points, or breaking linkage compatibility.
+// Given the name of a 'feature', return whether this ImageOutput
+// supports output of images with the given properties.
+// Feature names that ImageIO plugins are expected to recognize
+// include:
+//    "tiles"          Is this format able to write tiled images?
+//    "rectangles"     Does this plugin accept arbitrary rectangular
+//                       pixel regions, not necessarily aligned to
+//                       scanlines or tiles?
+//    "random_access"  May tiles or scanlines be written in
+//                       any order (false indicates that they MUST
+//                       be in successive order).
+//    "multiimage"     Does this format support multiple subimages
+//                       within a file?
+//    "appendsubimage" Does this format support adding subimages one at
+//                       a time through open(name,spec,AppendSubimage)?
+//                       If not, then open(name,subimages,specs) must
+//                       be used instead.
+//    "mipmap"         Does this format support multiple resolutions
+//                       for an image/subimage?
+//    "volumes"        Does this format support "3D" pixel arrays?
+//    "rewrite"        May the same scanline or tile be sent more than
+//                       once?  (Generally, this will be true for
+//                       plugins that implement interactive display.)
+//    "empty"          Does this plugin support passing a NULL data
+//                       pointer to write_scanline or write_tile to
+//                       indicate that the entire data block is zero?
+//    "channelformats" Does the plugin/format support per-channel
+//                       data formats?
+//    "displaywindow"  Does the format support display ("full") windows
+//                        distinct from the pixel data window?
+//    "origin"         Does the format support a nonzero x,y,z
+//                        origin of the pixel data window?
+//    "negativeorigin" Does the format support negative x,y,z
+//                        and full_{x,y,z} origin values?
+//    "deepdata"       Deep (multi-sample per pixel) data
+//
+// Note that main advantage of this approach, versus having
+// separate individual supports_foo() methods, is that this allows
+// future expansion of the set of possible queries without changing
+// the API, adding new entry points, or breaking linkage
+// compatibility.
 func (i *ImageInput) Supports(feature string) bool {
 	c_str := C.CString(feature)
 	defer C.free(unsafe.Pointer(c_str))
@@ -188,7 +223,7 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 		return nil, err
 	}
 
-	var cbk unsafe.Pointer
+	var cbk unsafe.Pointer = nil
 	if progress != nil {
 		cbk = unsafe.Pointer(progress)
 	}
