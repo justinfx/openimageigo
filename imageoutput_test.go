@@ -11,7 +11,6 @@ func TestImageOutputCreate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err.Error())
 	}
-
 	outfile := createOutputFile()
 	defer os.Remove(outfile)
 
@@ -63,7 +62,6 @@ func TestImageOutputWritePixels(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	t.Logf("Writing to output file: %q", outfile)
 	spec := src.Spec()
 	if err = out.Open(outfile, spec, OpenModeCreate); err != nil {
 		t.Fatal(err.Error())
