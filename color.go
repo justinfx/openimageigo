@@ -163,7 +163,7 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 	if err != nil {
 		return nil, err
 	}
-	return newColorProcessor(ptr), err
+	return newColorProcessor(ptr), nil
 }
 
 // This routine will return the error string (and clear any error
