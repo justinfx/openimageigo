@@ -23,8 +23,8 @@ func TestImageOutputCreate(t *testing.T) {
 	out.Supports("xyz")
 
 	actual := out.FormatName()
-	if actual != "png" {
-		t.Errorf("Expected FormatName 'png' but got %q", actual)
+	if actual != TEST_IMAGE_TYPE {
+		t.Errorf("Expected FormatName %q but got %q", TEST_IMAGE_TYPE, actual)
 	}
 
 	if err = out.Close(); err != nil {
@@ -37,8 +37,8 @@ func TestImageOutputCreate(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	if actual = out.FormatName(); actual != "png" {
-		t.Errorf("Expected FormatName 'png' but got %q", actual)
+	if actual = out.FormatName(); actual != TEST_IMAGE_TYPE {
+		t.Errorf("Expected FormatName %q but got %q", TEST_IMAGE_TYPE, actual)
 	}
 
 }

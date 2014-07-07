@@ -11,6 +11,11 @@ import (
 	"testing"
 )
 
+const (
+	TEST_IMAGE_EXT  = "png"
+	TEST_IMAGE_TYPE = "png"
+)
+
 var TEST_IMAGE string
 
 func init() {
@@ -21,7 +26,7 @@ func init() {
 
 	defer tmpfile.Close()
 
-	TEST_IMAGE = fmt.Sprintf("%s.png", tmpfile.Name())
+	TEST_IMAGE = fmt.Sprintf("%s.%s", tmpfile.Name(), TEST_IMAGE_EXT)
 
 	m := image.NewRGBA(image.Rect(0, 0, 128, 64))
 	blue := color.RGBA{0, 0, 255, 255}
@@ -45,7 +50,7 @@ func createOutputFile() string {
 
 	defer tmpfile.Close()
 
-	name := fmt.Sprintf("%s.png", tmpfile.Name())
+	name := fmt.Sprintf("%s.%s", tmpfile.Name(), TEST_IMAGE_EXT)
 	os.Rename(tmpfile.Name(), name)
 	return name
 }

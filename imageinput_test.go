@@ -19,8 +19,8 @@ func TestOpenImageInput(t *testing.T) {
 	in.Supports("xyz")
 
 	actual := in.FormatName()
-	if actual != "png" {
-		t.Errorf("Expected FormatName 'png' but got %q", actual)
+	if actual != TEST_IMAGE_TYPE {
+		t.Errorf("Expected FormatName %q but got %q", TEST_IMAGE_TYPE, actual)
 	}
 
 	if err = in.Close(); err != nil {
@@ -32,8 +32,8 @@ func TestOpenImageInput(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	if actual = in.FormatName(); actual != "png" {
-		t.Errorf("Expected FormatName 'png' but got %q", actual)
+	if actual = in.FormatName(); actual != TEST_IMAGE_TYPE {
+		t.Errorf("Expected FormatName %q but got %q", TEST_IMAGE_TYPE, actual)
 	}
 
 }

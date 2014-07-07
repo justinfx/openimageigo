@@ -58,8 +58,8 @@ func TestImageBufReadImage(t *testing.T) {
 		t.Errorf("Expected name %v; got %v", TEST_IMAGE, buf.Name())
 	}
 
-	if buf.FileFormatName() != "png" {
-		t.Errorf("Expected format png; got %v", buf.FileFormatName())
+	if buf.FileFormatName() != TEST_IMAGE_TYPE {
+		t.Errorf("Expected format %q; got %v", TEST_IMAGE_TYPE, buf.FileFormatName())
 	}
 
 	curr, total := buf.SubImage(), buf.NumSubImages()
@@ -234,7 +234,7 @@ func TestImageBufWriteFile(t *testing.T) {
 		t.Fatal("Image file was 0 bytes. Write failed")
 	}
 
-	if err = buf.WriteFile(outfile, "png"); err != nil {
+	if err = buf.WriteFile(outfile, TEST_IMAGE_EXT); err != nil {
 		t.Fatal(err.Error())
 	}
 
