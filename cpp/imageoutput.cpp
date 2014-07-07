@@ -47,7 +47,11 @@ bool ImageOutput_open(ImageOutput *out, const char* name, const ImageSpec* newsp
 // bool ImageOutput_open_subimages(ImageOutput* out, const char* name, int subimages, const ImageSpec* newspec);
 
 const char* ImageOutput_geterror(ImageOutput *out) {
-	return static_cast<OIIO::ImageOutput*>(out)->geterror().c_str();
+	std::string sstring = static_cast<OIIO::ImageOutput*>(out)->geterror();
+	if (sstring.empty()) {
+		return NULL;
+	}
+	return sstring.c_str();
 }
 
 const char* ImageOutput_format_name(ImageOutput *out) {
