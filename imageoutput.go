@@ -160,7 +160,7 @@ func (i *ImageOutput) Supports(feature string) bool {
 // may be passed.  Periodically, it will be called as follows:
 //   progress_callback (progress_callback_data ProgressCallback, done float)
 // where 'done' gives the portion of the image
-func (i *ImageOutput) WriteImageFormat(pixelData interface{}, format TypeDesc, progress *ProgressCallback) error {
+func (i *ImageOutput) WriteImageFormat(format TypeDesc, pixelData interface{}, progress *ProgressCallback) error {
 	pixels_ptr, err := pixelsToPtr(pixelData)
 	if err != nil {
 		return err

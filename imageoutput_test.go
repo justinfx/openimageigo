@@ -49,7 +49,9 @@ func TestImageOutputWritePixels(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	pixels, err := src.GetPixels(TypeUint8)
+	spec := src.Spec()
+
+	pixels, err := src.GetPixels(spec.Format())
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -62,12 +64,11 @@ func TestImageOutputWritePixels(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	spec := src.Spec()
 	if err = out.Open(outfile, spec, OpenModeCreate); err != nil {
 		t.Fatal(err.Error())
 	}
 
-	if err = out.WriteImageFormat(pixels, TypeUint8, nil); err != nil {
+	if err = out.WriteImageFormat(spec.Format(), pixels, nil); err != nil {
 		t.Fatal(err.Error())
 	}
 
