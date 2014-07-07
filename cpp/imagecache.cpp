@@ -17,7 +17,11 @@ void ImageCache_clear(ImageCache *x) {
 }
 
 const char* ImageCache_geterror(ImageCache* x) {
-	return static_cast<OIIO::ImageCache*>(x)->geterror().c_str();
+	std::string sstring = static_cast<OIIO::ImageCache*>(x)->geterror();
+	if (sstring.empty()) {
+		return NULL;
+	}
+	return sstring.c_str();
 }
 
 const char* ImageCache_getstats(ImageCache *x, int level) {

@@ -29,7 +29,11 @@ ImageInput* ImageInput_Create(const char* filename, const char* plugin_searchpat
 }
 
 const char* ImageInput_geterror(ImageInput *in) {
-	return static_cast<OIIO::ImageInput*>(in)->geterror().c_str();
+	std::string sstring = static_cast<OIIO::ImageInput*>(in)->geterror();
+	if (sstring.empty()) {
+		return NULL;
+	}
+	return sstring.c_str();
 }
 
 const char* ImageInput_format_name(ImageInput *in) {
