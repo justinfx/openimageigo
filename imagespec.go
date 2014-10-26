@@ -9,6 +9,7 @@ package oiio
 import "C"
 
 import (
+	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -311,6 +312,8 @@ func (s *ImageSpec) ChannelNames() []string {
 	return names
 }
 
+// SetChannelNames re-labels each existing channel,
+// from a slice of string names.
 func (s *ImageSpec) SetChannelNames(names []string) {
 	c_names := make([]*C.char, len(names))
 	for i, n := range names {
@@ -340,6 +343,7 @@ func (s *ImageSpec) ZChannel() int {
 	return int(C.ImageSpec_z_channel(s.ptr))
 }
 
+// Set the index of the depth channel.
 func (s *ImageSpec) SetZChannel(val int) {
 	C.ImageSpec_set_z_channel(s.ptr, C.int(val))
 }
@@ -353,3 +357,73 @@ func (s *ImageSpec) SetDeep(val bool) {
 	C.ImageSpec_set_deep(s.ptr, C.bool(val))
 }
 
+// SetAttribute sets a metadata value in the extra attribs. Acceptable types are
+// string, int, and float32.
+//
+// Example:
+// 		s = NewImageSpec(...)
+// 		s.SetAttribute("foo_str", "blah")
+// 		s.SetAttribute("foo_int", 14)
+// 		s.SetAttribute("foo_float", 3.14)
+func (s *ImageSpec) SetAttribute(name string, val interface{}) error {
+	c_str := C.CString(name)
+	defer C.free(unsafe.Pointer(c_str))
+
+	switch t := val.(type) {
+	case string:
+		c_val := C.CString(t)
+		defer C.free(unsafe.Pointer(c_val))
+		C.ImageSpec_attribute_char(s.ptr, c_str, c_val)
+	case float32:
+		C.ImageSpec_attribute_float(s.ptr, c_str, C.float(t))
+	case int:
+		C.ImageSpec_attribute_int(s.ptr, c_str, C.int(t))
+	default:
+		return fmt.Errorf("Value type %T is not one of (string, int, float32)", t)
+	}
+	return nil
+}
+
+// AttributeString looks up an existing attrib by name and returns
+// the string value, or a default value if it does not exist.
+// Default value is an empty string, if not specified.
+func (s *ImageSpec) AttributeString(name string, defaultVal ...string) string {
+	var defVal string
+	if len(defaultVal) > 0 {
+		defVal = defaultVal[0]
+	}
+	c_str := C.CString(name)
+	c_val := C.CString(defVal)
+	defer func() {
+		C.free(unsafe.Pointer(c_str))
+		C.free(unsafe.Pointer(c_val))
+	}()
+
+	return C.GoString(C.ImageSpec_get_string_attribute(s.ptr, c_str, c_val))
+}
+
+// AttributeFloat looks up an existing attrib by name and returns
+// the float value, or a default value if it does not exist.
+// Default value is 0, if not specified.
+func (s *ImageSpec) AttributeFloat(name string, defaultVal ...float32) float32 {
+	var defVal float32
+	if len(defaultVal) > 0 {
+		defVal = defaultVal[0]
+	}
+	c_str := C.CString(name)
+	defer C.free(unsafe.Pointer(c_str))
+	return float32(C.ImageSpec_get_float_attribute(s.ptr, c_str, C.float(defVal)))
+}
+
+// AttributeInt looks up an existing attrib by name and returns
+// the int value, or a default value if it does not exist.
+// Default value is 0, if not specified.
+func (s *ImageSpec) AttributeInt(name string, defaultVal ...int) int {
+	var defVal int
+	if len(defaultVal) > 0 {
+		defVal = defaultVal[0]
+	}
+	c_str := C.CString(name)
+	defer C.free(unsafe.Pointer(c_str))
+	return int(C.ImageSpec_get_int_attribute(s.ptr, c_str, C.int(defVal)))
+}

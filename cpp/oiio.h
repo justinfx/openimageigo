@@ -126,19 +126,6 @@ imagesize_t	ImageSpec_image_pixels(ImageSpec *spec);
 imagesize_t	ImageSpec_image_bytes(ImageSpec *spec, bool native);
 bool ImageSpec_size_safe(ImageSpec *spec);
 
-// void attribute(const char* name, TypeDesc type, const void *value)
-// void attribute(const char* name, TypeDesc type, const char* value)
-// void attribute(const char* name, unsigned int value)
-// void attribute(const char* name, int value)
-// void attribute(const char* name, float value)
-// void attribute(const char* name, const char *value)
-// void attribute(const char* name, const char* value)
-// void erase_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
-// ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
-// const ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false);
-// int get_int_attribute(const char* name, int defaultval=0);
-// float get_float_attribute(const char* name, float defaultval=0);
-// std::string get_string_attribute(const char* name, const char* defaultval=std::string());
 // std::string metadata_val(const ImageIOParameter &p, bool human=false);
 const char* ImageSpec_to_xml(ImageSpec *spec);
 // void from_xml(const char *xml)
@@ -192,7 +179,20 @@ int ImageSpec_z_channel(ImageSpec *spec);
 void ImageSpec_set_z_channel(ImageSpec *spec, int val);
 bool ImageSpec_deep(ImageSpec *spec);
 void ImageSpec_set_deep(ImageSpec *spec, bool val);
-// extra_attribs?
+
+void ImageSpec_attribute_type_data(ImageSpec *spec, const char* name, TypeDesc type, const void *value);
+void ImageSpec_attribute_type_char(ImageSpec *spec, const char* name, TypeDesc type, const char* value);
+void ImageSpec_attribute_uint(ImageSpec *spec, const char* name, unsigned int value);
+void ImageSpec_attribute_int(ImageSpec *spec, const char* name, int value);
+void ImageSpec_attribute_float(ImageSpec *spec, const char* name, float value);
+void ImageSpec_attribute_char(ImageSpec *spec, const char* name, const char* value);
+int ImageSpec_get_int_attribute(ImageSpec *spec, const char* name, int defaultval);
+float ImageSpec_get_float_attribute(ImageSpec *spec, const char* name, float defaultval);
+const char* ImageSpec_get_string_attribute(ImageSpec *spec, const char* name, const char* defaultval);
+// void erase_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
+// ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
+// const ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false);
+
 
 
 // ImageBuf

@@ -299,7 +299,40 @@ const char* ImageSpec_to_xml(ImageSpec *spec) {
 	return static_cast<OIIO::ImageSpec*>(spec)->to_xml().c_str();
 }
 
-// extra_attribs?
+void ImageSpec_attribute_type_data(ImageSpec *spec, const char* name, TypeDesc type, const void *value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, fromTypeDesc(type), value);
+}
+
+void ImageSpec_attribute_type_char(ImageSpec *spec, const char* name, TypeDesc type, const char* value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, fromTypeDesc(type), value);
+}
+
+void ImageSpec_attribute_uint(ImageSpec *spec, const char* name, unsigned int value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);
+}
+
+void ImageSpec_attribute_int(ImageSpec *spec, const char* name, int value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);
+}
+
+void ImageSpec_attribute_float(ImageSpec *spec, const char* name, float value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);
+}
+void ImageSpec_attribute_char(ImageSpec *spec, const char* name, const char* value) {
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);	
+}
+
+int ImageSpec_get_int_attribute(ImageSpec *spec, const char* name, int defaultval) {
+	return static_cast<OIIO::ImageSpec*>(spec)->get_int_attribute(name, defaultval);	
+}
+
+float ImageSpec_get_float_attribute(ImageSpec *spec, const char* name, float defaultval) {
+	return static_cast<OIIO::ImageSpec*>(spec)->get_float_attribute(name, defaultval);	
+}
+
+const char* ImageSpec_get_string_attribute(ImageSpec *spec, const char* name, const char* defaultval) {
+	return static_cast<OIIO::ImageSpec*>(spec)->get_string_attribute(name, defaultval).c_str();	
+}
 
 } // extern "C"
 
