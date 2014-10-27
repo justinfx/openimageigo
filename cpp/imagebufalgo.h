@@ -1,6 +1,8 @@
 #ifndef _OPENIMAGEIGO_IMAGEBUFALGO_H_
 #define _OPENIMAGEIGO_IMAGEBUFALGO_H_
 
+#include <stdint.h>
+
 #include "oiio.h"
 #include "color.h"
 
@@ -16,8 +18,8 @@ bool fill(ImageBuf *dst, const float *values, ROI* roi, int nthreads);
 // bool checker(ImageBuf *dst, int width, int height, int depth, const float *color1, const float *color2, 
 // 			  int xoffset=0, int yoffset=0, int zoffset=0, ROI* roi, int nthreads);
 
-// bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int *channelorder, 
-// 			   const float *channelvalues=NULL, const char *newchannelnames=NULL, bool shuffle_channel_names=false);
+bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *channelorder,
+			   const float *channelvalues, const char **newchannelnames, bool shuffle_channel_names);
 
 // bool channel_append(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 

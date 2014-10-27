@@ -2,6 +2,7 @@ package oiio
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"unsafe"
 )
@@ -20,6 +21,10 @@ func allocatePixelBuffer(spec *ImageSpec, format TypeDesc) (interface{}, unsafe.
 // The TypeDesc determines what format the pixels will be stored in.
 // Returns the slice, casted to an interface.
 func allocatePixelBufferSize(size int, format TypeDesc) (interface{}, unsafe.Pointer, error) {
+	if size <= 0 {
+		return nil, nil, fmt.Errorf("Invalid size %d; Must be greater than 0", size)
+	}
+
 	var (
 		pixel_iface interface{}
 		ptr         unsafe.Pointer
