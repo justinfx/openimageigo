@@ -44,6 +44,19 @@ bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *
 		delete [] str_names;
 }
 
+bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
+			const ImageBuf *src, ROI* srcroi, int nthreads) {
+	return OIIO::ImageBufAlgo::paste(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			xbegin,
+			ybegin,
+			zbegin,
+			chbegin,
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(srcroi)),
+			nthreads);
+}
+
 bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
 				   bool unpremult, ROI* roi, int nthreads) {
 
