@@ -27,8 +27,8 @@ bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *
 
 // bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
-// 			const ImageBuf *src, ROI* srcroi, int nthreads);
+bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
+			const ImageBuf *src, ROI* srcroi, int nthreads);
 
 // bool flip(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 

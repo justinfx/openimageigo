@@ -228,3 +228,60 @@ func TestAlgoResample(t *testing.T) {
 		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
 	}
 }
+
+func TestAlgoPaste2D(t *testing.T) {
+	srcSpec := NewImageSpecSize(16, 16, 3, TypeFloat)
+	src, err := NewImageBufSpec(srcSpec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	topExpected := []float32{1.0, 0.7, 0.7}
+	if err = Fill(src, topExpected, nil, GlobalThreads); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Destination is bigger than source
+	dstSpec := NewImageSpecSize(32, 32, 3, TypeFloat)
+	dst, err := NewImageBufSpec(dstSpec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	bottomExpected := []float32{0.5, 0.2, 0.2}
+	if err = Fill(dst, bottomExpected, nil, GlobalThreads); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Paste source into destination at top left
+	if err = Paste2D(dst, src, 0, 0, nil, GlobalThreads); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Top left pixel
+	roi := NewROIRegion2D(0, 1, 0, 1)
+	roi.SetChannelsEnd(3)
+	topIface, err := dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Bottom right pixel
+	roi = NewROIRegion2D(31, 32, 31, 32)
+	roi.SetChannelsEnd(3)
+	bottomIface, err := dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	topActual := topIface.([]float32)
+	bottomActual := bottomIface.([]float32)
+
+	if !reflect.DeepEqual(topExpected, topActual) {
+		t.Fatalf("Expected pixels %v; Got %v", topExpected, topActual)
+	}
+
+	if !reflect.DeepEqual(bottomExpected, bottomActual) {
+		t.Fatalf("Expected pixels %v; Got %v", bottomExpected, bottomActual)
+	}
+}

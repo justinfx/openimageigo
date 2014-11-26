@@ -146,6 +146,17 @@ func Channels(dst, src *ImageBuf, nchannels int, opts *ChannelOpts) error {
 	return nil
 }
 
+// Copy into dst, beginning at (xbegin, ybegin), the pixels of src described by roi.
+// If roi is nil, the entirety of src will be used.
+func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, roi *ROI, nthreads int) error {
+	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(0), C.int(0), src.ptr, validOrAllROIPtr(roi), C.int(nthreads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Copy pixels within the ROI from src to dst, applying a color transform.
 // If dst is not yet initialized, it will be allocated to the same size as specified by roi. If roi is not
 // defined it will be all of dst, if dst is defined, or all of src, if dst is not yet defined.
