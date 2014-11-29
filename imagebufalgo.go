@@ -96,6 +96,50 @@ func Fill(dst *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	return nil
 }
 
+// Checker2D sets the pixels in the destination image within the specified region to a checkerboard pattern
+// with origin given by the offset values, checker size given by the width and height values, and
+// alternating between color1 and color2. The colors must contain enough values for all channels in the image.
+//
+// Example:
+//     // Create a new 640x480 RGB image, fill it with a two-toned gray
+//     // checkerboard, the checkers being 64x64 pixels each.
+//     spec := NewImageSpecSize(640, 480, 3, TypeFloat)
+//     dark := []float32{0.1, 0.1, 0.1}
+//     light := []float32{0.4, 0.4, 0.4}
+//     Checker(spec, 64, 64, dark, light, 0, 0)
+//
+func Checker2D(dst *ImageBuf, width, height int, color1, color2 []float32,
+	xoffset, yoffset int, opts ...AlgoOpts) error {
+	return Checker(dst, width, height, 1, color1, color2, xoffset, yoffset, 0, opts...)
+}
+
+// Checker sets the pixels in the destination image within the specified region to a checkerboard pattern
+// with origin given by the offset values, checker size given by the width, height,
+// depth values, and alternating between color1 and color2. The colors must contain enough values
+// for all channels in the image.
+func Checker(dst *ImageBuf, width, height, depth int, color1, color2 []float32,
+	xoffset, yoffset, zoffset int, opts ...AlgoOpts) error {
+
+	opt := flatAlgoOpts(opts)
+	err := checkBufAndROI(dst, opt.ROI)
+	if err != nil {
+		return err
+	}
+
+	c1_ptr := (*C.float)(unsafe.Pointer(&color1[0]))
+	c2_ptr := (*C.float)(unsafe.Pointer(&color2[0]))
+
+	ok := bool(C.checker(dst.ptr, C.int(width), C.int(height), C.int(depth),
+		c1_ptr, c2_ptr, C.int(xoffset), C.int(yoffset), C.int(zoffset),
+		opt.ROI.validOrAllPtr(), C.int(opt.Threads)),
+	)
+
+	if !ok {
+		return dst.LastError()
+	}
+	return nil
+}
+
 // ChannelOpts are options that can be passed to the Channels() function
 //
 // For any channel in which ChannelOpts.Order[i] < 0, it will just make dst channel i be a constant value
@@ -174,12 +218,58 @@ func Channels(dst, src *ImageBuf, nchannels int, opts ...*ChannelOpts) error {
 	return nil
 }
 
+// ChannelAppend appends the channels of A and B together into dst over the region of interest.
+// If a roi is passed, it will be interpreted as being the union of the pixel windows of
+// A and B (and all channels of both images). If dst is not already initialized to a size, it
+// will be resized to be big enough for the region.
+func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.channel_append(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// TODO: Flatten does not seem to work as expected
+//
+// Flatten copies pixels from deep image src into non-deep dst, compositing the depth samples
+// within each pixel to yield a single “flat” value per pixel. If src is not deep, it just copies
+// the pixels without alteration.
+// func Flatten(dst, src *ImageBuf, opts ...AlgoOpts) error {
+// 	opt := flatAlgoOpts(opts)
+//
+// 	ok := C.flatten(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+// 	if !bool(ok) {
+// 		return dst.LastError()
+// 	}
+//
+// 	return nil
+// }
+
 // Copy into dst, beginning at (xbegin, ybegin), the pixels of src described by roi.
 // If roi is nil, the entirety of src will be used.
 func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(0), C.int(0),
+		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Copy into dst, beginning at (xbegin, ybegin, zbegin, chbegin), the pixels of src described by roi.
+// If roi is nil, the entirety of src will be used.
+func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(zbegin), C.int(chbegin),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
 	if !bool(ok) {

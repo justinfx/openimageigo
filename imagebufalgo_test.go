@@ -52,6 +52,45 @@ func TestAlgoFill(t *testing.T) {
 	}
 }
 
+func TestAlgoChecker(t *testing.T) {
+	spec := NewImageSpecSize(16, 16, 3, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	dark := []float32{.1, .1, .1}
+	light := []float32{.4, .4, .4}
+
+	if err = Checker2D(buf, 4, 4, dark, light, 0, 0); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	roi := NewROIRegion2D(0, 1, 0, 1)
+	roi.SetChannelsEnd(3)
+	iface, err := buf.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	actual := iface.([]float32)
+	if !reflect.DeepEqual(dark, actual) {
+		t.Fatalf("Expected pixels %v; Got %v", dark, actual)
+	}
+
+	roi = NewROIRegion2D(14, 15, 0, 1)
+	roi.SetChannelsEnd(3)
+	iface, err = buf.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	actual = iface.([]float32)
+	if !reflect.DeepEqual(light, actual) {
+		t.Fatalf("Expected pixels %v; Got %v", light, actual)
+	}
+}
+
 func TestAlgoChannels(t *testing.T) {
 	// Create a source image
 	src, err := NewImageBufSpec(NewImageSpecSize(32, 32, 4, TypeFloat))
@@ -172,6 +211,78 @@ func TestAlgoChannels(t *testing.T) {
 		t.Errorf("Expected names %v; got %v", expected_names, actual)
 	}
 }
+
+func TestAlgoChannelAppend(t *testing.T) {
+	// Create a source image
+	rgb, err := NewImageBufSpec(NewImageSpecSize(32, 32, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	fill := []float32{1, 1, 1}
+	if err = Fill(rgb, fill); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	a, err := NewImageBufSpec(NewImageSpecSize(32, 32, 1, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	fill = []float32{1}
+	if err = Fill(a, fill); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	dst := NewImageBuf()
+
+	if err = ChannelAppend(dst, rgb, a); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Has right number of channels
+	if dst.NumChannels() != 4 {
+		t.Errorf("Expected 4 channels; got %d", dst.NumChannels())
+	}
+
+	expected := []string{"R", "G", "B", "A"}
+	actual := dst.Spec().ChannelNames()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected names %v; got %v", expected, actual)
+	}
+}
+
+// TODO: Flatten does not seem to work as expected
+//
+// func TestAlgoFlatten(t *testing.T) {
+// 	// Create a source image
+// 	src, err := NewImageBufSpec(NewImageSpecSize(32, 32, 1, TypeFloat))
+// 	if err != nil {
+// 		t.Fatal(err.Error())
+// 	}
+//
+// 	fill := []float32{0.5}
+// 	if err = Fill(src, fill); err != nil {
+// 		t.Fatal(err.Error())
+// 	}
+//
+// 	dst, _ := NewImageBufSpec(src.Spec())
+// 	if err = Flatten(dst, src); err != nil {
+// 		t.Fatal(err.Error())
+// 	}
+//
+// 	// Check that the pixels for the region are correct
+// 	firstPixel := NewROIRegion2D(0, 1, 0, 1)
+// 	firstPixel.SetChannelsEnd(1)
+// 	iface, err := dst.GetPixelRegion(firstPixel, TypeFloat)
+// 	if err != nil {
+// 		t.Fatal(err.Error())
+// 	}
+// 	pixels := iface.([]float32)
+// 	if !reflect.DeepEqual(pixels, fill[:1]) {
+// 		t.Errorf("Expected pixels %v;  got %v", fill[:1], pixels)
+// 	}
+// }
 
 func TestAlgoColorConvert(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
