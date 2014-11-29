@@ -7,14 +7,13 @@ import (
 
 func TestAlgoZero(t *testing.T) {
 	buf := NewImageBuf()
-	roi := NewROI()
-	err := Zero(buf, roi, GlobalThreads)
+	err := Zero(buf)
 	if err == nil {
 		t.Error("Expected passing nil buffer and nil ROI to raise error")
 	}
 
-	roi = NewROIRegion2D(0, 100, 0, 200)
-	if err = Zero(buf, roi, GlobalThreads); err != nil {
+	roi := NewROIRegion2D(0, 100, 0, 200)
+	if err = Zero(buf, AlgoOpts{ROI: roi}); err != nil {
 		t.Error(err.Error())
 	}
 
@@ -22,7 +21,7 @@ func TestAlgoZero(t *testing.T) {
 		t.Error("buf was not initialized to ROI")
 	}
 
-	err = Zero(buf, nil, 1)
+	err = Zero(buf, AlgoOpts{Threads: 1})
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -36,7 +35,7 @@ func TestAlgoFill(t *testing.T) {
 	}
 
 	expected := []float32{1.0, 0.7, 0.7}
-	if err = Fill(buf, expected, nil, GlobalThreads); err != nil {
+	if err = Fill(buf, expected); err != nil {
 		t.Fatal(err.Error())
 	}
 
@@ -61,7 +60,7 @@ func TestAlgoChannels(t *testing.T) {
 	}
 
 	fill := []float32{0.25, 0.5, 0.75, 1.0}
-	if err = Fill(src, fill, nil, 0); err != nil {
+	if err = Fill(src, fill); err != nil {
 		t.Fatal(err.Error())
 	}
 
@@ -182,7 +181,7 @@ func TestAlgoColorConvert(t *testing.T) {
 
 	dst := NewImageBuf()
 
-	err = ColorConvert(dst, src, "lnf", "srgb8", false, nil, GlobalThreads)
+	err = ColorConvert(dst, src, "lnf", "srgb8", false)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -198,7 +197,7 @@ func TestAlgoColorConvert(t *testing.T) {
 	}
 
 	dst = NewImageBuf()
-	err = ColorConvertProcessor(dst, src, cp, false, nil, GlobalThreads)
+	err = ColorConvertProcessor(dst, src, cp, false)
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -212,7 +211,7 @@ func TestAlgoResize(t *testing.T) {
 
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(0, 64, 0, 32)
-	err = Resize(dst, src, roi, GlobalThreads)
+	err = Resize(dst, src, AlgoOpts{ROI: roi})
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -230,7 +229,7 @@ func TestAlgoResample(t *testing.T) {
 
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(0, 64, 0, 32)
-	err = Resample(dst, src, true, roi, GlobalThreads)
+	err = Resample(dst, src, true, AlgoOpts{ROI: roi})
 	if err != nil {
 		t.Error(err.Error())
 	}
@@ -248,7 +247,7 @@ func TestAlgoPaste2D(t *testing.T) {
 	}
 
 	topExpected := []float32{1.0, 0.7, 0.7}
-	if err = Fill(src, topExpected, nil, GlobalThreads); err != nil {
+	if err = Fill(src, topExpected); err != nil {
 		t.Fatal(err.Error())
 	}
 
@@ -260,12 +259,12 @@ func TestAlgoPaste2D(t *testing.T) {
 	}
 
 	bottomExpected := []float32{0.5, 0.2, 0.2}
-	if err = Fill(dst, bottomExpected, nil, GlobalThreads); err != nil {
+	if err = Fill(dst, bottomExpected); err != nil {
 		t.Fatal(err.Error())
 	}
 
 	// Paste source into destination at top left
-	if err = Paste2D(dst, src, 0, 0, nil, GlobalThreads); err != nil {
+	if err = Paste2D(dst, src, 0, 0); err != nil {
 		t.Fatal(err.Error())
 	}
 

@@ -39,13 +39,6 @@ func deleteROI(i *ROI) {
 	}
 }
 
-func validOrAllROIPtr(roi *ROI) unsafe.Pointer {
-	if roi == nil || roi.ptr == nil {
-		return roi_all.ptr
-	}
-	return roi.ptr
-}
-
 // Default constructor is an undefined region.
 func NewROI() *ROI {
 	return newROI(C.ROI_New())
