@@ -231,6 +231,22 @@ bool colorconvert_processor(ImageBuf *dst, const ImageBuf *src, const ColorProce
 			nthreads);
 }
 
+bool unpremult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::unpremult(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::premult(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads) 
 {

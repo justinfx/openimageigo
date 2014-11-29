@@ -87,9 +87,9 @@ bool colorconvert_processor(ImageBuf *dst, const ImageBuf *src, const ColorProce
 
 // bool colorconvert(float *color, int nchannels, const ColorProcessor *processor, bool unpremult);
 
-// bool unpremult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool unpremult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 // bool computePixelStats(PixelStats *stats, const ImageBuf *src, ROI* roi, int nthreads);
 

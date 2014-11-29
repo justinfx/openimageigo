@@ -498,6 +498,30 @@ func TestAlgoColorConvert(t *testing.T) {
 	checkError(t, ColorConvertProcessor(dst, src, cp, false))
 }
 
+func TestAlgoPremult(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(1, 1, 4, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	Fill(buf, []float32{1, .6, .4, .5})
+	dst := NewImageBuf()
+
+	checkFatalError(t, Premult(dst, buf))
+	actual, _ := dst.GetFloatPixels()
+	expected := []float32{.5, .3, .2, .5}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	dst, src := NewImageBuf(), dst
+	checkFatalError(t, Unpremult(dst, src))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{1, .6, .4, .5}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+}
+
 func TestAlgoResize(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {

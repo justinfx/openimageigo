@@ -516,6 +516,40 @@ func ColorConvertProcessor(dst, src *ImageBuf, cp *ColorProcessor, unpremult boo
 	return nil
 }
 
+// Premult copies pixels from src to dst, and in the process multiply all color channels (those not
+// alpha or z) by the alpha value, to “premultiply” them. This presumes that the image starts
+// of as “unassociated alpha” a.k.a. “non-premultipled.” The alterations are restricted to the
+// pixels and channels of the supplied ROI (which defaults to all of src). This is just a copy
+// if there is no identified alpha channel (and a no-op if dst and src are the same image).
+func Premult(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.premult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Unpremult copies pixels from src to dst, and in the process divide all color channels (those not alpha
+// or z) by the alpha value, to “un-premultiply” them. This presumes that the image starts
+// of as “associated alpha” a.k.a. “premultipled.” The alterations are restricted to the pixels
+// and channels of the supplied ROI (which defaults to all of src). Pixels in which the alpha
+// channel is 0 will not be modified (since the operation is undefined in that case). This is
+// just a copy if there is no identified alpha channel (and a no-op if dst and src are the same
+// image).
+func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.unpremult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Set dst, over the region of interest, to be a resized version of the corresponding portion of src
 // (mapping such that the "full" image window of each correspond to each other, regardless of resolution).
 // Will choose a reasonable default high-quality default filter (blackman-harris when upsizing, lanczos3 when downsizing)
