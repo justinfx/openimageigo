@@ -161,6 +161,17 @@ func TestAlgoChannels(t *testing.T) {
 	if !reflect.DeepEqual(actual, expected_names) {
 		t.Errorf("Expected names %v; got %v", expected_names, actual)
 	}
+
+	dst = NewImageBuf()
+	expected_names = []string{"A2", "B2", "G2", "R2"}
+	opts = ChannelOpts{NewNames: expected_names}
+	if err = Channels(dst, rgb, 4, &opts); err != nil {
+		t.Fatal(err.Error())
+	}
+	actual = dst.Spec().ChannelNames()
+	if !reflect.DeepEqual(actual, expected_names) {
+		t.Errorf("Expected names %v; got %v", expected_names, actual)
+	}
 }
 
 func TestAlgoColorConvert(t *testing.T) {

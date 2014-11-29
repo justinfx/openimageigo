@@ -26,22 +26,17 @@ bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *
 			   const float *channelvalues, const char **newchannelnames,
 			   bool shuffle_channel_names)
 {
-	std::string *str_names = NULL;
+	std::vector<std::string> vec_names;
 
 	if (nchannels > 0 && newchannelnames != NULL) {
-		str_names = new(std::string[nchannels]);
-		const char** temp = newchannelnames;
-		for (size_t i=0; i < nchannels; i++) {
-			str_names[i] = std::string(*temp++);
-		}
+		vec_names.assign(newchannelnames, newchannelnames+nchannels);
 	}
 
 	bool ok = OIIO::ImageBufAlgo::channels(*(static_cast<OIIO::ImageBuf*>(dst)),
 											*(static_cast<const OIIO::ImageBuf*>(src)),
 											nchannels, channelorder, channelvalues,
-											str_names, shuffle_channel_names );
-	if (str_names != NULL)
-		delete [] str_names;
+											&vec_names[0], shuffle_channel_names );
+	return ok;
 }
 
 bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
