@@ -23,14 +23,10 @@ func TestOpenImageInput(t *testing.T) {
 		t.Errorf("Expected FormatName 'png' but got %q", actual)
 	}
 
-	if err = in.Close(); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, in.Close())
 
 	// Re-open
-	if err = in.Open(TEST_IMAGE); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, in.Open(TEST_IMAGE))
 
 	if actual = in.FormatName(); actual != "png" {
 		t.Errorf("Expected FormatName 'png' but got %q", actual)

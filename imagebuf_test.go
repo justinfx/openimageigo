@@ -225,28 +225,21 @@ func TestImageBufWriteFile(t *testing.T) {
 	buf.SetWriteTiles(0, 0, 0)
 	buf.SetWriteFormat(TypeUint8)
 
-	if err = buf.WriteFile(outfile, ""); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, buf.WriteFile(outfile, ""))
 
 	info, _ := os.Stat(outfile)
 	if info.Size() == 0 {
 		t.Fatal("Image file was 0 bytes. Write failed")
 	}
 
-	if err = buf.WriteFile(outfile, "png"); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, buf.WriteFile(outfile, "png"))
 
 	var progress ProgressCallback = func(done float32) bool {
 		// no cancel
 		return false
 	}
 
-	if err = buf.WriteFileProgress(outfile, "", &progress); err != nil {
-		t.Fatal(err.Error())
-	}
-
+	checkFatalError(t, buf.WriteFileProgress(outfile, "", &progress))
 }
 
 func TestImageBufCopySwap(t *testing.T) {
@@ -256,21 +249,10 @@ func TestImageBufCopySwap(t *testing.T) {
 	}
 
 	other := NewImageBuf()
-	if err = other.Copy(src); err != nil {
-		t.Fatal(err.Error())
-	}
-
-	if err = other.CopyMetadata(src); err != nil {
-		t.Fatal(err.Error())
-	}
-
-	if err = other.CopyPixels(src); err != nil {
-		t.Fatal(err.Error())
-	}
-
-	if err = other.Swap(src); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, other.Copy(src))
+	checkFatalError(t, other.CopyMetadata(src))
+	checkFatalError(t, other.CopyPixels(src))
+	checkFatalError(t, other.Swap(src))
 }
 
 func TestImageBufGetPixels(t *testing.T) {

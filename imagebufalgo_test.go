@@ -13,18 +13,13 @@ func TestAlgoZero(t *testing.T) {
 	}
 
 	roi := NewROIRegion2D(0, 100, 0, 200)
-	if err = Zero(buf, AlgoOpts{ROI: roi}); err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, Zero(buf, AlgoOpts{ROI: roi}))
 
 	if buf.XBegin() != 0 || buf.XEnd() != 100 || buf.YBegin() != 0 || buf.YEnd() != 200 {
 		t.Error("buf was not initialized to ROI")
 	}
 
-	err = Zero(buf, AlgoOpts{Threads: 1})
-	if err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, Zero(buf, AlgoOpts{Threads: 1}))
 }
 
 func TestAlgoFill(t *testing.T) {
@@ -35,9 +30,7 @@ func TestAlgoFill(t *testing.T) {
 	}
 
 	expected := []float32{1.0, 0.7, 0.7}
-	if err = Fill(buf, expected); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Fill(buf, expected))
 
 	roi := NewROIRegion2D(0, 1, 0, 1)
 	roi.SetChannelsEnd(3)
@@ -62,9 +55,7 @@ func TestAlgoChecker(t *testing.T) {
 	dark := []float32{.1, .1, .1}
 	light := []float32{.4, .4, .4}
 
-	if err = Checker2D(buf, 4, 4, dark, light, 0, 0); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Checker2D(buf, 4, 4, dark, light, 0, 0))
 
 	roi := NewROIRegion2D(0, 1, 0, 1)
 	roi.SetChannelsEnd(3)
@@ -99,16 +90,12 @@ func TestAlgoChannels(t *testing.T) {
 	}
 
 	fill := []float32{0.25, 0.5, 0.75, 1.0}
-	if err = Fill(src, fill); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Fill(src, fill))
 
 	// Strip the alpha channel
 	dst := NewImageBuf()
 
-	if err = Channels(dst, src, 3, nil); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Channels(dst, src, 3, nil))
 
 	// Has right number of channels
 	if dst.NumChannels() != 3 {
@@ -134,9 +121,7 @@ func TestAlgoChannels(t *testing.T) {
 	dst = NewImageBuf()
 	opts := ChannelOpts{Order: []int32{3}}
 
-	if err = Channels(dst, src, 1, &opts); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Channels(dst, src, 1, &opts))
 
 	// Has right number of channels
 	if dst.NumChannels() != 1 {
@@ -166,9 +151,7 @@ func TestAlgoChannels(t *testing.T) {
 		Order:  []int32{0, 1, -1, -1},
 		Values: []float32{0, 0, 1.0, 0.5},
 	}
-	if err = Channels(dst, src, 4, &opts); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Channels(dst, src, 4, &opts))
 
 	roi.SetChannelsEnd(4)
 	iface, err = dst.GetPixelRegion(roi, TypeFloat)
@@ -188,9 +171,7 @@ func TestAlgoChannels(t *testing.T) {
 		Values:   []float32{0, 0, 0, 1.0},
 		NewNames: []string{"", "", "", "A"},
 	}
-	if err = Channels(dst, rgb, 4, &opts); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Channels(dst, rgb, 4, &opts))
 	if dst.NumChannels() != 4 {
 		t.Errorf("Expected 4 channels; got %d", dst.NumChannels())
 	}
@@ -203,9 +184,7 @@ func TestAlgoChannels(t *testing.T) {
 	dst = NewImageBuf()
 	expected_names = []string{"A2", "B2", "G2", "R2"}
 	opts = ChannelOpts{NewNames: expected_names}
-	if err = Channels(dst, rgb, 4, &opts); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Channels(dst, rgb, 4, &opts))
 	actual = dst.Spec().ChannelNames()
 	if !reflect.DeepEqual(actual, expected_names) {
 		t.Errorf("Expected names %v; got %v", expected_names, actual)
@@ -236,9 +215,7 @@ func TestAlgoChannelAppend(t *testing.T) {
 
 	dst := NewImageBuf()
 
-	if err = ChannelAppend(dst, rgb, a); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, ChannelAppend(dst, rgb, a))
 
 	// Has right number of channels
 	if dst.NumChannels() != 4 {
@@ -293,9 +270,7 @@ func TestAlgoCrop(t *testing.T) {
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(10, 60, 20, 40)
 
-	if err = Crop(dst, src, AlgoOpts{ROI: roi}); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Crop(dst, src, AlgoOpts{ROI: roi}))
 
 	expect_w := 50
 	expect_h := 20
@@ -321,16 +296,12 @@ func TestAlgoFlipFlop(t *testing.T) {
 	red := []float32{1, 0, 0}
 	blue := []float32{0, 0, 1}
 
-	if err = Checker2D(buf, 4, 4, red, blue, 0, 0); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Checker2D(buf, 4, 4, red, blue, 0, 0))
 
 	dst := NewImageBuf()
 
 	// Flip
-	if err = Flip(dst, buf); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Flip(dst, buf))
 
 	roi := NewROIRegion2D(0, 1, 0, 1)
 	roi.SetChannelsEnd(3)
@@ -345,9 +316,7 @@ func TestAlgoFlipFlop(t *testing.T) {
 	}
 
 	// Flop
-	if err = Flop(dst, buf); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Flop(dst, buf))
 
 	iface, err = dst.GetPixelRegion(roi, TypeFloat)
 	if err != nil {
@@ -359,9 +328,7 @@ func TestAlgoFlipFlop(t *testing.T) {
 	}
 
 	// Flopflop
-	if err = Flipflop(dst, buf); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Flipflop(dst, buf))
 
 	iface, err = dst.GetPixelRegion(roi, TypeFloat)
 	if err != nil {
@@ -390,9 +357,7 @@ func TestAlgoTranspose(t *testing.T) {
 	Fill(buf, []float32{1.0}, AlgoOpts{ROI: NewROIRegion2D(1, 2, 1, 2)})
 
 	dst := NewImageBuf()
-	if err = Transpose(dst, buf); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Transpose(dst, buf))
 
 	pixels, _ := dst.GetFloatPixels()
 	table := []float32{0, .75, .25, 1}
@@ -530,10 +495,7 @@ func TestAlgoColorConvert(t *testing.T) {
 	}
 
 	dst = NewImageBuf()
-	err = ColorConvertProcessor(dst, src, cp, false)
-	if err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, ColorConvertProcessor(dst, src, cp, false))
 }
 
 func TestAlgoResize(t *testing.T) {
@@ -544,10 +506,7 @@ func TestAlgoResize(t *testing.T) {
 
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(0, 64, 0, 32)
-	err = Resize(dst, src, AlgoOpts{ROI: roi})
-	if err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, Resize(dst, src, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
 		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
@@ -562,10 +521,7 @@ func TestAlgoResample(t *testing.T) {
 
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(0, 64, 0, 32)
-	err = Resample(dst, src, true, AlgoOpts{ROI: roi})
-	if err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, Resample(dst, src, true, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
 		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
@@ -580,9 +536,7 @@ func TestAlgoPaste2D(t *testing.T) {
 	}
 
 	topExpected := []float32{1.0, 0.7, 0.7}
-	if err = Fill(src, topExpected); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Fill(src, topExpected))
 
 	// Destination is bigger than source
 	dstSpec := NewImageSpecSize(32, 32, 3, TypeFloat)
@@ -592,14 +546,10 @@ func TestAlgoPaste2D(t *testing.T) {
 	}
 
 	bottomExpected := []float32{0.5, 0.2, 0.2}
-	if err = Fill(dst, bottomExpected); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Fill(dst, bottomExpected))
 
 	// Paste source into destination at top left
-	if err = Paste2D(dst, src, 0, 0); err != nil {
-		t.Fatal(err.Error())
-	}
+	checkFatalError(t, Paste2D(dst, src, 0, 0))
 
 	// Top left pixel
 	roi := NewROIRegion2D(0, 1, 0, 1)
