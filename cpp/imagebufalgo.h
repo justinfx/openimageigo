@@ -25,18 +25,18 @@ bool channel_append(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* ro
 
 bool flatten(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
 			const ImageBuf *src, ROI* srcroi, int nthreads);
 
-// bool flip(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool flip(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 // bool circular_shift(ImageBuf *dst, const ImageBuf *src, int xshift, int yshift,
 // 					 int zshift=0, ROI* roi, int nthreads);

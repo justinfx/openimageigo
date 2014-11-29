@@ -284,6 +284,126 @@ func TestAlgoChannelAppend(t *testing.T) {
 // 	}
 // }
 
+func TestAlgoCrop(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	dst := NewImageBuf()
+	roi := NewROIRegion2D(10, 60, 20, 40)
+
+	if err = Crop(dst, src, AlgoOpts{ROI: roi}); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	expect_w := 50
+	expect_h := 20
+	actual_w := dst.Spec().Width()
+	actual_h := dst.Spec().Height()
+
+	if expect_w != actual_w {
+		t.Errorf("Expected width %d, got %d", expect_w, actual_w)
+	}
+	if expect_h != actual_h {
+		t.Errorf("Expected width %d, got %d", expect_h, actual_h)
+	}
+
+}
+
+func TestAlgoFlipFlop(t *testing.T) {
+	spec := NewImageSpecSize(16, 16, 3, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	red := []float32{1, 0, 0}
+	blue := []float32{0, 0, 1}
+
+	if err = Checker2D(buf, 4, 4, red, blue, 0, 0); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	dst := NewImageBuf()
+
+	// Flip
+	if err = Flip(dst, buf); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	roi := NewROIRegion2D(0, 1, 0, 1)
+	roi.SetChannelsEnd(3)
+	iface, err := dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	expected := blue
+	pixels := iface.([]float32)
+	if !reflect.DeepEqual(pixels, expected) {
+		t.Errorf("Expected pixels %v; got %v", expected, pixels)
+	}
+
+	// Flop
+	if err = Flop(dst, buf); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	iface, err = dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	pixels = iface.([]float32)
+	if !reflect.DeepEqual(pixels, expected) {
+		t.Errorf("Expected pixels %v; got %v", expected, pixels)
+	}
+
+	// Flopflop
+	if err = Flipflop(dst, buf); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	iface, err = dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	expected = red
+	pixels = iface.([]float32)
+	if !reflect.DeepEqual(pixels, expected) {
+		t.Errorf("Expected pixels %v; got %v", expected, pixels)
+	}
+}
+
+func TestAlgoTranspose(t *testing.T) {
+	spec := NewImageSpecSize(2, 2, 1, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	// top-left
+	Fill(buf, []float32{0.0}, AlgoOpts{ROI: NewROIRegion2D(0, 1, 0, 1)})
+	// top-right
+	Fill(buf, []float32{.25}, AlgoOpts{ROI: NewROIRegion2D(1, 2, 0, 1)})
+	// bottom-left
+	Fill(buf, []float32{.75}, AlgoOpts{ROI: NewROIRegion2D(0, 1, 1, 2)})
+	// bottom-right
+	Fill(buf, []float32{1.0}, AlgoOpts{ROI: NewROIRegion2D(1, 2, 1, 2)})
+
+	dst := NewImageBuf()
+	if err = Transpose(dst, buf); err != nil {
+		t.Fatal(err.Error())
+	}
+
+	pixels, _ := dst.GetFloatPixels()
+	table := []float32{0, .75, .25, 1}
+	for i, expected := range table {
+		actual := pixels[i]
+		if actual != expected {
+			t.Errorf("Expected value %f at index %d; got %f", expected, i, actual)
+		}
+	}
+}
+
 func TestAlgoColorConvert(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {

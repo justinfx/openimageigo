@@ -249,6 +249,21 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 // 	return nil
 // }
 
+// Crop resets dst to be the specified region of src.
+// Note that the crop operation does not actually move the pixels on the image plane or
+// adjust the full/display window; it merely restricts which pixels are copied from src to
+// dst. (Note the difference compared to Cut()).
+func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.crop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Copy into dst, beginning at (xbegin, ybegin), the pixels of src described by roi.
 // If roi is nil, the entirety of src will be used.
 func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
@@ -272,6 +287,58 @@ func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...Algo
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(zbegin), C.int(chbegin),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Flip copies src (or a subregion of src) to the corresponding pixels of dst, but with the scanlines
+// exchanged vertically.
+func Flip(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.flip(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Flop copies src (or a subregion of src) to the corresponding pixels of dst, but with the columns
+// exchanged horizontally.
+func Flop(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.flop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Flipflop copies src (or a subregion of src to the corresponding pixels of dst, but with both the
+// rows exchanged vertically and the columns exchanged horizontally (this is equivalent to
+// a 180 degree rotation).
+func Flipflop(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.flipflop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Transpose copies src (or a subregion of src to the corresponding transposed (x$y) pixels
+func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.transpose(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	if !bool(ok) {
 		return dst.LastError()
 	}

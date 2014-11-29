@@ -70,6 +70,14 @@ bool flatten(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			nthreads);	
 }
 
+bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::crop(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
 bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
 			const ImageBuf *src, ROI* srcroi, int nthreads) 
 {
@@ -84,9 +92,41 @@ bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
 			nthreads);
 }
 
-bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
-				   bool unpremult, ROI* roi, int nthreads) {
+bool flip(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::flip(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
 
+bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::flop(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::flipflop(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::transpose(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
+				   bool unpremult, ROI* roi, int nthreads) 
+{
 	return OIIO::ImageBufAlgo::colorconvert(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
