@@ -404,6 +404,111 @@ func TestAlgoTranspose(t *testing.T) {
 	}
 }
 
+func TestAlgoColorAdd(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	reset := func() { Fill(buf, []float32{0, .25, .75}) }
+	dst := NewImageBuf()
+
+	reset()
+	checkFatalError(t, AddValue(dst, buf, .25))
+	actual, _ := dst.GetFloatPixels()
+	expected := []float32{.25, .5, 1}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	checkFatalError(t, AddValues(dst, buf, []float32{.1, .2, .15}))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.1, .45, .9}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	b, _ := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	Fill(b, []float32{.2, .2, .2})
+	checkFatalError(t, Add(dst, buf, b))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.2, .45, .95}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+}
+
+func TestAlgoColorSub(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	reset := func() { Fill(buf, []float32{.5, .75, 1}) }
+	dst := NewImageBuf()
+
+	reset()
+	checkFatalError(t, SubValue(dst, buf, .25))
+	actual, _ := dst.GetFloatPixels()
+	expected := []float32{.25, .5, .75}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	checkFatalError(t, SubValues(dst, buf, []float32{.1, .2, .15}))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.4, .55, .85}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	b, _ := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	Fill(b, []float32{.2, .2, .2})
+	checkFatalError(t, Sub(dst, buf, b))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.3, .55, .8}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+}
+
+func TestAlgoColorMul(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	reset := func() { Fill(buf, []float32{.1, .2, .3}) }
+	dst := NewImageBuf()
+
+	reset()
+	checkFatalError(t, MulValue(dst, buf, 2))
+	actual, _ := dst.GetFloatPixels()
+	expected := []float32{.2, .4, .6}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	checkFatalError(t, MulValues(dst, buf, []float32{2, 3, .5}))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.2, .6, .15}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+
+	reset()
+	b, _ := NewImageBufSpec(NewImageSpecSize(1, 1, 3, TypeFloat))
+	Fill(b, []float32{.5, .25, 1})
+	checkFatalError(t, Mul(dst, buf, b))
+	actual, _ = dst.GetFloatPixels()
+	expected = []float32{.05, .05, .3}
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected pixels %v, got %v", expected, actual)
+	}
+}
+
 func TestAlgoColorConvert(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {
@@ -412,10 +517,7 @@ func TestAlgoColorConvert(t *testing.T) {
 
 	dst := NewImageBuf()
 
-	err = ColorConvert(dst, src, "lnf", "srgb8", false)
-	if err != nil {
-		t.Error(err.Error())
-	}
+	checkError(t, ColorConvert(dst, src, "lnf", "srgb8", false))
 
 	cfg, err := NewColorConfig()
 	if err != nil {

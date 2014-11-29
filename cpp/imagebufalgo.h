@@ -47,23 +47,23 @@ bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 // bool clamp(ImageBuf *dst, const ImageBuf *src, float min=-std::numeric_limits< float >::max(),
 // 			float max=std::numeric_limits< float >::max(), bool clampalpha01=false, ROI* roi, int nthreads);
 
-// bool add(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
+bool add(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 
-// bool add(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
+bool add_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
 
-// bool add(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
+bool add_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
 
-// bool sub(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
+bool sub(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 
-// bool sub(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
+bool sub_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
 
-// bool sub(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
+bool sub_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
 
-// bool mul(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
+bool mul(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 
-// bool mul(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
+bool mul_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
 
-// bool mul(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
+bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
 
 // bool channel_sum(ImageBuf *dst, const ImageBuf *src, const float *weights=NULL, ROI* roi, int nthreads);
 

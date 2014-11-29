@@ -346,6 +346,132 @@ func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
+// For all pixels and channels within the designated region, set dst to the sum of image A
+// and image B. All of the images must have the same number of channels.
+func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.add(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels and channels within the designated region, set dst to the sum of image src
+// and float value (added to all channels). All of the images must have the same number of channels.
+func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.add_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels and channels within the designated region, set dst to the sum of image src
+// and per-channel float slice values. All of the images must have the same number of channels.
+func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
+
+	ok := C.add_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels and channels within the designated region, subtract image B from
+// image A. All of the images must have the same number of channels.
+func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.sub(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels and channels within the designated region, subtract float value (subtracted from
+// all channels) from image src. All of the images must have the same number of channels.
+func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.sub_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels and channels within the designated region, subtract per-channel float slice B
+// from image src. All of the images must have the same number of channels.
+func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
+
+	ok := C.sub_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels within the designated region, multiply the pixel values of image A by image B
+// (channel by channel), putting the product in dst. All of the images must have the same number
+// of channels.
+func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.mul(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels within the designated region, multiply the pixel values of image A by float
+// value B (applied to all channels), putting the product in dst. All of the images must have
+// the same number of channels.
+func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.mul_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// For all pixels within the designated region, multiply the pixel values of image A by
+// per-channel float array, putting the product in dst. All of the images must have the
+// same number of channels.
+func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
+
+	ok := C.mul_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Copy pixels within the ROI from src to dst, applying a color transform.
 // If dst is not yet initialized, it will be allocated to the same size as specified by roi. If roi is not
 // defined it will be all of dst, if dst is defined, or all of src, if dst is not yet defined.

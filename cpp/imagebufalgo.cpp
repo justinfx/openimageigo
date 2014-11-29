@@ -124,6 +124,87 @@ bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			nthreads);	
 }
 
+bool add(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::add(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			*(static_cast<const OIIO::ImageBuf*>(B)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool add_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::add(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);		
+}
+
+bool add_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::add(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool sub(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::sub(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			*(static_cast<const OIIO::ImageBuf*>(B)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool sub_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::sub(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool sub_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::sub(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool mul(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::mul(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			*(static_cast<const OIIO::ImageBuf*>(B)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool mul_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::mul(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::mul(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
 bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
 				   bool unpremult, ROI* roi, int nthreads) 
 {
