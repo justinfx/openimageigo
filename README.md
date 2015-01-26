@@ -6,6 +6,10 @@ used in professional, large-scale animation and visual effects work for film.
 OpenImageIO is used extensively in animation and VFX studios all over the world, and is
 also incorporated into several commercial products.
 
+**Note:** Master branch is currently compatible with OpenImageIO 1.4.x. 
+
+A 1.5 branch will be created to fix compatibility with the newer oiio release, and once it is done it will be come master, and 1.4.x support will remain tagged. 
+
 API Status
 -----------
 
