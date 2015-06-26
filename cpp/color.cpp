@@ -23,7 +23,7 @@ const char* ColorConfig_geterror(ColorConfig* c) {
 	if (!ColorConfig_error(c)) {
 		return NULL;
 	}
-	return static_cast<OIIO::ImageOutput*>(c)->geterror().c_str();
+	return static_cast<OIIO::ColorConfig*>(c)->geterror().c_str();
 }
 
 int ColorConfig_getNumColorSpaces(ColorConfig* c) {
