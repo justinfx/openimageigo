@@ -14,15 +14,12 @@ Tested against OpenImageIO 1.4.x - 1.5.x
 API Status
 -----------
 
-* TextureSystem - _Not started_
-* ImageOuput - __Started__
-* ImageInput - __Partial__
-* ImageSpec - __Partial__
-* ImageBuf - __Partial__
-* ImageCache - __Partial__
-* ImageBufAlgo - __Partial__
-* ColorConfig - __Partial__
-* ROI - Done
+There is pretty decent exposure of the "Image*" APIs thus far, as well as the ColorConfig API. 
+Because OIIO is a fairly large library, not every aspect of the APIs have been wrapped yet. It 
+has mainly been driven by use-cases.
+
+If you find something that you need is missing, feel free to submit a feature request, or better yet, 
+fork and send a merge request :-)
 
 Requirements
 ----------------------
