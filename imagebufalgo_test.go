@@ -646,6 +646,67 @@ func TestAlgoResample(t *testing.T) {
 	}
 }
 
+func TestAlgoOver(t *testing.T) {
+	srcSpec := NewImageSpecSize(16, 16, 4, TypeFloat)
+	srcSpec.SetAlphaChannel(3)
+
+	srcA, err := NewImageBufSpec(srcSpec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	srcB, err := NewImageBufSpec(srcSpec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	Fill(srcA, []float32{1.0, 0.0, 0.0, 0.5})
+	Fill(srcB, []float32{0.0, 0.0, 1.0, 1.0})
+
+	Premult(srcA, srcA)
+
+	dst := NewImageBuf()
+	ok := Over(dst, srcA, srcB)
+	if !ok {
+		t.Fatalf("Failed while performing Over operation: %s", dst.LastError())
+	}
+
+	expected := []float32{.5, 0, .5}
+
+	// Top left pixel
+	roi := NewROIRegion2D(0, 1, 0, 1)
+	roi.SetChannelsEnd(3)
+	topIface, err := dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	actual := topIface.([]float32)
+
+	if !reflect.DeepEqual(expected, actual) {
+		t.Fatalf("Expected pixels %#v; Got %#v", expected, actual)
+	}
+}
+
+func ExampleOver() {
+	srcSpec := NewImageSpecSize(16, 16, 4, TypeFloat)
+	srcSpec.SetAlphaChannel(3)
+
+	srcA, _ := NewImageBufSpec(srcSpec)
+	srcB, _ := NewImageBufSpec(srcSpec)
+
+	// Red with 50% alpha
+	Fill(srcA, []float32{1.0, 0.0, 0.0, 0.5})
+	// Blue with solid alpha
+	Fill(srcB, []float32{0.0, 0.0, 1.0, 1.0})
+
+	// Make sure the foreground image is premult
+	Premult(srcA, srcA)
+
+	dst := NewImageBuf()
+	Over(dst, srcA, srcB)
+}
+
 func TestAlgoPaste2D(t *testing.T) {
 	srcSpec := NewImageSpecSize(16, 16, 3, TypeFloat)
 	src, err := NewImageBufSpec(srcSpec)

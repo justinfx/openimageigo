@@ -145,7 +145,7 @@ bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, in
 
 // bool capture_image(ImageBuf *dst, int cameranum=0, TypeDesc convert=TypeDesc::UNKNOWN);
 
-// bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
+bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 
 // bool zover(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, bool z_zeroisinf=false, ROI* roi, int nthreads);
 

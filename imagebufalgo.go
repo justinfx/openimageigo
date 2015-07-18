@@ -675,3 +675,42 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 	}
 	return nil
 }
+
+// Over sets dst to the composite of A over B using the Porter/Duff definition
+// of "over", returning true upon success and false for any of a
+// variety of failures (as described below).
+//
+// A and B (and dst, if already defined/allocated) must have valid alpha
+// channels identified by their ImageSpec alpha_channel field.  If A or
+// B do not have alpha channels (as determined by those rules) or if
+// the number of non-alpha channels do not match between A and B,
+// Over() will fail, returning false.
+//
+// If dst is not already an initialized ImageBuf, it will be sized to
+// encompass the minimal rectangular pixel region containing the union
+// of the defined pixels of A and B, and with a number of channels
+// equal to the number of non-alpha channels of A and B, plus an alpha
+// channel.  However, if dst is already initialized, it will not be
+// resized, and the "over" operation will apply to its existing pixel
+// data window.  In this case, dst must have an alpha channel designated
+// and must have the same number of non-alpha channels as A and B,
+// otherwise it will fail, returning false.
+//
+// 'roi' AlgoOpts specifies the region of dst's pixels which will be computed;
+// existing pixels outside this range will not be altered.  If not
+// specified, the default ROI value will be interpreted as a request to
+// apply "A over B" to the entire region of dst's pixel data.
+//
+// A, B, and dst need not perfectly overlap in their pixel data windows;
+// pixel values of A or B that are outside their respective pixel data
+// window will be treated as having "zero" (0,0,0...) value.
+//
+// The nthreads AlgoOpts specifies how many threads (potentially) may
+// be used, but it's not a guarantee.  If nthreads == 0, it will use
+// the global OIIO attribute "nthreads".  If nthreads == 1, it
+// guarantees that it will not launch any new threads.
+func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) bool {
+	opt := flatAlgoOpts(opts)
+	ok := C.over(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	return bool(ok)
+}

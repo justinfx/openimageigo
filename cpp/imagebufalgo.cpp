@@ -293,6 +293,15 @@ bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, in
 			nthreads);
 }
 
+bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::over(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			*(static_cast<const OIIO::ImageBuf*>(B)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
 } // extern "C"
 
 
