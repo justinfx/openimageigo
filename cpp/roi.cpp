@@ -18,6 +18,11 @@ ROI* ROI_NewOptions(int xbegin, int xend, int ybegin, int yend, int zbegin, int 
 	return (ROI*) roi;
 }
 
+ROI* ROI_Copy(const ROI *roi) {
+	ROI* rc =  new OIIO::ROI(*(static_cast<const OIIO::ROI*>(roi)));
+	return (ROI*) rc;
+}
+
 bool ROI_defined(ROI* roi) {
 	return static_cast<OIIO::ROI*>(roi)->defined();
 }

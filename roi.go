@@ -9,6 +9,7 @@ package oiio
 import "C"
 
 import (
+	"fmt"
 	"runtime"
 	"unsafe"
 )
@@ -85,6 +86,19 @@ func (r *ROI) validOrAllPtr() unsafe.Pointer {
 		return roi_all.ptr
 	}
 	return r.ptr
+}
+
+// Return a new copy of the ROI that can be freely modified.
+func (r *ROI) Copy() *ROI {
+	rc := C.ROI_Copy(r.ptr)
+	return newROI(rc)
+}
+
+// String returns a printable string representation
+// of the ROI, containing just the origin (X,Y) and Width,Height.
+func (r *ROI) String() string {
+	return fmt.Sprintf("ROI:{X: %d, Y: %d, W: %d, H: %d, ...}",
+		r.XBegin(), r.YBegin(), r.Width(), r.Height())
 }
 
 // Is a region defined?
