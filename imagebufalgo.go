@@ -707,7 +707,7 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 // channels identified by their ImageSpec alpha_channel field.  If A or
 // B do not have alpha channels (as determined by those rules) or if
 // the number of non-alpha channels do not match between A and B,
-// Over() will fail, returning false.
+// Over() will fail.
 //
 // If dst is not already an initialized ImageBuf, it will be sized to
 // encompass the minimal rectangular pixel region containing the union
@@ -717,7 +717,7 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 // resized, and the "over" operation will apply to its existing pixel
 // data window.  In this case, dst must have an alpha channel designated
 // and must have the same number of non-alpha channels as A and B,
-// otherwise it will fail, returning false.
+// otherwise it will fail.
 //
 // 'roi' AlgoOpts specifies the region of dst's pixels which will be computed;
 // existing pixels outside this range will not be altered.  If not
@@ -732,8 +732,11 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 // be used, but it's not a guarantee.  If nthreads == 0, it will use
 // the global OIIO attribute "nthreads".  If nthreads == 1, it
 // guarantees that it will not launch any new threads.
-func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) bool {
+func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 	ok := C.over(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
-	return bool(ok)
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
 }

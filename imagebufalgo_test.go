@@ -686,9 +686,9 @@ func TestAlgoOver(t *testing.T) {
 	Premult(srcA, srcA)
 
 	dst := NewImageBuf()
-	ok := Over(dst, srcA, srcB)
-	if !ok {
-		t.Fatalf("Failed while performing Over operation: %s", dst.LastError())
+	err = Over(dst, srcA, srcB)
+	if err != nil {
+		t.Fatalf("Failed while performing Over operation: %s", err)
 	}
 
 	expected := []float32{.5, 0, .5}
