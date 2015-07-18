@@ -522,6 +522,93 @@ func TestAlgoPremult(t *testing.T) {
 	}
 }
 
+func TestAlgoConstantColor(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(16, 16, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	constants := []float32{.25, .5, 1}
+	Fill(buf, constants)
+
+	if !IsConstantColor(buf) {
+		t.Error("Expected constant color. Got false.")
+	}
+
+	colors := ConstantColors(buf)
+	if !reflect.DeepEqual(colors, constants) {
+		t.Errorf("Expected %v pixels. Got %v", constants, colors)
+	}
+
+	roi := buf.ROI()
+	roi.SetChannelsEnd(2)
+	colors = ConstantColors(buf, AlgoOpts{ROI: roi})
+	if !reflect.DeepEqual(colors, constants[:2]) {
+		t.Errorf("Expected %v pixels. Got %v", constants, colors)
+	}
+}
+
+func TestAlgoIsConstantChannel(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(16, 16, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	// Fill all channels with a constant color
+	constants := []float32{.25, .5, .8}
+	Fill(buf, constants)
+
+	for i, val := range constants {
+		if !IsConstantChannel(buf, i, val) {
+			t.Errorf("Expected constant value %0.2f for %d channel. Got false.", val, i)
+		}
+	}
+
+	// Fill part of the 3rd channel with another color
+	roi := buf.ROI().Copy()
+	roi.SetChannelsBegin(2)
+	roi.SetChannelsEnd(3)
+	roi.SetXEnd(8)
+	roi.SetYEnd(8)
+	constants2 := []float32{.1, .2, .3}
+	Fill(buf, constants2, AlgoOpts{ROI: roi})
+
+	// First 2 channels should be constant, still
+	for i, val := range constants[:2] {
+		if !IsConstantChannel(buf, i, val) {
+			t.Errorf("Expected constant value %0.2f for %d channel. Got false.", val, i)
+		}
+	}
+
+	// 3rd channel should not be constant anymore.
+	// Check both the old and new fill values
+	for _, v := range []float32{constants[2], constants2[2]} {
+		if IsConstantChannel(buf, 2, v) {
+			t.Error("Expected channel 2 to *not* be a constant value")
+		}
+	}
+}
+
+func TestAlgoIsMonochrome(t *testing.T) {
+	buf, err := NewImageBufSpec(NewImageSpecSize(16, 16, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	var val float32 = 0
+	height := buf.OrientedHeight()
+	roi := buf.ROI().Copy()
+
+	for i := 1; i <= 10; i++ {
+		val = float32(i) / float32(height)
+		roi.SetYEnd(height / i)
+		Fill(buf, []float32{val, val, val}, AlgoOpts{ROI: roi})
+	}
+
+	if !IsMonochrome(buf) {
+		t.Error("Expected image to be monochrome. Got false.")
+	}
+}
+
 func TestAlgoResize(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {

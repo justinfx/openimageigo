@@ -98,11 +98,11 @@ bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 // int compare_Yee(const ImageBuf *A, const ImageBuf *B, CompareResults *result, float luminance=100,
 // 				 float fov=45, ROI* roi, int nthreads)
-// bool isConstantColor(const ImageBuf *src, float *color=NULL, ROI* roi, int nthreads);
+bool is_constant_color(const ImageBuf *src, float *color, ROI* roi, int nthreads);
 
-// bool isConstantChannel(const ImageBuf *src, int channel, float val, ROI* roi, int nthreads);
+bool is_constant_channel(const ImageBuf *src, int channel, float val, ROI* roi, int nthreads);
 
-// bool isMonochrome(const ImageBuf *src, ROI* roi, int nthreads);
+bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads);
 
 // bool color_count(const ImageBuf *src, imagesize_t *count, int ncolors, const float *color,
 // 				  const float *eps=NULL, ROI* roi, int nthreads);

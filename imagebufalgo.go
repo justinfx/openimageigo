@@ -550,6 +550,61 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
+// IsConstantColor returns true if all pixels of src within the ROI have the same values
+// (for the subset of channels described by roi)
+func IsConstantColor(src *ImageBuf, opts ...AlgoOpts) bool {
+	opt := flatAlgoOpts(opts)
+	ok := C.is_constant_color(src.ptr, nil, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	return bool(ok)
+}
+
+// ConstantColors returns a slice of the constant pixel values of all channels within
+// either the src image, or the specific channel range of the given ROI.
+// If the image does not have constant colors in the given channel range, a nil value
+// is returned.
+func ConstantColors(src *ImageBuf, opts ...AlgoOpts) []float32 {
+	opt := flatAlgoOpts(opts)
+
+	// Determine how big of a slice to allocation,
+	// depending on whether they have passed an ROI
+	// or not.
+	num := src.NumChannels()
+	if opt.ROI != nil {
+		roi_num := opt.ROI.NumChannels()
+		if roi_num < num {
+			num = roi_num
+		}
+	}
+	values := make([]float32, num)
+	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
+
+	ok := C.is_constant_color(src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return nil
+	}
+	return values
+}
+
+// IsConstantChannel returns true if all pixels of src within the
+// ROI have the given channel value val
+func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts) bool {
+	opt := flatAlgoOpts(opts)
+	ok := C.is_constant_channel(src.ptr, C.int(channel), C.float(val),
+		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	return bool(ok)
+}
+
+// IsMonochrome returns true if the image is monochrome within the ROI,
+// that is, for all pixels within the region, do all channels
+// [roi.chbegin, roi.chend) have the same value? If roi is not defined
+// (the default), it will be understood to be all of the defined pixels
+// and channels of source.
+func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
+	opt := flatAlgoOpts(opts)
+	ok := C.is_monochrome(src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	return bool(ok)
+}
+
 // Set dst, over the region of interest, to be a resized version of the corresponding portion of src
 // (mapping such that the "full" image window of each correspond to each other, regardless of resolution).
 // Will choose a reasonable default high-quality default filter (blackman-harris when upsizing, lanczos3 when downsizing)

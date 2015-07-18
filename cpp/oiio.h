@@ -310,6 +310,7 @@ void deleteROI(ROI* roi);
 
 ROI* ROI_New();
 ROI* ROI_NewOptions(int xbeing, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend);
+ROI* ROI_Copy(const ROI *roi); 
 
 bool ROI_defined(ROI* roi);
 int ROI_width(ROI* roi);

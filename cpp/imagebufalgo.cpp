@@ -247,6 +247,30 @@ bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			nthreads);
 }
 
+bool is_constant_color(const ImageBuf *src, float *color, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::isConstantColor(
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			color,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
+bool is_constant_channel(const ImageBuf *src, int channel, float val, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::isConstantChannel(
+				*(static_cast<const OIIO::ImageBuf*>(src)),
+				channel,
+				val, 
+				*(static_cast<OIIO::ROI*>(roi)),
+				nthreads);		
+}
+
+bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::isMonochrome(
+				*(static_cast<const OIIO::ImageBuf*>(src)),
+				*(static_cast<OIIO::ROI*>(roi)),
+				nthreads);	
+}
+
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads) 
 {
