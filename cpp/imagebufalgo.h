@@ -67,6 +67,12 @@ bool mul_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int 
 
 bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
 
+/* OIIO >= 1.5.x
+// bool pow_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads);
+
+// bool pow_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads);
+*/
+
 // bool channel_sum(ImageBuf *dst, const ImageBuf *src, const float *weights=NULL, ROI* roi, int nthreads);
 
 // bool rangecompress(ImageBuf *dst, const ImageBuf *src, bool useluma=false, ROI* roi, int nthreads);
@@ -116,7 +122,46 @@ bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads);
 
 const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 								  ROI* roi, int blocksize, int nthreads);
-	
+
+/* OIIO >= 1.5.x
+// bool warp (ImageBuf *dst, const ImageBuf *src,
+//                     const Imath::M33f &M,
+//                     const char* filtername,
+//                     float filterwidth,
+//                     bool recompute_roi,
+//                     ImageBuf::WrapMode wrap = ImageBuf::WrapDefault,
+//                     ROI* roi, int nthreads);
+
+// bool warp (ImageBuf *dst, const ImageBuf *src,
+//                     const Imath::M33f &M,
+//                     const Filter2D *filter,
+//                     bool recompute_roi,
+//                     ImageBuf::WrapMode wrap = ImageBuf::WrapDefault,
+//                     ROI* roi, int nthreads);
+
+// bool reorient(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
+// bool rotate90(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
+// bool rotate180(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
+// bool rotate270(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
+// bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, const char* filtername, 
+// 				float filterwidth, bool recompute_roi, ROI *roi, int nthreads);
+
+// bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, Filter2D *filter,
+//              bool recompute_roi, ROI *rot, int nthreads);
+
+// bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, 
+//              float center_x, float center_y, const char* filtername, 
+//              float filterwidth, bool recompute_roi, ROI *roi, int nthreads);
+
+// bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, float center_x, 
+// 			 float center_y, Filter2D *filter, bool recompute_roi = false, 
+// 			 ROI *rot, int nthreads);
+*/
+
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads);
 
