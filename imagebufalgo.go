@@ -19,6 +19,8 @@ const (
 	FilterDefault = ""
 	// Let OIIO choose the best filter and filter width
 	FilterDefaultWidth = 0.0
+	// Use a default system font
+	FontNameDefault = ""
 	// Use the global OIIO-determined thread count
 	GlobalThreads = 0
 )
@@ -257,6 +259,25 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.crop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Cut assigns to dst the designated region of src, but shifted to be at the
+// (0,0) origin, and with the full/display resolution set to be identical
+// to the data region.
+//
+// The nthreads AlgoOpts specifies how many threads (potentially) may
+// be used, but it's not a guarantee.  If nthreads == 0, it will use
+// the global OIIO attribute "nthreads".  If nthreads == 1, it
+// guarantees that it will not launch any new threads.
+func Cut(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.cut(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -735,6 +756,36 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 	ok := C.over(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
+// RenderTextColor renders a text string into image dst, essentially doing an "over" of
+// the character into the existing pixel data.
+// The baseline of the first character will start at position (x,y), and with a
+// nominal height of fontSize (in pixels).
+// The font is given by fontName as either a full pathname to the font file,
+// or a font basename which can be found in the standard system font locations.
+// If an empty string is provided or font is not found, it defaults to some
+// reasonable system font if not supplied at all.
+// The characters will be drawn in opaque white (1.0,1.0,...) in all channels,
+// unless color is supplied (and is expected to point to a float slice of length at
+// least equal to R.Spec().NumChannels).
+func RenderTextColor(dst *ImageBuf, x, y int, text string, fontSize int, fontName string, color []float32) error {
+	c_text := C.CString(text)
+	defer C.free(unsafe.Pointer(c_text))
+
+	c_fontName := C.CString(fontName)
+	defer C.free(unsafe.Pointer(c_fontName))
+
+	var color_ptr *C.float
+	if color != nil && len(color) > 0 {
+		color_ptr = (*C.float)(unsafe.Pointer(&color[0]))
+	}
+
+	ok := C.render_text(dst.ptr, C.int(x), C.int(y), c_text, C.int(fontSize), c_fontName, color_ptr)
 	if !bool(ok) {
 		return dst.LastError()
 	}

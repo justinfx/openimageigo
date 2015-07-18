@@ -78,6 +78,14 @@ bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			nthreads);
 }
 
+bool cut (ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::cut(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);	
+}
+
 bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
 			const ImageBuf *src, ROI* srcroi, int nthreads) 
 {
@@ -311,6 +319,20 @@ bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nth
 			*(static_cast<const OIIO::ImageBuf*>(B)),
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);	
+}
+
+bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize,
+				  const char *fontname, const float *textcolor) {
+
+	if (fontsize <= 0) fontsize = 16;
+
+	return OIIO::ImageBufAlgo::render_text(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			x, y, 
+			OIIO::string_view(text), 
+			fontsize, 
+			OIIO::string_view(fontname),
+			textcolor);
 }
 
 } // extern "C"

@@ -25,6 +25,8 @@ bool channel_append(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* ro
 
 bool flatten(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
+bool cut (ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
 bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 bool paste(ImageBuf *dst, int xbegin, int ybegin, int zbegin, int chbegin,
@@ -149,8 +151,8 @@ bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nth
 
 // bool zover(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, bool z_zeroisinf=false, ROI* roi, int nthreads);
 
-// bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize=16,
-// 				  const char *fontname="", const float *textcolor=NULL);
+bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize,
+				  const char *fontname, const float *textcolor);
 
 // bool histogram(const ImageBuf *src, int channel, std::vector< imagesize_t > *histogram, int bins=256,
 // 				float min=0, float max=1, imagesize_t *submin=NULL, imagesize_t *supermax=NULL, ROI* roi);

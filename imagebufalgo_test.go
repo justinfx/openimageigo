@@ -272,11 +272,49 @@ func TestAlgoCrop(t *testing.T) {
 
 	checkFatalError(t, Crop(dst, src, AlgoOpts{ROI: roi}))
 
+	expect_x := roi.XBegin()
+	expect_y := roi.YBegin()
+	expect_w := roi.Width()
+	expect_h := roi.Height()
+	actual_w := dst.Spec().Width()
+	actual_h := dst.Spec().Height()
+	actual_x := dst.Spec().X()
+	actual_y := dst.Spec().Y()
+
+	if actual_x != expect_x || actual_y != expect_y {
+		t.Errorf("Expected origin to be (%d,%d), got (%d,%d)",
+			expect_x, expect_y, actual_x, actual_y)
+	}
+	if expect_w != actual_w {
+		t.Errorf("Expected width %d, got %d", expect_w, actual_w)
+	}
+	if expect_h != actual_h {
+		t.Errorf("Expected width %d, got %d", expect_h, actual_h)
+	}
+
+}
+
+func TestAlgoCut(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	dst := NewImageBuf()
+	roi := NewROIRegion2D(10, 60, 20, 40)
+
+	checkFatalError(t, Cut(dst, src, AlgoOpts{ROI: roi}))
+
 	expect_w := 50
 	expect_h := 20
 	actual_w := dst.Spec().Width()
 	actual_h := dst.Spec().Height()
+	actual_x := dst.Spec().X()
+	actual_y := dst.Spec().Y()
 
+	if actual_x != 0 || actual_y != 0 {
+		t.Errorf("Expected origin to be (0,0), got (%d,%d)", actual_x, actual_y)
+	}
 	if expect_w != actual_w {
 		t.Errorf("Expected width %d, got %d", expect_w, actual_w)
 	}
@@ -776,4 +814,22 @@ func TestAlgoPaste2D(t *testing.T) {
 	if !reflect.DeepEqual(bottomExpected, bottomActual) {
 		t.Fatalf("Expected pixels %v; Got %v", bottomExpected, bottomActual)
 	}
+}
+
+func TestAlgoRenderText(t *testing.T) {
+	spec := NewImageSpecSize(256, 256, 3, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	Fill(buf, []float32{0.3, 0.3, 0.3})
+
+	err = RenderTextColor(buf, 0, spec.Height()/2, "UNITTEST", 18,
+		FontNameDefault, []float32{1.0, .1, .2})
+
+	if err != nil {
+		t.Fatalf("Failed to render text: %s", err)
+	}
+	buf.WriteFile("/tmp/text.png", "png")
 }
