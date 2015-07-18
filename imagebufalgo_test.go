@@ -612,12 +612,19 @@ func TestAlgoIsMonochrome(t *testing.T) {
 func TestAlgoResize(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {
-		t.Error(err.Error())
+		t.Fatal(err.Error())
 	}
 
 	dst := NewImageBuf()
 	roi := NewROIRegion2D(0, 64, 0, 32)
+
 	checkError(t, Resize(dst, src, AlgoOpts{ROI: roi}))
+
+	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
+		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
+	}
+
+	checkError(t, ResizeFilter(dst, src, "lanczos3", 1.0, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
 		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())

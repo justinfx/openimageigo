@@ -605,10 +605,17 @@ func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
 	return bool(ok)
 }
 
-// Set dst, over the region of interest, to be a resized version of the corresponding portion of src
-// (mapping such that the "full" image window of each correspond to each other, regardless of resolution).
-// Will choose a reasonable default high-quality default filter (blackman-harris when upsizing, lanczos3 when downsizing)
-// Works on all pixel data types.
+// Set dst, over the region of interest, to be a resized version of the
+// corresponding portion of src (mapping such that the "full" image
+// window of each correspond to each other, regardless of resolution).
+//
+// Default high-quality filters are used: blackman-harris when upsizing,
+// lanczos3 when downsizing
+//
+// The nthreads AlgoOpts specifies how many threads (potentially) may
+// be used, but it's not a guarantee.  If nthreads == 0, it will use
+// the global OIIO attribute "nthreads".  If nthreads == 1, it
+// guarantees that it will not launch any new threads.
 func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
@@ -616,6 +623,35 @@ func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	defer C.free(unsafe.Pointer(c_filtname))
 
 	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(0.0), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Set dst, over the region of interest, to be a resized version of the
+// corresponding portion of src (mapping such that the "full" image
+// window of each correspond to each other, regardless of resolution).
+//
+// The filter is used to weight the src pixels falling underneath it for
+// each dst pixel.  The caller may specify a reconstruction filter by name
+// and width (expressed  in pixels unts of the dst image), or ResizeFilter() will
+// choose a reasonable default high-quality default filter (blackman-harris
+// when upsizing, lanczos3 when downsizing) if the empty string is passed
+// or if filterWidth is 0.
+//
+// The nthreads AlgoOpts specifies how many threads (potentially) may
+// be used, but it's not a guarantee.  If nthreads == 0, it will use
+// the global OIIO attribute "nthreads".  If nthreads == 1, it
+// guarantees that it will not launch any new threads.
+func ResizeFilter(dst, src *ImageBuf, filter string, filterWidth float32, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	c_filtname := C.CString(filter)
+	defer C.free(unsafe.Pointer(c_filtname))
+
+	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(filterWidth), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	if !bool(ok) {
 		return dst.LastError()
 	}
