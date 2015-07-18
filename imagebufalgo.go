@@ -605,6 +605,29 @@ func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
 	return bool(ok)
 }
 
+// ComputePixelHashSHA1 computes the SHA-1 byte hash for all the pixels in the specifed region of the image. If
+// blocksize > 0, the function will compute separate SHA-1 hashes of each blocksize
+// batch of scanlines, then return a hash of the individual hashes. This is just as strong a
+// hash, but will NOT match a single hash of the entire image (blocksize == 0). But by
+// breaking up the hash into independent blocks, we can parallelize across multiple threads,
+// given by nthreads. The extrainfo provides additional text that will be incorporated
+// into the hash.
+func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts ...AlgoOpts) string {
+	opt := flatAlgoOpts(opts)
+
+	c_extraInfo := C.CString(extraInfo)
+	defer C.free(unsafe.Pointer(c_extraInfo))
+
+	if blockSize < 0 {
+		blockSize = 0
+	}
+
+	c_str := C.computePixelHashSHA1(src.ptr, c_extraInfo,
+		opt.ROI.validOrAllPtr(), C.int(blockSize), C.int(opt.Threads))
+
+	return C.GoString(c_str)
+}
+
 // Set dst, over the region of interest, to be a resized version of the
 // corresponding portion of src (mapping such that the "full" image
 // window of each correspond to each other, regardless of resolution).

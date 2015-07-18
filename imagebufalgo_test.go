@@ -609,6 +609,26 @@ func TestAlgoIsMonochrome(t *testing.T) {
 	}
 }
 
+func TestAlgoComputeHash(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	aHash := ComputePixelHashSHA1(src, "extra", 4)
+	err = src.LastError()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	aHash2 := ComputePixelHashSHA1(src, "extra", 4)
+
+	if aHash == "" || aHash2 == "" || aHash != aHash2 {
+		t.Fatal("Computed pixel hash was either empty or inconsistent across multiple runs")
+	}
+	t.Logf("Pixel hash: %v", aHash)
+}
+
 func TestAlgoResize(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {

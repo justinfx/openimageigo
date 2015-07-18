@@ -112,9 +112,9 @@ bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads);
 
 // ROI* nonzero_region(const ImageBuf *src, ROI* roi, int nthreads);
 
-// const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo="",
-// 								  ROI* roi, int blocksize=0, int nthreads);
-
+const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
+								  ROI* roi, int blocksize, int nthreads);
+	
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads);
 
