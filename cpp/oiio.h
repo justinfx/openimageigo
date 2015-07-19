@@ -93,10 +93,10 @@ const ImageSpec* ImageInput_spec(ImageInput *in);
 bool ImageInput_supports(ImageInput *in, const char* feature);
 bool ImageInput_close(ImageInput *in);
 
-// int ImageInput_current_subimage(ImageInput *in);
-// int ImageInput_current_miplevel(ImageInput *in);
-// bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec);
-// bool ImageInput_seek_subimage_mip(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec);
+int ImageInput_current_subimage(ImageInput *in);
+int ImageInput_current_miplevel(ImageInput *in);
+bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec);
+bool ImageInput_seek_subimage_miplevel(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec);
 bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 // bool ImageInput_read_scanline_format(ImageInput *in, int y, int z, TypeDesc format, void* data, stride_t xstride);
 // bool ImageInput_read_tile(ImageInput *in, int x, int y, int z, float* data);

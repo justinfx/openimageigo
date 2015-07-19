@@ -64,6 +64,27 @@ bool ImageInput_close(ImageInput *in) {
 	return static_cast<OIIO::ImageInput*>(in)->close();	
 }
 
+int ImageInput_current_subimage(ImageInput *in) {
+	return static_cast<OIIO::ImageInput*>(in)->current_subimage();	
+}
+
+bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec) {
+	return static_cast<OIIO::ImageInput*>(in)->seek_subimage(
+													subimage, 
+													*(static_cast<OIIO::ImageSpec*>(newspec)));	
+}
+
+int ImageInput_current_miplevel(ImageInput *in) {
+	return static_cast<OIIO::ImageInput*>(in)->current_miplevel();	
+}
+
+bool ImageInput_seek_subimage_miplevel(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec) {
+	return static_cast<OIIO::ImageInput*>(in)->seek_subimage(
+													subimage, 
+													miplevel,
+													*(static_cast<OIIO::ImageSpec*>(newspec)));	
+}
+
 bool ImageInput_read_image_floats(ImageInput *in, float* data) {
 	return static_cast<OIIO::ImageInput*>(in)->read_image(data);	
 }

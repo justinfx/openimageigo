@@ -127,3 +127,86 @@ func TestImageInputReadScanline(t *testing.T) {
 	}
 
 }
+
+func TestImageInputSubimage(t *testing.T) {
+	filepath := `testdata/subimages.exr`
+	in, err := OpenImageInput(filepath)
+	checkFatalError(t, err)
+
+	expected := 0
+	actual := in.CurrentSubimage()
+	if actual != expected {
+		t.Fatalf("Expected subimage %d, got %d", expected, actual)
+	}
+
+	expected = 1
+	ok := in.SeekSubimage(expected, nil)
+	if !ok {
+		t.Fatalf("Failed while seeking to subimage %d", expected)
+	}
+	actual = in.CurrentSubimage()
+	if actual != expected {
+		t.Fatalf("Expected subimage %d, got %d", expected, actual)
+	}
+
+	expected = 2
+	newSpec := NewImageSpec(TypeUnknown)
+	ok = in.SeekSubimage(expected, newSpec)
+	if !ok {
+		t.Fatalf("Failed while seeking to subimage %d", expected)
+	}
+	actual = in.CurrentSubimage()
+	if actual != expected {
+		t.Fatalf("Expected subimage %d, got %d", expected, actual)
+	}
+	nchans := newSpec.NumChannels()
+	if nchans != 1 {
+		t.Fatalf("Expected to find 1 channel in subimage %d, got %d", expected, nchans)
+	}
+	if newSpec.Format() != in.Spec().Format() {
+		t.Fatalf("Expected subimage format %v, got %v", in.Spec().Format(), newSpec.Format())
+	}
+}
+
+func TestImageInputMipLevel(t *testing.T) {
+	filepath := `testdata/checker_mip.tx`
+	in, err := OpenImageInput(filepath)
+	checkFatalError(t, err)
+
+	expected := 0
+	actual := in.CurrentMipLevel()
+	if actual != expected {
+		t.Fatalf("Expected mip level %d, got %d", expected, actual)
+	}
+
+	expected = 1
+	ok := in.SeekMipLevel(0, expected, nil)
+	if !ok {
+		t.Fatalf("Failed while seeking to Mip level %d", expected)
+	}
+	actual = in.CurrentMipLevel()
+	if actual != expected {
+		t.Fatalf("Expected mip level %d, got %d", expected, actual)
+	}
+
+	expected = 2
+	newSpec := NewImageSpec(TypeUnknown)
+	ok = in.SeekMipLevel(0, expected, newSpec)
+	if !ok {
+		t.Fatalf("Failed while seeking to mip level %d", expected)
+	}
+	actual = in.CurrentMipLevel()
+	if actual != expected {
+		t.Fatalf("Expected mip level %d, got %d", expected, actual)
+	}
+
+	expected = 8
+	actual = 0
+	for i := 0; in.SeekMipLevel(0, i, newSpec); i++ {
+		actual++
+	}
+	if actual != expected {
+		t.Fatalf("Expected total number of mip levels to be %d, got %d", expected, actual)
+	}
+
+}

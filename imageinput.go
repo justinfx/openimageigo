@@ -156,6 +156,69 @@ func (i *ImageInput) Spec() *ImageSpec {
 	return &ImageSpec{ptr}
 }
 
+// CurrentSubimage returns the index of the subimage that is currently being read.
+// The first subimage (or the only subimage, if there is just one) is number 0.
+func (i *ImageInput) CurrentSubimage() int {
+	return int(C.ImageInput_current_subimage(i.ptr))
+}
+
+// Seek to the given subimage within the open image file.
+// The first subimage of the file has index 0. Return true on
+// success, false on failure (including that there is not a
+// subimage with the specified index). The new
+// subimage's vital statistics are put in newspec (and also saved
+// in ImageInput.Spec()). The reader is expected to give the appearance
+// of random access to subimages -- in other words,
+// if it can't randomly seek to the given subimage, it should
+// transparently close, reopen, and sequentially read through prior
+// subimages.
+func (i *ImageInput) SeekSubimage(index int, newSpec *ImageSpec) bool {
+	if index < 0 {
+		index = 0
+	}
+
+	if newSpec == nil || newSpec.ptr == nil {
+		newSpec = NewImageSpec(TypeUnknown)
+	}
+
+	ok := C.ImageInput_seek_subimage(i.ptr, C.int(index), newSpec.ptr)
+	return bool(ok)
+}
+
+// Returns the index of the MIPmap image that is currently being read.
+// The highest-res MIP level (or the only level, if there is just
+// one) is number 0.
+func (i *ImageInput) CurrentMipLevel() int {
+	return int(C.ImageInput_current_miplevel(i.ptr))
+}
+
+// Seek to the given subimage and MIP-map level within the open
+// image file. The first subimage of the file has index 0, the
+// highest-resolution MIP level has index 0. Return true on
+// success, false on failure (including that there is not a
+// subimage or MIP level with the specified index). The new
+// subimage's vital statistics are put in newspec (and also saved
+// in ImageInpit.Spec()). The reader is expected to give the appearance
+// of random access to subimages and MIP levels -- in other words,
+// if it can't randomly seek to the given subimage/level, it should
+// transparently close, reopen, and sequentially read through prior
+// subimages and levels.
+func (i *ImageInput) SeekMipLevel(subimage, miplevel int, newSpec *ImageSpec) bool {
+	if subimage < 0 {
+		subimage = 0
+	}
+	if miplevel < 0 {
+		miplevel = 0
+	}
+
+	if newSpec == nil || newSpec.ptr == nil {
+		newSpec = NewImageSpec(TypeUnknown)
+	}
+
+	ok := C.ImageInput_seek_subimage_miplevel(i.ptr, C.int(subimage), C.int(miplevel), newSpec.ptr)
+	return bool(ok)
+}
+
 // Read the entire image of width * height * depth * channels into contiguous float32 pixels.
 // Read tiles or scanlines automatically.
 func (i *ImageInput) ReadImage() ([]float32, error) {
