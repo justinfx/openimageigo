@@ -151,23 +151,15 @@ func (i *ImageInput) Supports(feature string) bool {
 // Return a reference to the image format specification of the current subimage/MIPlevel.
 // Note that the contents of the spec are invalid before Open() or after Close(), and may
 // change with a call to SeekSubImage().
-func (i *ImageInput) Spec() (*ImageSpec, error) {
+func (i *ImageInput) Spec() *ImageSpec {
 	ptr := C.ImageInput_spec(i.ptr)
-	err := i.LastError()
-	if err != nil {
-		return nil, err
-	}
-	return &ImageSpec{ptr}, nil
+	return &ImageSpec{ptr}
 }
 
 // Read the entire image of width * height * depth * channels into contiguous float32 pixels.
 // Read tiles or scanlines automatically.
 func (i *ImageInput) ReadImage() ([]float32, error) {
-	spec, err := i.Spec()
-	if err != nil {
-		return nil, err
-	}
-
+	spec := i.Spec()
 	size := spec.Width() * spec.Height() * spec.Depth() * spec.NumChannels()
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
@@ -217,10 +209,7 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 //     floatPixels = val.([]float32)
 //
 func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback) (interface{}, error) {
-	spec, err := i.Spec()
-	if err != nil {
-		return nil, err
-	}
+	spec := i.Spec()
 
 	pixel_iface, ptr, err := allocatePixelBuffer(spec, format)
 	if err != nil {
@@ -241,10 +230,7 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 // from the native data format of the file into contiguous float32 pixels (z==0 for non-volume images).
 // The size of the slice is: width * depth * channels
 func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
-	spec, err := i.Spec()
-	if err != nil {
-		return nil, err
-	}
+	spec := i.Spec()
 
 	size := spec.Width() * spec.Depth() * spec.NumChannels()
 	pixels := make([]float32, size)

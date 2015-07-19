@@ -71,10 +71,8 @@ func TestImageSpecProperties(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	spec, err := in.Spec()
-	if err != nil {
-		t.Fatal(err.Error())
-	}
+	spec := in.Spec()
+
 	if spec.Width() != 128 {
 		t.Errorf("Expected 128;  got %v", spec.Width())
 	}
@@ -205,10 +203,6 @@ func getTestImageSpec() (*ImageSpec, error) {
 		return nil, err
 	}
 
-	spec, err := in.Spec()
-	if err != nil {
-		return nil, err
-	}
-
+	spec := in.Spec()
 	return spec, nil
 }
