@@ -99,7 +99,7 @@ bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec);
 bool ImageInput_seek_subimage_miplevel(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec);
 bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data);
 // bool ImageInput_read_scanline_format(ImageInput *in, int y, int z, TypeDesc format, void* data, stride_t xstride);
-// bool ImageInput_read_tile(ImageInput *in, int x, int y, int z, float* data);
+bool ImageInput_read_tile_floats(ImageInput *in, int x, int y, int z, float* data);
 // bool ImageInput_read_tile_format(ImageInput *in, int x, int y, int z, TypeDesc format, void* data,
 // 									stride_t xstride, stride_t ystride, stride_t zstride);
 bool ImageInput_read_image_floats(ImageInput *in, float* data);

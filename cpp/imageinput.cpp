@@ -110,6 +110,10 @@ bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data) 
 	return static_cast<OIIO::ImageInput*>(in)->read_scanline(y, z, data);	
 }
 
+bool ImageInput_read_tile_floats(ImageInput *in, int x, int y, int z, float* data) {
+	return static_cast<OIIO::ImageInput*>(in)->read_tile(x, y, z, data);	
+}
+
 
 } // extern "C"
 

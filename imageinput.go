@@ -289,7 +289,7 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 	return pixel_iface, i.LastError()
 }
 
-// Read the scanline that includes pixels (*,y,z) into data, converting if necessary
+// Read the scanline that includes pixels (*,y,z), converting if necessary
 // from the native data format of the file into contiguous float32 pixels (z==0 for non-volume images).
 // The size of the slice is: width * depth * channels
 func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
@@ -299,6 +299,22 @@ func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_scanline_floats(i.ptr, C.int(y), C.int(z), pixels_ptr)
+
+	return pixels, i.LastError()
+}
+
+// Read the tile whose upper-left origin is (x,y,z),
+// converting if necessary from the native data format of the file
+// into contiguous float32 pixels.
+// The size of the slice is: tilewidth * tileheight * depth * channels
+// (z==0 for non-volume images.)
+func (i *ImageInput) ReadTile(x, y, z int) ([]float32, error) {
+	spec := i.Spec()
+
+	size := spec.TilePixels()
+	pixels := make([]float32, size)
+	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
+	C.ImageInput_read_tile_floats(i.ptr, C.int(x), C.int(y), C.int(z), pixels_ptr)
 
 	return pixels, i.LastError()
 }

@@ -128,6 +128,35 @@ func TestImageInputReadScanline(t *testing.T) {
 
 }
 
+func TestImageInputReadTile(t *testing.T) {
+	filepath := `testdata/checker_mip.tx`
+	in, err := OpenImageInput(filepath)
+	checkFatalError(t, err)
+
+	var pixels []float32
+	pixels, err = in.ReadTile(0, 0, 0)
+	checkFatalError(t, err)
+
+	size := 64
+	expected := size * size
+	actual := len(pixels)
+	if actual != expected {
+		t.Fatalf("Expected tile to have %d pixels, got %d", expected, actual)
+	}
+
+	if pixels[0] != 0 {
+		t.Fatalf("Expected first pixel of first tile to be black. Got %0.2f", pixels[0])
+	}
+
+	pixels, err = in.ReadTile(size, size, 0)
+	checkFatalError(t, err)
+
+	pixel := pixels[63]
+	if pixel != 1 {
+		t.Fatalf("Expected pixel at the end of first line of last tile to be white. Got %0.2f", pixel)
+	}
+}
+
 func TestImageInputSubimage(t *testing.T) {
 	filepath := `testdata/subimages.exr`
 	in, err := OpenImageInput(filepath)
