@@ -1,5 +1,7 @@
 # OpenImageIO bindings for Go
 
+[![GoDoc](https://godoc.org/github.com/justinfx/openimageigo?status.svg)](https://godoc.org/github.com/justinfx/openimageigo)
+
 OpenImageIO is a library for reading and writing images, and a bunch of related classes,
 utilities, and applications.  There is a particular emphasis on formats and functionality
 used in professional, large-scale animation and visual effects work for film.
@@ -44,10 +46,3 @@ If you have installed OpenImageIO to a custom location, you will need to tell CG
 Or just prefixing the install:
 
 	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo
-
-Documentation
--------------
-
-[http://godoc.org/github.com/justinfx/openimageigo](http://godoc.org/github.com/justinfx/openimageigo)
-
-
