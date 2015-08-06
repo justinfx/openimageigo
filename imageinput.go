@@ -27,6 +27,7 @@ func newImageInput(i unsafe.Pointer) *ImageInput {
 
 func deleteImageInput(i *ImageInput) {
 	if i.ptr != nil {
+		C.ImageInput_close(i.ptr)
 		C.free(i.ptr)
 		i.ptr = nil
 	}
