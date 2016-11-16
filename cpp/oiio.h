@@ -117,8 +117,17 @@ bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, v
 
 const char* ImageInput_geterror(ImageInput *in);
 
+// ImageOutput
+//
 
+void deleteImageOutput(ImageOutput *out);
+ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchpath);
 
+const char* ImageOutput_format_name(ImageOutput *out);
+const ImageSpec* ImageOutput_spec(ImageOutput *out);
+bool ImageOutput_supports(ImageOutput *out, const char* feature);
+
+const char* ImageOutput_geterror(ImageOutput *out);
 
 // ImageSpec
 //
