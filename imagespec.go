@@ -427,3 +427,27 @@ func (s *ImageSpec) AttributeInt(name string, defaultVal ...int) int {
 	defer C.free(unsafe.Pointer(c_str))
 	return int(C.ImageSpec_get_int_attribute(s.ptr, c_str, C.int(defVal)))
 }
+
+// EraseAttribute removes the specified attribute from the list of extra_attribs.
+// If not found, do nothing.
+// If caseSensitive is true, the name search will be case-sensitive, otherwise the name
+// search will be performed without regard to case
+func (s *ImageSpec) EraseAttribute(name string, caseSensitive bool) {
+	c_str := C.CString(name)
+	defer C.free(unsafe.Pointer(c_str))
+
+	C.ImageSpec_erase_attribute(s.ptr, c_str, C.TYPE_UNKNOWN, C.bool(caseSensitive))
+}
+
+// EraseAttributeType removes the specified attribute from the list of extra_attribs.
+// If not found, do nothing.
+// If searchtype is anything but TypeUnknown, restrict matches to only those of
+// the given type.
+// If caseSensitive is true, the name search will be case-sensitive, otherwise
+// the name search will be performed without regard to case
+func (s *ImageSpec) EraseAttributeType(name string, searchType TypeDesc, caseSensitive bool) {
+	c_str := C.CString(name)
+	defer C.free(unsafe.Pointer(c_str))
+
+	C.ImageSpec_erase_attribute(s.ptr, c_str, C.TypeDesc(searchType), C.bool(caseSensitive))
+}

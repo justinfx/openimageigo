@@ -175,25 +175,72 @@ func TestImageSpecIntAttribute(t *testing.T) {
 		t.Error(err.Error())
 	}
 
+	const name = `FOO_TEST`
+
 	e := "Expected value %s for attr FOO_TEST; got %s"
 
 	var expected int
-	actual := spec.AttributeInt("FOO_TEST")
+	actual := spec.AttributeInt(name)
 	if actual != expected {
 		t.Errorf(e, expected, actual)
 	}
 
 	expected = -1
-	actual = spec.AttributeInt("FOO_TEST", expected)
+	actual = spec.AttributeInt(name, expected)
 	if actual != expected {
 		t.Errorf(e, expected, actual)
 	}
 
 	expected = 123
-	spec.SetAttribute("FOO_TEST", expected)
-	actual = spec.AttributeInt("FOO_TEST")
+	spec.SetAttribute(name, expected)
+	actual = spec.AttributeInt(name)
 	if actual != expected {
 		t.Errorf(e, expected, actual)
+	}
+}
+
+func TestImageSpecEraseAttribute(t *testing.T) {
+	spec, err := getTestImageSpec()
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	var number int = 123
+	var str string = "test"
+
+	spec.SetAttribute("INT_VALUE", number)
+	spec.SetAttribute("STR_VALUE", str)
+
+	if actual := spec.AttributeInt("INT_VALUE"); actual != number {
+		t.Fatalf("INT_VALUE attribute not set properly. Expected %d, got %d", number, actual)
+	}
+
+	if actual := spec.AttributeString("STR_VALUE"); actual != str {
+		t.Fatalf("STR_VALUE attribute not set properly. Expected %d, got %d", str, actual)
+	}
+
+	spec.EraseAttribute("StR_VaLUe", true) // case-sensitive
+
+	if spec.AttributeString("STR_VALUE") == "" {
+		t.Fatal("STR_VALUE was not expected to have been erased using case-sensitive option")
+	}
+
+	spec.EraseAttribute("StR_VaLUe", false) // case-insensitive
+
+	if spec.AttributeString("STR_VALUE") != "" {
+		t.Error("Expected STR_VALUE attribute to have been erased")
+	}
+
+	spec.EraseAttributeType("INT_VALUE", TypeDouble, false)
+
+	if spec.AttributeInt("INT_VALUE") == 0 {
+		t.Fatal("INT_VALUE was not expected to have been erased non-matching search type")
+	}
+
+	spec.EraseAttributeType("INT_VALUE", TypeInt, false)
+
+	if spec.AttributeInt("INT_VALUE") != 0 {
+		t.Error("Expected INT_VALUE attribute to have been erased")
 	}
 }
 

@@ -204,7 +204,7 @@ void ImageSpec_attribute_char(ImageSpec *spec, const char* name, const char* val
 int ImageSpec_get_int_attribute(ImageSpec *spec, const char* name, int defaultval);
 float ImageSpec_get_float_attribute(ImageSpec *spec, const char* name, float defaultval);
 const char* ImageSpec_get_string_attribute(ImageSpec *spec, const char* name, const char* defaultval);
-// void erase_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
+void ImageSpec_erase_attribute(ImageSpec *spec, const char* name, TypeDesc searchtype, bool caseSensitive);
 // ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false)
 // const ImageIOParameter * find_attribute(const char* name, TypeDesc searchtype=TypeDesc::UNKNOWN, bool casesensitive=false);
 
@@ -310,7 +310,7 @@ void deleteROI(ROI* roi);
 
 ROI* ROI_New();
 ROI* ROI_NewOptions(int xbeing, int xend, int ybegin, int yend, int zbegin, int zend, int chbegin, int chend);
-ROI* ROI_Copy(const ROI *roi); 
+ROI* ROI_Copy(const ROI *roi);
 
 bool ROI_defined(ROI* roi);
 int ROI_width(ROI* roi);

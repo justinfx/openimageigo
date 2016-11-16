@@ -10,15 +10,15 @@ OIIO::TypeDesc fromTypeDesc(TypeDesc fmt) {
 	case TYPE_UINT8: 	return OIIO::TypeDesc::UINT8;
 	case TYPE_INT8: 	return OIIO::TypeDesc::INT8;
 	case TYPE_UINT16: 	return OIIO::TypeDesc::UINT16;
-	case TYPE_INT16: 	return OIIO::TypeDesc::INT16;	
-	case TYPE_UINT: 	return OIIO::TypeDesc::UINT; 	
-	case TYPE_INT: 		return OIIO::TypeDesc::INT; 	
-	case TYPE_UINT64: 	return OIIO::TypeDesc::UINT64; 	
-	case TYPE_INT64: 	return OIIO::TypeDesc::INT64; 	
-	case TYPE_HALF: 	return OIIO::TypeDesc::HALF; 
-	case TYPE_FLOAT: 	return OIIO::TypeDesc::FLOAT; 
-	case TYPE_DOUBLE: 	return OIIO::TypeDesc::DOUBLE; 
-	case TYPE_UNKNOWN: 	return OIIO::TypeDesc::UNKNOWN; 
+	case TYPE_INT16: 	return OIIO::TypeDesc::INT16;
+	case TYPE_UINT: 	return OIIO::TypeDesc::UINT;
+	case TYPE_INT: 		return OIIO::TypeDesc::INT;
+	case TYPE_UINT64: 	return OIIO::TypeDesc::UINT64;
+	case TYPE_INT64: 	return OIIO::TypeDesc::INT64;
+	case TYPE_HALF: 	return OIIO::TypeDesc::HALF;
+	case TYPE_FLOAT: 	return OIIO::TypeDesc::FLOAT;
+	case TYPE_DOUBLE: 	return OIIO::TypeDesc::DOUBLE;
+	case TYPE_UNKNOWN: 	return OIIO::TypeDesc::UNKNOWN;
 	}
 	return OIIO::TypeDesc::UNKNOWN;
 }
@@ -318,20 +318,25 @@ void ImageSpec_attribute_int(ImageSpec *spec, const char* name, int value) {
 void ImageSpec_attribute_float(ImageSpec *spec, const char* name, float value) {
 	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);
 }
+
 void ImageSpec_attribute_char(ImageSpec *spec, const char* name, const char* value) {
-	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);	
+	static_cast<OIIO::ImageSpec*>(spec)->attribute(name, value);
+}
+
+void ImageSpec_erase_attribute(ImageSpec *spec, const char* name, TypeDesc type, bool caseSensitive) {
+	static_cast<OIIO::ImageSpec*>(spec)->erase_attribute(name, fromTypeDesc(type), caseSensitive);
 }
 
 int ImageSpec_get_int_attribute(ImageSpec *spec, const char* name, int defaultval) {
-	return static_cast<OIIO::ImageSpec*>(spec)->get_int_attribute(name, defaultval);	
+	return static_cast<OIIO::ImageSpec*>(spec)->get_int_attribute(name, defaultval);
 }
 
 float ImageSpec_get_float_attribute(ImageSpec *spec, const char* name, float defaultval) {
-	return static_cast<OIIO::ImageSpec*>(spec)->get_float_attribute(name, defaultval);	
+	return static_cast<OIIO::ImageSpec*>(spec)->get_float_attribute(name, defaultval);
 }
 
 const char* ImageSpec_get_string_attribute(ImageSpec *spec, const char* name, const char* defaultval) {
-	return static_cast<OIIO::ImageSpec*>(spec)->get_string_attribute(name, defaultval).c_str();	
+	return static_cast<OIIO::ImageSpec*>(spec)->get_string_attribute(name, defaultval).c_str();
 }
 
 } // extern "C"
