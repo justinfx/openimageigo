@@ -30,6 +30,7 @@ func deleteImageOutput(i *ImageOutput) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // Create an ImageOutput that will write to a file, with the format
@@ -62,6 +63,7 @@ func (i *ImageOutput) LastError() error {
 	if err == "" {
 		return nil
 	}
+	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 
@@ -109,17 +111,23 @@ func (i *ImageOutput) LastError() error {
 func (i *ImageOutput) Supports(feature string) bool {
 	c_str := C.CString(feature)
 	defer C.free(unsafe.Pointer(c_str))
-	return bool(C.ImageOutput_supports(i.ptr, c_str))
+	ret := bool(C.ImageOutput_supports(i.ptr, c_str))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Return a reference to the image format specification of the current subimage/MIPlevel.
 // Note that the contents of the spec will be empty unless it is further added to it
 func (i *ImageOutput) Spec() *ImageSpec {
 	ptr := C.ImageOutput_spec(i.ptr)
-	return &ImageSpec{ptr}
+	ret := &ImageSpec{ptr}
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Return the name of the format implemented by this image.
 func (i *ImageOutput) FormatName() string {
-	return C.GoString(C.ImageOutput_format_name(i.ptr))
+	ret := C.GoString(C.ImageOutput_format_name(i.ptr))
+	runtime.KeepAlive(i)
+	return ret
 }

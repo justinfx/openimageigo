@@ -31,6 +31,7 @@ func deleteColorProcessor(i *ColorProcessor) {
 		C.deleteColorProcessor(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // Represents the set of all color transformations that are allowed.
@@ -57,6 +58,7 @@ func deleteColorConfig(i *ColorConfig) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // Return if OpenImageIO was built with OCIO support
@@ -88,46 +90,62 @@ func NewColorConfigPath(path string) (*ColorConfig, error) {
 
 // Get the number of ColorSpace(s) defined in this configuration
 func (c *ColorConfig) NumColorSpaces() int {
-	return int(C.ColorConfig_getNumColorSpaces(c.ptr))
+	ret := int(C.ColorConfig_getNumColorSpaces(c.ptr))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Return the name of the colorspace at a given index
 func (c *ColorConfig) ColorSpaceNameByIndex(index int) string {
-	return C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.ptr, C.int(index)))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Get the number of Looks defined in this configuration
 func (c *ColorConfig) NumLooks() int {
-	return int(C.ColorConfig_getNumLooks(c.ptr))
+	ret := int(C.ColorConfig_getNumLooks(c.ptr))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Return the name of the look at a given index
 func (c *ColorConfig) LookNameByIndex(index int) string {
-	return C.GoString(C.ColorConfig_getLookNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getLookNameByIndex(c.ptr, C.int(index)))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Get the number of displays defined in this configuration
 func (c *ColorConfig) NumDisplays() int {
-	return int(C.ColorConfig_getNumDisplays(c.ptr))
+	ret := int(C.ColorConfig_getNumDisplays(c.ptr))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Return the name of the display at a given index
 func (c *ColorConfig) DisplayNameByIndex(index int) string {
-	return C.GoString(C.ColorConfig_getDisplayNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getDisplayNameByIndex(c.ptr, C.int(index)))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Get the number of displays defined in this configuration
 func (c *ColorConfig) NumViews(displayName string) int {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
-	return int(C.ColorConfig_getNumViews(c.ptr, c_str))
+	ret := int(C.ColorConfig_getNumViews(c.ptr, c_str))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Get the name of a view at a specific index of a display
 func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
-	return C.GoString(C.ColorConfig_getViewNameByIndex(c.ptr, c_str, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getViewNameByIndex(c.ptr, c_str, C.int(index)))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Get the name of the color space representing the named role,
@@ -135,7 +153,9 @@ func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 func (c *ColorConfig) ColorSpaceNameByRole(role string) string {
 	c_str := C.CString(role)
 	defer C.free(unsafe.Pointer(c_str))
-	return C.GoString(C.ColorConfig_getColorSpaceNameByRole(c.ptr, c_str))
+	ret := C.GoString(C.ColorConfig_getColorSpaceNameByRole(c.ptr, c_str))
+	runtime.KeepAlive(c)
+	return ret
 }
 
 // Given the specified input and output ColorSpace, construct the
@@ -163,6 +183,9 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 	if err != nil {
 		return nil, err
 	}
+
+	runtime.KeepAlive(c)
+
 	return newColorProcessor(ptr), nil
 }
 
@@ -174,5 +197,6 @@ func (c *ColorConfig) error() error {
 	if C.bool(isError) {
 		return errors.New(C.GoString(C.ColorConfig_geterror(c.ptr)))
 	}
+	runtime.KeepAlive(c)
 	return nil
 }

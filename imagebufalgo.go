@@ -11,6 +11,7 @@ import "C"
 import (
 	"errors"
 	"fmt"
+	"runtime"
 	"unsafe"
 )
 
@@ -76,6 +77,8 @@ func Zero(dst *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -94,6 +97,8 @@ func Fill(dst *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	if !ok {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -135,6 +140,8 @@ func Checker(dst *ImageBuf, width, height, depth int, color1, color2 []float32,
 		c1_ptr, c2_ptr, C.int(xoffset), C.int(yoffset), C.int(zoffset),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads)),
 	)
+
+	runtime.KeepAlive(dst)
 
 	if !ok {
 		return dst.LastError()
@@ -214,9 +221,14 @@ func Channels(dst, src *ImageBuf, nchannels int, opts ...*ChannelOpts) error {
 	}
 
 	ok := C.channels(dst.ptr, src.ptr, C.int(nchannels), order, values, newNames, shuffle)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -231,6 +243,10 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 
 	return nil
 }
@@ -263,6 +279,9 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -282,6 +301,9 @@ func Cut(dst, src *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -296,6 +318,9 @@ func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -312,6 +337,9 @@ func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...Algo
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -325,6 +353,9 @@ func Flip(dst, src *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -337,6 +368,9 @@ func Flop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -352,6 +386,9 @@ func Flipflop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -363,6 +400,9 @@ func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -377,6 +417,10 @@ func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -389,6 +433,9 @@ func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -405,6 +452,9 @@ func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -418,6 +468,10 @@ func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -430,6 +484,9 @@ func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -446,6 +503,9 @@ func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -460,6 +520,10 @@ func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -473,6 +537,9 @@ func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -489,6 +556,9 @@ func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -515,6 +585,10 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -534,6 +608,10 @@ func ColorConvertProcessor(dst, src *ImageBuf, cp *ColorProcessor, unpremult boo
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -549,6 +627,9 @@ func Premult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -568,6 +649,9 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -576,6 +660,7 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 func IsConstantColor(src *ImageBuf, opts ...AlgoOpts) bool {
 	opt := flatAlgoOpts(opts)
 	ok := C.is_constant_color(src.ptr, nil, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	return bool(ok)
 }
 
@@ -603,6 +688,9 @@ func ConstantColors(src *ImageBuf, opts ...AlgoOpts) []float32 {
 	if !bool(ok) {
 		return nil
 	}
+
+	runtime.KeepAlive(src)
+
 	return values
 }
 
@@ -612,6 +700,9 @@ func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts
 	opt := flatAlgoOpts(opts)
 	ok := C.is_constant_channel(src.ptr, C.int(channel), C.float(val),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(src)
+
 	return bool(ok)
 }
 
@@ -623,6 +714,7 @@ func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts
 func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
 	opt := flatAlgoOpts(opts)
 	ok := C.is_monochrome(src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	return bool(ok)
 }
 
@@ -645,6 +737,8 @@ func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts .
 
 	c_str := C.computePixelHashSHA1(src.ptr, c_extraInfo,
 		opt.ROI.validOrAllPtr(), C.int(blockSize), C.int(opt.Threads))
+
+	runtime.KeepAlive(src)
 
 	return C.GoString(c_str)
 }
@@ -670,6 +764,9 @@ func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -700,6 +797,9 @@ func ResizeFilter(dst, src *ImageBuf, filter string, filterWidth float32, opts .
 		return dst.LastError()
 	}
 
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -717,6 +817,10 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -759,6 +863,11 @@ func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
+	runtime.KeepAlive(dst)
+
 	return nil
 }
 
@@ -789,5 +898,8 @@ func RenderTextColor(dst *ImageBuf, x, y int, text string, fontSize int, fontNam
 	if !bool(ok) {
 		return dst.LastError()
 	}
+
+	runtime.KeepAlive(dst)
+
 	return nil
 }

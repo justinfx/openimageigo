@@ -31,6 +31,7 @@ func deleteImageSpec(i *ImageSpec) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // given just the data format, set the default quantize and set all other channels to something reasonable.
@@ -49,6 +50,7 @@ func NewImageSpecSize(x, y, chans int, format TypeDesc) *ImageSpec {
 // and alpha_channel, based on the number of channels.
 func (s *ImageSpec) DefaultChannelNames() {
 	C.ImageSpec_default_channel_names(s.ptr)
+	runtime.KeepAlive(s)
 }
 
 // Return the number of bytes for each channel datum, assuming they are
@@ -62,7 +64,9 @@ func (s *ImageSpec) ChannelBytes() int {
 // but if native is true, compute the size of the channel in terms of the "native"
 // data format of that channel as stored in the file.
 func (s *ImageSpec) ChannelBytesChan(chanNum int, native bool) int {
-	return int(C.ImageSpec_channel_bytes_chan(s.ptr, C.int(chanNum), C.bool(native)))
+	ret := int(C.ImageSpec_channel_bytes_chan(s.ptr, C.int(chanNum), C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes for each pixel (counting all channels). If native is
@@ -71,7 +75,9 @@ func (s *ImageSpec) ChannelBytesChan(chanNum int, native bool) int {
 // differ in the case of per-channel formats). This will return a max value
 // in the event of an overflow where it's not representable in a int.
 func (s *ImageSpec) PixelBytes(native bool) int {
-	return int(C.ImageSpec_pixel_bytes(s.ptr, C.bool(native)))
+	ret := int(C.ImageSpec_pixel_bytes(s.ptr, C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes for just the subset of channels in each pixel described
@@ -80,7 +86,9 @@ func (s *ImageSpec) PixelBytes(native bool) int {
 // the file (these may differ in the case of per-channel formats). This will return
 // a max value in the event of an overflow where it's not representable in a int.
 func (s *ImageSpec) PixelBytesChans(chanBegin, chanEnd int, native bool) int {
-	return int(C.ImageSpec_pixel_bytes_chans(s.ptr, C.int(chanBegin), C.int(chanEnd), C.bool(native)))
+	ret := int(C.ImageSpec_pixel_bytes_chans(s.ptr, C.int(chanBegin), C.int(chanEnd), C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes for each scanline.
@@ -89,13 +97,17 @@ func (s *ImageSpec) PixelBytesChans(chanBegin, chanEnd int, native bool) int {
 // format, but if native is true, compute the size of a pixel in the "native"
 // data format of the file (these may differ in the case of per-channel formats).
 func (s *ImageSpec) ScanlineBytes(native bool) int {
-	return int(C.ImageSpec_scanline_bytes(s.ptr, C.bool(native)))
+	ret := int(C.ImageSpec_scanline_bytes(s.ptr, C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of pixels for a tile. This will return a max value in the event
 // of an overflow where it's not representable in an int.
 func (s *ImageSpec) TilePixels() int {
-	return int(C.ImageSpec_tile_pixels(s.ptr))
+	ret := int(C.ImageSpec_tile_pixels(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes for each a tile of the image.
@@ -104,14 +116,18 @@ func (s *ImageSpec) TilePixels() int {
 // in format, but if native is true, compute the size of a pixel in the "native"
 // data format of the file (these may differ in the case of per-channel formats).
 func (s *ImageSpec) TileBytes(native bool) int {
-	return int(C.ImageSpec_tile_bytes(s.ptr, C.bool(native)))
+	ret := int(C.ImageSpec_tile_bytes(s.ptr, C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of pixels for an entire image.
 // This will return a max value in the event of an overflow where
 // it's not representable in an int.
 func (s *ImageSpec) ImagePixels() int {
-	return int(C.ImageSpec_image_pixels(s.ptr))
+	ret := int(C.ImageSpec_image_pixels(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes for an entire image.
@@ -120,7 +136,9 @@ func (s *ImageSpec) ImagePixels() int {
 // format, but if native is true, compute the size of a pixel in the "native"
 // data format of the file (these may differ in the case of per-channel formats).
 func (s *ImageSpec) ImageBytes(native bool) int {
-	return int(C.ImageSpec_image_bytes(s.ptr, C.bool(native)))
+	ret := int(C.ImageSpec_image_bytes(s.ptr, C.bool(native)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Verify that on this platform, a size_t is big enough to hold the number of bytes
@@ -128,16 +146,22 @@ func (s *ImageSpec) ImageBytes(native bool) int {
 // the image is much too big to allocate and read all at once, so client apps beware
 // and check these routines for overflows!
 func (s *ImageSpec) SizeSafe() bool {
-	return bool(C.ImageSpec_size_safe(s.ptr))
+	ret := bool(C.ImageSpec_size_safe(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) ChannelFormat(chanNum int) TypeDesc {
-	return (TypeDesc)(C.ImageSpec_channelformat(s.ptr, C.int(chanNum)))
+	ret := (TypeDesc)(C.ImageSpec_channelformat(s.ptr, C.int(chanNum)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Properties
 func (s *ImageSpec) X() int {
-	return int(C.ImageSpec_x(s.ptr))
+	ret := int(C.ImageSpec_x(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetX(val int) {
@@ -145,146 +169,194 @@ func (s *ImageSpec) SetX(val int) {
 }
 
 func (s *ImageSpec) Y() int {
-	return int(C.ImageSpec_y(s.ptr))
+	ret := int(C.ImageSpec_y(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetY(val int) {
 	C.ImageSpec_set_y(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // origin (upper left corner) of pixel data
 func (s *ImageSpec) Z() int {
-	return int(C.ImageSpec_z(s.ptr))
+	ret := int(C.ImageSpec_z(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetZ(val int) {
 	C.ImageSpec_set_z(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // width of the pixel data window
 func (s *ImageSpec) Width() int {
-	return int(C.ImageSpec_width(s.ptr))
+	ret := int(C.ImageSpec_width(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetWidth(val int) {
 	C.ImageSpec_set_width(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // height of the pixel data window
 func (s *ImageSpec) Height() int {
-	return int(C.ImageSpec_height(s.ptr))
+	ret := int(C.ImageSpec_height(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetHeight(val int) {
 	C.ImageSpec_set_height(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // depth of pixel data, >1 indicates a "volume"
 func (s *ImageSpec) Depth() int {
-	return int(C.ImageSpec_depth(s.ptr))
+	ret := int(C.ImageSpec_depth(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetDepth(val int) {
 	C.ImageSpec_set_depth(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // origin of the full (display) window
 func (s *ImageSpec) FullX() int {
-	return int(C.ImageSpec_full_x(s.ptr))
+	ret := int(C.ImageSpec_full_x(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullX(val int) {
 	C.ImageSpec_set_full_x(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // origin of the full (display) window
 func (s *ImageSpec) FullY() int {
-	return int(C.ImageSpec_full_y(s.ptr))
+	ret := int(C.ImageSpec_full_y(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullY(val int) {
 	C.ImageSpec_set_full_y(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // origin of the full (display) window
 func (s *ImageSpec) FullZ() int {
-	return int(C.ImageSpec_full_z(s.ptr))
+	ret := int(C.ImageSpec_full_z(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullZ(val int) {
 	C.ImageSpec_set_full_z(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // width of the full (display) window
 func (s *ImageSpec) FullWidth() int {
-	return int(C.ImageSpec_full_width(s.ptr))
+	ret := int(C.ImageSpec_full_width(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullWidth(val int) {
 	C.ImageSpec_set_full_width(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // height of the full (display) window
 func (s *ImageSpec) FullHeight() int {
-	return int(C.ImageSpec_full_height(s.ptr))
+	ret := int(C.ImageSpec_full_height(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullHeight(val int) {
 	C.ImageSpec_set_full_height(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // depth of the full (display) window
 func (s *ImageSpec) FullDepth() int {
-	return int(C.ImageSpec_full_depth(s.ptr))
+	ret := int(C.ImageSpec_full_depth(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetFullDepth(val int) {
 	C.ImageSpec_set_full_depth(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // tile width (0 for a non-tiled image)
 func (s *ImageSpec) TileWidth() int {
-	return int(C.ImageSpec_tile_width(s.ptr))
+	ret := int(C.ImageSpec_tile_width(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetTileWidth(val int) {
 	C.ImageSpec_set_tile_width(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // tile height (0 for a non-tiled image)
 func (s *ImageSpec) TileHeight() int {
-	return int(C.ImageSpec_tile_height(s.ptr))
+	ret := int(C.ImageSpec_tile_height(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetTileHeight(val int) {
 	C.ImageSpec_set_tile_height(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 func (s *ImageSpec) TileDepth() int {
-	return int(C.ImageSpec_tile_depth(s.ptr))
+	ret := int(C.ImageSpec_tile_depth(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetTileDepth(val int) {
 	C.ImageSpec_set_tile_depth(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // number of image channels, e.g., 4 for RGBA
 func (s *ImageSpec) NumChannels() int {
-	return int(C.ImageSpec_nchannels(s.ptr))
+	ret := int(C.ImageSpec_nchannels(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetNumChannels(val int) {
 	C.ImageSpec_set_nchannels(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // data format of the channels
 func (s *ImageSpec) Format() TypeDesc {
-	return (TypeDesc)(C.ImageSpec_format(s.ptr))
+	ret := (TypeDesc)(C.ImageSpec_format(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Set the data format, and as a side effect set quantize to good defaults for that format
 func (s *ImageSpec) SetFormat(format TypeDesc) {
 	C.ImageSpec_set_format(s.ptr, (C.TypeDesc)(format))
+	runtime.KeepAlive(s)
 }
 
 // Optional per-channel formats.
@@ -298,6 +370,7 @@ func (s *ImageSpec) ChannelFormats() []TypeDesc {
 func (s *ImageSpec) SetChannelFormats(formats []TypeDesc) {
 	formats_ptr := (*C.TypeDesc)(unsafe.Pointer(&formats[0]))
 	C.ImageSpec_set_channelformats(s.ptr, formats_ptr)
+	runtime.KeepAlive(s)
 }
 
 // String name of each channel
@@ -309,6 +382,7 @@ func (s *ImageSpec) ChannelNames() []string {
 	for i, c := range c_names {
 		names[i] = C.GoString(c)
 	}
+	runtime.KeepAlive(s)
 	return names
 }
 
@@ -322,39 +396,51 @@ func (s *ImageSpec) SetChannelNames(names []string) {
 	}
 	c_names_ptr := (**C.char)(unsafe.Pointer(&c_names[0]))
 	C.ImageSpec_set_channelnames(s.ptr, c_names_ptr)
+	runtime.KeepAlive(s)
 }
 
 // Convert ImageSpec class into XML string.
 func (s *ImageSpec) ToXml() string {
-	return C.GoString(C.ImageSpec_to_xml(s.ptr))
+	ret := C.GoString(C.ImageSpec_to_xml(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Index of alpha channel, or -1 if not known.
 func (s *ImageSpec) AlphaChannel() int {
-	return int(C.ImageSpec_alpha_channel(s.ptr))
+	ret := int(C.ImageSpec_alpha_channel(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetAlphaChannel(val int) {
 	C.ImageSpec_set_alpha_channel(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // Index of depth channel, or -1 if not known.
 func (s *ImageSpec) ZChannel() int {
-	return int(C.ImageSpec_z_channel(s.ptr))
+	ret := int(C.ImageSpec_z_channel(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Set the index of the depth channel.
 func (s *ImageSpec) SetZChannel(val int) {
 	C.ImageSpec_set_z_channel(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 // Contains deep data.
 func (s *ImageSpec) Deep() bool {
-	return bool(C.ImageSpec_deep(s.ptr))
+	ret := bool(C.ImageSpec_deep(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 func (s *ImageSpec) SetDeep(val bool) {
 	C.ImageSpec_set_deep(s.ptr, C.bool(val))
+	runtime.KeepAlive(s)
 }
 
 // SetAttribute sets a metadata value in the extra attribs. Acceptable types are
@@ -381,6 +467,7 @@ func (s *ImageSpec) SetAttribute(name string, val interface{}) error {
 	default:
 		return fmt.Errorf("Value type %T is not one of (string, int, float32)", t)
 	}
+	runtime.KeepAlive(s)
 	return nil
 }
 
@@ -399,7 +486,9 @@ func (s *ImageSpec) AttributeString(name string, defaultVal ...string) string {
 		C.free(unsafe.Pointer(c_val))
 	}()
 
-	return C.GoString(C.ImageSpec_get_string_attribute(s.ptr, c_str, c_val))
+	ret := C.GoString(C.ImageSpec_get_string_attribute(s.ptr, c_str, c_val))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // AttributeFloat looks up an existing attrib by name and returns
@@ -412,7 +501,9 @@ func (s *ImageSpec) AttributeFloat(name string, defaultVal ...float32) float32 {
 	}
 	c_str := C.CString(name)
 	defer C.free(unsafe.Pointer(c_str))
-	return float32(C.ImageSpec_get_float_attribute(s.ptr, c_str, C.float(defVal)))
+	ret := float32(C.ImageSpec_get_float_attribute(s.ptr, c_str, C.float(defVal)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // AttributeInt looks up an existing attrib by name and returns
@@ -425,7 +516,9 @@ func (s *ImageSpec) AttributeInt(name string, defaultVal ...int) int {
 	}
 	c_str := C.CString(name)
 	defer C.free(unsafe.Pointer(c_str))
-	return int(C.ImageSpec_get_int_attribute(s.ptr, c_str, C.int(defVal)))
+	ret := int(C.ImageSpec_get_int_attribute(s.ptr, c_str, C.int(defVal)))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // EraseAttribute removes the specified attribute from the list of extra_attribs.
@@ -437,6 +530,7 @@ func (s *ImageSpec) EraseAttribute(name string, caseSensitive bool) {
 	defer C.free(unsafe.Pointer(c_str))
 
 	C.ImageSpec_erase_attribute(s.ptr, c_str, C.TYPE_UNKNOWN, C.bool(caseSensitive))
+	runtime.KeepAlive(s)
 }
 
 // EraseAttributeType removes the specified attribute from the list of extra_attribs.
@@ -450,4 +544,5 @@ func (s *ImageSpec) EraseAttributeType(name string, searchType TypeDesc, caseSen
 	defer C.free(unsafe.Pointer(c_str))
 
 	C.ImageSpec_erase_attribute(s.ptr, c_str, C.TypeDesc(searchType), C.bool(caseSensitive))
+	runtime.KeepAlive(s)
 }

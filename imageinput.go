@@ -31,6 +31,7 @@ func deleteImageInput(i *ImageInput) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // Create an ImageInput subclass instance that is able to read the given file and open it,
@@ -58,6 +59,7 @@ func (i *ImageInput) LastError() error {
 	if err == "" {
 		return nil
 	}
+	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 
@@ -74,6 +76,7 @@ func (i *ImageInput) Open(filename string) error {
 	ptr := C.ImageInput_Open(c_str, cfg)
 	i.ptr = ptr
 
+	runtime.KeepAlive(i)
 	return i.LastError()
 }
 
@@ -82,12 +85,15 @@ func (i *ImageInput) Close() error {
 	if !bool(C.ImageInput_close(i.ptr)) {
 		return i.LastError()
 	}
+	runtime.KeepAlive(i)
 	return nil
 }
 
 // Return the name of the format implemented by this image.
 func (i *ImageInput) FormatName() string {
-	return C.GoString(C.ImageInput_format_name(i.ptr))
+	ret := C.GoString(C.ImageInput_format_name(i.ptr))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Return true if the named file is file of the type for this ImageInput.
@@ -99,7 +105,9 @@ func (i *ImageInput) FormatName() string {
 func (i *ImageInput) ValidFile(filename string) bool {
 	c_str := C.CString(filename)
 	defer C.free(unsafe.Pointer(c_str))
-	return bool(C.ImageInput_valid_file(i.ptr, c_str))
+	ret := bool(C.ImageInput_valid_file(i.ptr, c_str))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Given the name of a 'feature', return whether this ImageOutput
@@ -146,7 +154,9 @@ func (i *ImageInput) ValidFile(filename string) bool {
 func (i *ImageInput) Supports(feature string) bool {
 	c_str := C.CString(feature)
 	defer C.free(unsafe.Pointer(c_str))
-	return bool(C.ImageInput_supports(i.ptr, c_str))
+	ret := bool(C.ImageInput_supports(i.ptr, c_str))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Return a reference to the image format specification of the current subimage/MIPlevel.
@@ -154,13 +164,17 @@ func (i *ImageInput) Supports(feature string) bool {
 // change with a call to SeekSubImage().
 func (i *ImageInput) Spec() *ImageSpec {
 	ptr := C.ImageInput_spec(i.ptr)
-	return &ImageSpec{ptr}
+	ret := &ImageSpec{ptr}
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // CurrentSubimage returns the index of the subimage that is currently being read.
 // The first subimage (or the only subimage, if there is just one) is number 0.
 func (i *ImageInput) CurrentSubimage() int {
-	return int(C.ImageInput_current_subimage(i.ptr))
+	ret := int(C.ImageInput_current_subimage(i.ptr))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Seek to the given subimage within the open image file.
@@ -183,6 +197,8 @@ func (i *ImageInput) SeekSubimage(index int, newSpec *ImageSpec) bool {
 	}
 
 	ok := C.ImageInput_seek_subimage(i.ptr, C.int(index), newSpec.ptr)
+	runtime.KeepAlive(i)
+	runtime.KeepAlive(newSpec)
 	return bool(ok)
 }
 
@@ -190,7 +206,9 @@ func (i *ImageInput) SeekSubimage(index int, newSpec *ImageSpec) bool {
 // The highest-res MIP level (or the only level, if there is just
 // one) is number 0.
 func (i *ImageInput) CurrentMipLevel() int {
-	return int(C.ImageInput_current_miplevel(i.ptr))
+	ret := int(C.ImageInput_current_miplevel(i.ptr))
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Seek to the given subimage and MIP-map level within the open
@@ -217,6 +235,8 @@ func (i *ImageInput) SeekMipLevel(subimage, miplevel int, newSpec *ImageSpec) bo
 	}
 
 	ok := C.ImageInput_seek_subimage_miplevel(i.ptr, C.int(subimage), C.int(miplevel), newSpec.ptr)
+	runtime.KeepAlive(i)
+	runtime.KeepAlive(newSpec)
 	return bool(ok)
 }
 
@@ -228,7 +248,7 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_image_floats(i.ptr, pixels_ptr)
-
+	runtime.KeepAlive(i)
 	return pixels, i.LastError()
 }
 
@@ -286,7 +306,7 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 	}
 
 	C.ImageInput_read_image_format(i.ptr, (C.TypeDesc)(format), ptr, cbk)
-
+	runtime.KeepAlive(i)
 	return pixel_iface, i.LastError()
 }
 
@@ -300,7 +320,7 @@ func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_scanline_floats(i.ptr, C.int(y), C.int(z), pixels_ptr)
-
+	runtime.KeepAlive(i)
 	return pixels, i.LastError()
 }
 
@@ -316,6 +336,6 @@ func (i *ImageInput) ReadTile(x, y, z int) ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_tile_floats(i.ptr, C.int(x), C.int(y), C.int(z), pixels_ptr)
-
+	runtime.KeepAlive(i)
 	return pixels, i.LastError()
 }

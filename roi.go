@@ -38,6 +38,7 @@ func deleteROI(i *ROI) {
 		C.free(i.ptr)
 		i.ptr = nil
 	}
+	runtime.KeepAlive(i)
 }
 
 // Default constructor is an undefined region.
@@ -85,13 +86,17 @@ func (r *ROI) validOrAllPtr() unsafe.Pointer {
 	if r == nil || r.ptr == nil {
 		return roi_all.ptr
 	}
-	return r.ptr
+	ret := r.ptr
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Return a new copy of the ROI that can be freely modified.
 func (r *ROI) Copy() *ROI {
 	rc := C.ROI_Copy(r.ptr)
-	return newROI(rc)
+	ret := newROI(rc)
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // String returns a printable string representation
@@ -103,53 +108,73 @@ func (r *ROI) String() string {
 
 // Is a region defined?
 func (r *ROI) Defined() bool {
-	return bool(C.ROI_defined(r.ptr))
+	ret := bool(C.ROI_defined(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Width of the region (X)
 func (r *ROI) Width() int {
-	return int(C.ROI_width(r.ptr))
+	ret := int(C.ROI_width(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Height of the region (Y)
 func (r *ROI) Height() int {
-	return int(C.ROI_height(r.ptr))
+	ret := int(C.ROI_height(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Depth of the region (Z)
 func (r *ROI) Depth() int {
-	return int(C.ROI_depth(r.ptr))
+	ret := int(C.ROI_depth(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Number of channels in the region
 func (r *ROI) NumChannels() int {
-	return int(C.ROI_nchannels(r.ptr))
+	ret := int(C.ROI_nchannels(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 // Number of total pixels in the region
 // This is Width * Height * Depth
 func (r *ROI) NumPixels() int {
-	return int(C.ROI_npixels(r.ptr))
+	ret := int(C.ROI_npixels(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) XBegin() int {
-	return int(C.ROI_xbegin(r.ptr))
+	ret := int(C.ROI_xbegin(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetXBegin(x int) {
 	C.ROI_set_xbegin(r.ptr, C.int(x))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) XEnd() int {
-	return int(C.ROI_xend(r.ptr))
+	ret := int(C.ROI_xend(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetXEnd(x int) {
 	C.ROI_set_xend(r.ptr, C.int(x))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) YBegin() int {
-	return int(C.ROI_ybegin(r.ptr))
+	ret := int(C.ROI_ybegin(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetYBegin(y int) {
@@ -157,7 +182,9 @@ func (r *ROI) SetYBegin(y int) {
 }
 
 func (r *ROI) YEnd() int {
-	return int(C.ROI_yend(r.ptr))
+	ret := int(C.ROI_yend(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetYEnd(y int) {
@@ -165,15 +192,20 @@ func (r *ROI) SetYEnd(y int) {
 }
 
 func (r *ROI) ZBegin() int {
-	return int(C.ROI_zbegin(r.ptr))
+	ret := int(C.ROI_zbegin(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetZBegin(z int) {
 	C.ROI_set_zbegin(r.ptr, C.int(z))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) ZEnd() int {
-	return int(C.ROI_zend(r.ptr))
+	ret := int(C.ROI_zend(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetZEnd(z int) {
@@ -181,17 +213,23 @@ func (r *ROI) SetZEnd(z int) {
 }
 
 func (r *ROI) ChannelsBegin() int {
-	return int(C.ROI_chbegin(r.ptr))
+	ret := int(C.ROI_chbegin(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetChannelsBegin(ch int) {
 	C.ROI_set_chbegin(r.ptr, C.int(ch))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) ChannelsEnd() int {
-	return int(C.ROI_chend(r.ptr))
+	ret := int(C.ROI_chend(r.ptr))
+	runtime.KeepAlive(r)
+	return ret
 }
 
 func (r *ROI) SetChannelsEnd(ch int) {
 	C.ROI_set_chend(r.ptr, C.int(ch))
+	runtime.KeepAlive(r)
 }
