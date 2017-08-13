@@ -8,10 +8,17 @@ used in professional, large-scale animation and visual effects work for film.
 OpenImageIO is used extensively in animation and VFX studios all over the world, and is
 also incorporated into several commercial products.
 
+Motivation
+----------
+
+While there are other image processing bindings available, OpenImageIO is a common image processing solution to the Visual Effects industry, with specific support for concepts like EXR, deep compositing, OpenColorIO support, textures, and subimages. It isn't neccessarily the fastest solution, but it is comprehensive, and useful to VFX pipelines.
+
 Compatibility
 -------------
 
 Tested against OpenImageIO 1.4.x - 1.5.x 
+
+Ideally would like to be compatible with >= 1.6.x. Patches welcome.
  
 API Status
 -----------
