@@ -41,7 +41,6 @@ func TestImageOutputSupports(t *testing.T) {
 		"exif",
 		"iptc",
 		"multiimage",
-		"deepdata",
 	}
 
 	for _, expect := range expectSupports {

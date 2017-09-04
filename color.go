@@ -183,9 +183,6 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 	if err != nil {
 		return nil, err
 	}
-
-	runtime.KeepAlive(c)
-
 	return newColorProcessor(ptr), nil
 }
 

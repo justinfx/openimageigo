@@ -86,17 +86,14 @@ func (r *ROI) validOrAllPtr() unsafe.Pointer {
 	if r == nil || r.ptr == nil {
 		return roi_all.ptr
 	}
-	ret := r.ptr
-	runtime.KeepAlive(r)
-	return ret
+	return r.ptr
 }
 
 // Return a new copy of the ROI that can be freely modified.
 func (r *ROI) Copy() *ROI {
 	rc := C.ROI_Copy(r.ptr)
-	ret := newROI(rc)
 	runtime.KeepAlive(r)
-	return ret
+	return newROI(rc)
 }
 
 // String returns a printable string representation
@@ -179,6 +176,7 @@ func (r *ROI) YBegin() int {
 
 func (r *ROI) SetYBegin(y int) {
 	C.ROI_set_ybegin(r.ptr, C.int(y))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) YEnd() int {
@@ -189,6 +187,7 @@ func (r *ROI) YEnd() int {
 
 func (r *ROI) SetYEnd(y int) {
 	C.ROI_set_yend(r.ptr, C.int(y))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) ZBegin() int {
@@ -210,6 +209,7 @@ func (r *ROI) ZEnd() int {
 
 func (r *ROI) SetZEnd(z int) {
 	C.ROI_set_zend(r.ptr, C.int(z))
+	runtime.KeepAlive(r)
 }
 
 func (r *ROI) ChannelsBegin() int {

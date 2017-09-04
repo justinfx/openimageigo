@@ -50,6 +50,7 @@ func (i *ImageCache) Destroy(teardown bool) {
 // An nil error will be returned if no error has occured.
 func (i *ImageCache) LastError() error {
 	c_str := C.ImageCache_geterror(i.ptr)
+	runtime.KeepAlive(i)
 	if c_str == nil {
 		return nil
 	}
@@ -57,7 +58,6 @@ func (i *ImageCache) LastError() error {
 	if err == "" {
 		return nil
 	}
-	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 

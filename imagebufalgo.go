@@ -77,8 +77,6 @@ func Zero(dst *ImageBuf, opts ...AlgoOpts) error {
 		return dst.LastError()
 	}
 
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
@@ -97,8 +95,6 @@ func Fill(dst *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	if !ok {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -141,8 +137,6 @@ func Checker(dst *ImageBuf, width, height, depth int, color1, color2 []float32,
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads)),
 	)
 
-	runtime.KeepAlive(dst)
-
 	if !ok {
 		return dst.LastError()
 	}
@@ -155,13 +149,13 @@ func Checker(dst *ImageBuf, width, height, depth int, color1, color2 []float32,
 // set to ChannelOpts.Values[i] (if ChannelOpts.Values is not nil) or 0.0 (if ChannelOpts.Values is
 // nil).
 // If ChannelOpts.Order is nil, it will be interpreted as {0, 1, ..., nchannels-1}, mean-
-// ing that it’s only renaming channels, not reordering them.
+// ing that it's only renaming channels, not reordering them.
 // If ChannelOpts.NewNames is not nil, it points to a list of new channel names. Channels
 // for which ChannelOpts.NewNames[i] is the empty string (or all channels, if ChannelOpts.NewNames
 // == nil) will be named as follows: If ChannelOpts.ShuffleNames is false, the result-
 // ing dst image will have default channel names in the usual order ("R", "G", etc.), but
 // if ChannelOpts.ShuffleNames is true, the names will be taken from the corresponding
-// channels of the source image – be careful with this, shuffling both channel ordering and
+// channels of the source image - be careful with this, shuffling both channel ordering and
 // their names could result in no semantic change at all, if you catch the drift.
 type ChannelOpts struct {
 	Order        []int32
@@ -221,14 +215,10 @@ func Channels(dst, src *ImageBuf, nchannels int, opts ...*ChannelOpts) error {
 	}
 
 	ok := C.channels(dst.ptr, src.ptr, C.int(nchannels), order, values, newNames, shuffle)
-
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
@@ -240,13 +230,11 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.channel_append(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(dst)
-	runtime.KeepAlive(a)
-	runtime.KeepAlive(b)
 
 	return nil
 }
@@ -254,7 +242,7 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 // TODO: Flatten does not seem to work as expected
 //
 // Flatten copies pixels from deep image src into non-deep dst, compositing the depth samples
-// within each pixel to yield a single “flat” value per pixel. If src is not deep, it just copies
+// within each pixel to yield a single "flat" value per pixel. If src is not deep, it just copies
 // the pixels without alteration.
 // func Flatten(dst, src *ImageBuf, opts ...AlgoOpts) error {
 // 	opt := flatAlgoOpts(opts)
@@ -275,12 +263,10 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.crop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -297,12 +283,10 @@ func Cut(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.cut(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -315,12 +299,10 @@ func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(0), C.int(0),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -333,12 +315,10 @@ func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...Algo
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(zbegin), C.int(chbegin),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -349,12 +329,10 @@ func Flip(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.flip(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -365,12 +343,10 @@ func Flop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.flop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -382,12 +358,10 @@ func Flipflop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.flipflop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -397,12 +371,10 @@ func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.transpose(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -413,13 +385,11 @@ func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.add(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(a)
-	runtime.KeepAlive(b)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -430,12 +400,10 @@ func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.add_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -448,12 +416,10 @@ func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.add_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -464,13 +430,11 @@ func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.sub(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(a)
-	runtime.KeepAlive(b)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -481,12 +445,10 @@ func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.sub_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -499,12 +461,10 @@ func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.sub_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -516,13 +476,11 @@ func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.mul(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(a)
-	runtime.KeepAlive(b)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -534,12 +492,10 @@ func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.mul_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -553,12 +509,10 @@ func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.mul_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -582,13 +536,10 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 	ok := C.colorconvert(dst.ptr, src.ptr, c_from, c_to, C.bool(unpremult),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
@@ -605,38 +556,34 @@ func ColorConvertProcessor(dst, src *ImageBuf, cp *ColorProcessor, unpremult boo
 	ok := C.colorconvert_processor(dst.ptr, src.ptr, cp.ptr, C.bool(unpremult),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(cp)
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
 // Premult copies pixels from src to dst, and in the process multiply all color channels (those not
-// alpha or z) by the alpha value, to “premultiply” them. This presumes that the image starts
-// of as “unassociated alpha” a.k.a. “non-premultipled.” The alterations are restricted to the
+// alpha or z) by the alpha value, to "premultiply" them. This presumes that the image starts
+// of as "unassociated alpha" a.k.a. "non-premultipled." The alterations are restricted to the
 // pixels and channels of the supplied ROI (which defaults to all of src). This is just a copy
 // if there is no identified alpha channel (and a no-op if dst and src are the same image).
 func Premult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.premult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
 
 // Unpremult copies pixels from src to dst, and in the process divide all color channels (those not alpha
-// or z) by the alpha value, to “un-premultiply” them. This presumes that the image starts
-// of as “associated alpha” a.k.a. “premultipled.” The alterations are restricted to the pixels
+// or z) by the alpha value, to "un-premultiply" them. This presumes that the image starts
+// of as "associated alpha" a.k.a. "premultipled." The alterations are restricted to the pixels
 // and channels of the supplied ROI (which defaults to all of src). Pixels in which the alpha
 // channel is 0 will not be modified (since the operation is undefined in that case). This is
 // just a copy if there is no identified alpha channel (and a no-op if dst and src are the same
@@ -645,12 +592,10 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.unpremult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -685,12 +630,10 @@ func ConstantColors(src *ImageBuf, opts ...AlgoOpts) []float32 {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.is_constant_color(src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return nil
 	}
-
-	runtime.KeepAlive(src)
-
 	return values
 }
 
@@ -700,9 +643,7 @@ func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts
 	opt := flatAlgoOpts(opts)
 	ok := C.is_constant_channel(src.ptr, C.int(channel), C.float(val),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
-
 	runtime.KeepAlive(src)
-
 	return bool(ok)
 }
 
@@ -739,7 +680,6 @@ func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts .
 		opt.ROI.validOrAllPtr(), C.int(blockSize), C.int(opt.Threads))
 
 	runtime.KeepAlive(src)
-
 	return C.GoString(c_str)
 }
 
@@ -761,12 +701,10 @@ func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	defer C.free(unsafe.Pointer(c_filtname))
 
 	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(0.0), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -793,12 +731,10 @@ func ResizeFilter(dst, src *ImageBuf, filter string, filterWidth float32, opts .
 	defer C.free(unsafe.Pointer(c_filtname))
 
 	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(filterWidth), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
 
 	return nil
 }
@@ -814,13 +750,10 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.resample(dst.ptr, src.ptr, C.bool(interpolate), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(src)
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
@@ -860,14 +793,11 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 	ok := C.over(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(a)
-	runtime.KeepAlive(b)
-	runtime.KeepAlive(dst)
-
 	return nil
 }
 
@@ -898,8 +828,5 @@ func RenderTextColor(dst *ImageBuf, x, y int, text string, fontSize int, fontNam
 	if !bool(ok) {
 		return dst.LastError()
 	}
-
-	runtime.KeepAlive(dst)
-
 	return nil
 }

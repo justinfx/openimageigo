@@ -52,6 +52,7 @@ func OpenImageInput(filename string) (*ImageInput, error) {
 // An nil error will be returned if no error has occured.
 func (i *ImageInput) LastError() error {
 	c_str := C.ImageInput_geterror(i.ptr)
+	runtime.KeepAlive(i)
 	if c_str == nil {
 		return nil
 	}
@@ -59,7 +60,6 @@ func (i *ImageInput) LastError() error {
 	if err == "" {
 		return nil
 	}
-	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 
@@ -76,7 +76,6 @@ func (i *ImageInput) Open(filename string) error {
 	ptr := C.ImageInput_Open(c_str, cfg)
 	i.ptr = ptr
 
-	runtime.KeepAlive(i)
 	return i.LastError()
 }
 
@@ -85,7 +84,6 @@ func (i *ImageInput) Close() error {
 	if !bool(C.ImageInput_close(i.ptr)) {
 		return i.LastError()
 	}
-	runtime.KeepAlive(i)
 	return nil
 }
 
@@ -164,9 +162,8 @@ func (i *ImageInput) Supports(feature string) bool {
 // change with a call to SeekSubImage().
 func (i *ImageInput) Spec() *ImageSpec {
 	ptr := C.ImageInput_spec(i.ptr)
-	ret := &ImageSpec{ptr}
 	runtime.KeepAlive(i)
-	return ret
+	return &ImageSpec{ptr}
 }
 
 // CurrentSubimage returns the index of the subimage that is currently being read.
@@ -248,7 +245,7 @@ func (i *ImageInput) ReadImage() ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_image_floats(i.ptr, pixels_ptr)
-	runtime.KeepAlive(i)
+
 	return pixels, i.LastError()
 }
 
@@ -306,7 +303,7 @@ func (i *ImageInput) ReadImageFormat(format TypeDesc, progress *ProgressCallback
 	}
 
 	C.ImageInput_read_image_format(i.ptr, (C.TypeDesc)(format), ptr, cbk)
-	runtime.KeepAlive(i)
+
 	return pixel_iface, i.LastError()
 }
 
@@ -320,7 +317,7 @@ func (i *ImageInput) ReadScanline(y, z int) ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_scanline_floats(i.ptr, C.int(y), C.int(z), pixels_ptr)
-	runtime.KeepAlive(i)
+
 	return pixels, i.LastError()
 }
 
@@ -336,6 +333,6 @@ func (i *ImageInput) ReadTile(x, y, z int) ([]float32, error) {
 	pixels := make([]float32, size)
 	pixels_ptr := (*C.float)(unsafe.Pointer(&pixels[0]))
 	C.ImageInput_read_tile_floats(i.ptr, C.int(x), C.int(y), C.int(z), pixels_ptr)
-	runtime.KeepAlive(i)
+
 	return pixels, i.LastError()
 }

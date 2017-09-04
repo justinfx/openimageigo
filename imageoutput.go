@@ -56,6 +56,7 @@ func OpenImageOutput(filename string) (*ImageOutput, error) {
 // An nil error will be returned if no error has occured.
 func (i *ImageOutput) LastError() error {
 	c_str := C.ImageOutput_geterror(i.ptr)
+	runtime.KeepAlive(i)
 	if c_str == nil {
 		return nil
 	}
@@ -63,7 +64,6 @@ func (i *ImageOutput) LastError() error {
 	if err == "" {
 		return nil
 	}
-	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 
@@ -120,9 +120,8 @@ func (i *ImageOutput) Supports(feature string) bool {
 // Note that the contents of the spec will be empty unless it is further added to it
 func (i *ImageOutput) Spec() *ImageSpec {
 	ptr := C.ImageOutput_spec(i.ptr)
-	ret := &ImageSpec{ptr}
 	runtime.KeepAlive(i)
-	return ret
+	return &ImageSpec{ptr}
 }
 
 // Return the name of the format implemented by this image.

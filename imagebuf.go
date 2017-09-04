@@ -58,11 +58,11 @@ func (i *ImageBuf) LastError() error {
 	if c_str == nil {
 		return nil
 	}
+	runtime.KeepAlive(i)
 	err := C.GoString(c_str)
 	if err == "" {
 		return nil
 	}
-	runtime.KeepAlive(i)
 	return errors.New(err)
 }
 
@@ -72,7 +72,7 @@ func NewImageBuf() *ImageBuf {
 	return newImageBuf(buf)
 }
 
-// Construct an ImageBuf to read the named image – but don't actually read it yet!
+// Construct an ImageBuf to read the named image - but don't actually read it yet!
 // The image will actually be read when other methods need to access the spec and/or pixels,
 // or when an explicit call to init_spec() or read() is made, whichever comes first.
 //
@@ -81,7 +81,7 @@ func NewImageBufPath(path string) (*ImageBuf, error) {
 	return NewImageBufPathCache(path, nil)
 }
 
-// Construct an ImageBuf to read the named image – but don't actually read it yet!
+// Construct an ImageBuf to read the named image - but don't actually read it yet!
 // The image will actually be read when other methods need to access the spec and/or pixels,
 // or when an explicit call to init_spec() or read() is made, whichever comes first.
 //
@@ -96,11 +96,11 @@ func NewImageBufPathCache(path string, cache *ImageCache) (*ImageBuf, error) {
 	}
 
 	buf := newImageBuf(C.ImageBuf_New_WithCache(c_str, ptr))
+	runtime.KeepAlive(cache)
 	err := buf.LastError()
 	if err != nil {
 		return nil, err
 	}
-	runtime.KeepAlive(cache)
 	return buf, nil
 }
 
@@ -108,11 +108,11 @@ func NewImageBufPathCache(path string, cache *ImageCache) (*ImageBuf, error) {
 // and allocate storage for the pixels of the image (whose values will be uninitialized).
 func NewImageBufSpec(spec *ImageSpec) (*ImageBuf, error) {
 	buf := newImageBuf(C.ImageBuf_New_Spec(spec.ptr))
+	runtime.KeepAlive(spec)
 	err := buf.LastError()
 	if err != nil {
 		return nil, err
 	}
-	runtime.KeepAlive(spec)
 	return buf, nil
 }
 
@@ -146,7 +146,6 @@ func (i *ImageBuf) InitSpec(filename string, subimage, miplevel int) error {
 	if !ok {
 		return i.LastError()
 	}
-	runtime.KeepAlive(i)
 	return nil
 }
 
@@ -155,7 +154,9 @@ func (i *ImageBuf) InitSpec(filename string, subimage, miplevel int) error {
 // This uses ImageInput underneath, so will read any file format for which an appropriate
 // imageio plugin can be found.
 func (i *ImageBuf) Read(force bool) error {
-	return i.ReadFormatCallback(force, TypeUnknown, nil)
+	ret := i.ReadFormatCallback(force, TypeUnknown, nil)
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Read the file from disk. Generally will skip the read if we've already got a current
@@ -169,7 +170,9 @@ func (i *ImageBuf) Read(force bool) error {
 // return true if the process should abort, and false if it should continue.
 //
 func (i *ImageBuf) ReadCallback(force bool, progress *ProgressCallback) error {
-	return i.ReadFormatCallback(force, TypeUnknown, progress)
+	ret := i.ReadFormatCallback(force, TypeUnknown, progress)
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Read the file from disk. Generally will skip the read if we've already got a current
@@ -195,15 +198,15 @@ func (i *ImageBuf) ReadFormatCallback(force bool, convert TypeDesc, progress *Pr
 		return i.LastError()
 	}
 
-	runtime.KeepAlive(i)
-
 	return nil
 }
 
 // Write the image to the named file and file format
 // (fileformat=="" means to infer the type from the filename extension).
 func (i *ImageBuf) WriteFile(filepath, fileformat string) error {
-	return i.WriteFileProgress(filepath, fileformat, nil)
+	ret := i.WriteFileProgress(filepath, fileformat, nil)
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Write the image to the named file and file format
@@ -231,15 +234,15 @@ func (i *ImageBuf) WriteFileProgress(filepath, fileformat string, progress *Prog
 		return i.LastError()
 	}
 
-	runtime.KeepAlive(i)
-
 	return nil
 }
 
 // Write the image to the open ImageOutput 'out'. Return true if all went ok, false if there were errors writing.
 // It does NOT close the file when it's done (and so may be called in a loop to write a multi-image file).
 func (i *ImageBuf) WriteImageOutput(output *ImageOutput) error {
-	return i.WriteImageOutputProgress(output, nil)
+	ret := i.WriteImageOutputProgress(output, nil)
+	runtime.KeepAlive(output)
+	return ret
 }
 
 // Write the image to the open ImageOutput 'out'. Return true if all went ok, false if there were errors writing.
@@ -260,8 +263,7 @@ func (i *ImageBuf) WriteImageOutputProgress(output *ImageOutput, progress *Progr
 	if !bool(ok) {
 		return i.LastError()
 	}
-
-	runtime.KeepAlive(i)
+	runtime.KeepAlive(output)
 
 	return nil
 }
@@ -282,7 +284,7 @@ func (i *ImageBuf) SetWriteTiles(width, height, depth int) {
 // channel information, and data format).
 func (i *ImageBuf) CopyMetadata(src *ImageBuf) error {
 	C.ImageBuf_copy_metadata(i.ptr, src.ptr)
-	runtime.KeepAlive(i)
+	runtime.KeepAlive(src)
 	return i.LastError()
 }
 
@@ -292,10 +294,10 @@ func (i *ImageBuf) CopyMetadata(src *ImageBuf) error {
 // that do not exist in this will not be copied.
 func (i *ImageBuf) CopyPixels(src *ImageBuf) error {
 	ok := bool(C.ImageBuf_copy_pixels(i.ptr, src.ptr))
+	runtime.KeepAlive(src)
 	if !ok {
 		return i.LastError()
 	}
-	runtime.KeepAlive(i)
 	return nil
 }
 
@@ -312,17 +314,17 @@ func (i *ImageBuf) CopyPixels(src *ImageBuf) error {
 // type of the app buffer.
 func (i *ImageBuf) Copy(src *ImageBuf) error {
 	ok := bool(C.ImageBuf_copy(i.ptr, src.ptr))
+	runtime.KeepAlive(src)
 	if !ok {
 		return i.LastError()
 	}
-	runtime.KeepAlive(i)
 	return nil
 }
 
 // Swap with another ImageBuf.
 func (i *ImageBuf) Swap(other *ImageBuf) error {
 	C.ImageBuf_swap(i.ptr, other.ptr)
-	runtime.KeepAlive(i)
+	runtime.KeepAlive(other)
 	return i.LastError()
 }
 
@@ -346,7 +348,9 @@ func (i *ImageBuf) NativeSpec() *ImageSpec {
 // Use with extreme caution! If you use this for anything other than adding
 // attribute metadata, you are really taking your chances!
 func (i *ImageBuf) SpecMod() *ImageSpec {
-	return &ImageSpec{C.ImageBuf_specmod(i.ptr)}
+	ret := &ImageSpec{C.ImageBuf_specmod(i.ptr)}
+	runtime.KeepAlive(i)
+	return ret
 }
 
 // Return the name of this image.
@@ -423,8 +427,6 @@ func (i *ImageBuf) GetFloatPixels() ([]float32, error) {
 		return nil, i.LastError()
 	}
 
-	runtime.KeepAlive(i)
-
 	return pixels, nil
 }
 
@@ -476,8 +478,6 @@ func (i *ImageBuf) GetPixels(format TypeDesc) (interface{}, error) {
 		return nil, i.LastError()
 	}
 
-	runtime.KeepAlive(i)
-
 	return pixel_iface, nil
 }
 
@@ -522,12 +522,11 @@ func (i *ImageBuf) GetPixelRegion(roi *ROI, format TypeDesc) (interface{}, error
 		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
 		(C.TypeDesc)(format), ptr),
 	)
+	runtime.KeepAlive(roi)
 
 	if !ok {
 		return nil, i.LastError()
 	}
-
-	runtime.KeepAlive(i)
 
 	return pixel_iface, nil
 }
@@ -710,7 +709,7 @@ func (i *ImageBuf) ROIFull() *ROI {
 // regardless of newroi.
 func (i *ImageBuf) SetROIFull(roi *ROI) error {
 	C.ImageBuf_set_roi_full(i.ptr, roi.ptr)
-	runtime.KeepAlive(i)
+	runtime.KeepAlive(roi)
 	return i.LastError()
 }
 

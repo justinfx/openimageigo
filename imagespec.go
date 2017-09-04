@@ -14,7 +14,7 @@ import (
 	"unsafe"
 )
 
-// ImageSpec describes the data format of an image – dimensions, layout,
+// ImageSpec describes the data format of an image - dimensions, layout,
 // number and meanings of image channels.
 type ImageSpec struct {
 	ptr unsafe.Pointer
@@ -56,7 +56,9 @@ func (s *ImageSpec) DefaultChannelNames() {
 // Return the number of bytes for each channel datum, assuming they are
 // all stored using the data format given by format.
 func (s *ImageSpec) ChannelBytes() int {
-	return int(C.ImageSpec_channel_bytes(s.ptr))
+	ret := int(C.ImageSpec_channel_bytes(s.ptr))
+	runtime.KeepAlive(s)
+	return ret
 }
 
 // Return the number of bytes needed for the single specified channel.
@@ -166,6 +168,7 @@ func (s *ImageSpec) X() int {
 
 func (s *ImageSpec) SetX(val int) {
 	C.ImageSpec_set_x(s.ptr, C.int(val))
+	runtime.KeepAlive(s)
 }
 
 func (s *ImageSpec) Y() int {
@@ -364,6 +367,7 @@ func (s *ImageSpec) ChannelFormats() []TypeDesc {
 	formats := make([]TypeDesc, s.NumChannels())
 	formats_ptr := (*C.TypeDesc)(unsafe.Pointer(&formats[0]))
 	C.ImageSpec_channelformats(s.ptr, formats_ptr)
+	runtime.KeepAlive(s)
 	return formats
 }
 
@@ -379,10 +383,10 @@ func (s *ImageSpec) ChannelNames() []string {
 	c_names := make([]*C.char, s.NumChannels())
 	c_names_ptr := (**C.char)(unsafe.Pointer(&c_names[0]))
 	C.ImageSpec_channelnames(s.ptr, c_names_ptr)
+	runtime.KeepAlive(s)
 	for i, c := range c_names {
 		names[i] = C.GoString(c)
 	}
-	runtime.KeepAlive(s)
 	return names
 }
 
