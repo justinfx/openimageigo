@@ -16,9 +16,9 @@ While there are other image processing bindings available, OpenImageIO is a comm
 Compatibility
 -------------
 
-Tested against OpenImageIO 1.4.x - 1.5.x 
+Tested against OpenImageIO 1.4.x - 1.6.x 
 
-Ideally would like to be compatible with >= 1.6.x. Patches welcome.
+Support for >= 1.7.x is in progress.
  
 API Status
 -----------
