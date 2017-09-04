@@ -12,10 +12,6 @@ void ImageCache_Destroy(ImageCache *x, bool teardown) {
 	OIIO::ImageCache::destroy(static_cast<OIIO::ImageCache*>(x), teardown);
 }
 
-void ImageCache_clear(ImageCache *x) {
-	static_cast<OIIO::ImageCache*>(x)->clear();
-}
-
 const char* ImageCache_geterror(ImageCache* x) {
 	std::string sstring = static_cast<OIIO::ImageCache*>(x)->geterror();
 	if (sstring.empty()) {

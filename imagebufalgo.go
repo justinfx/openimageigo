@@ -351,13 +351,113 @@ func Flop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Flipflop copies src (or a subregion of src to the corresponding pixels of dst, but with both the
-// rows exchanged vertically and the columns exchanged horizontally (this is equivalent to
-// a 180 degree rotation).
-func Flipflop(dst, src *ImageBuf, opts ...AlgoOpts) error {
+/*
+Copy src to dst, but with the image pixels rotated 90 degrees.
+In other words,
+    AB  -->  DC
+    CD       BA
+
+Only the pixels (and channels) in src that are specified by roi will be
+copied to their corresponding positions in dst; the default roi is to
+copy the whole data region of src. If dst is uninitialized, it will be
+resized to be a float ImageBuf large enough to hold the region specified
+by roi. It is an error to pass both an uninitialied dst and an undefined
+roi.
+*/
+func Rotate90(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
-	ok := C.flipflop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	ok := C.rotate90(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+/*
+Copy src to dst, but with the image pixels rotated 180 degrees.
+In other words,
+    AB  -->  DC
+    CD       BA
+
+Only the pixels (and channels) in src that are specified by roi will be
+copied to their corresponding positions in dst; the default roi is to
+copy the whole data region of src. If dst is uninitialized, it will be
+resized to be a float ImageBuf large enough to hold the region specified
+by roi. It is an error to pass both an uninitialied dst and an undefined
+roi.
+*/
+func Rotate180(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.rotate180(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+/*
+Copy src to dst, but with the image pixels rotated 270 degrees.
+In other words,
+    AB  -->  DC
+    CD       BA
+
+Only the pixels (and channels) in src that are specified by roi will be
+copied to their corresponding positions in dst; the default roi is to
+copy the whole data region of src. If dst is uninitialized, it will be
+resized to be a float ImageBuf large enough to hold the region specified
+by roi. It is an error to pass both an uninitialied dst and an undefined
+roi.
+*/
+func Rotate270(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.rotate270(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	runtime.KeepAlive(src)
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+/*
+Rotate the src image by the angle (in radians, with positive angles
+clockwise).
+
+Only the pixels (and channels) of dst that are specified by roi will be
+copied from the rotated src; the default roi is to alter all the pixels
+in dst. If dst is uninitialized, it will be resized to be an ImageBuf
+large enough to hold the rotated image if recompute_roi is true, or will
+have the same ROI as src if recompute_roi is false. It is an error to
+pass both an uninitialied dst and an undefined roi.
+
+The filter is used to weight the src pixels falling underneath it for
+each dst pixel.  The caller may specify a reconstruction filter by name
+and width (expressed in pixels unts of the dst image), or rotate() will
+choose a reasonable default high-quality default filter (lanczos3) if
+the empty string is passed, and a reasonable filter width if filterwidth
+is 0. (Note that some filter choices only make sense with particular
+width, in which case this filterwidth parameter may be ignored.)
+*/
+func Rotate(dst, src *ImageBuf, angle float32,
+	filterName string, filterWidth float32,
+	recomputeROI bool, opts ...AlgoOpts) error {
+
+	opt := flatAlgoOpts(opts)
+	cname := C.CString(filterName)
+	defer C.free(unsafe.Pointer(cname))
+
+	ok := C.rotate(dst.ptr, src.ptr, C.float(angle),
+		cname, C.float(filterWidth),
+		C.bool(recomputeROI), opt.ROI.validOrAllPtr(),
+		C.int(opt.Threads))
+
 	runtime.KeepAlive(src)
 	if !bool(ok) {
 		return dst.LastError()
@@ -533,7 +633,16 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 	c_to := C.CString(to)
 	defer C.free(unsafe.Pointer(c_to))
 
-	ok := C.colorconvert(dst.ptr, src.ptr, c_from, c_to, C.bool(unpremult),
+	c_empty := C.CString("")
+	defer C.free(unsafe.Pointer(c_empty))
+
+	ok := C.colorconvert(
+		dst.ptr, src.ptr, 
+		c_from, c_to, 
+		C.bool(unpremult),
+		c_empty, // context_key
+		c_empty, // context_value
+		nil, // ColorConfig*
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
 	runtime.KeepAlive(src)

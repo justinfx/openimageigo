@@ -389,8 +389,8 @@ func TestAlgoFlipFlop(t *testing.T) {
 		t.Errorf("Expected pixels %v; got %v", expected, pixels)
 	}
 
-	// Flopflop
-	checkFatalError(t, Flipflop(dst, buf))
+	// Rotate180
+	checkFatalError(t, Rotate180(dst, buf))
 
 	iface, err = dst.GetPixelRegion(roi, TypeFloat)
 	if err != nil {
@@ -401,6 +401,26 @@ func TestAlgoFlipFlop(t *testing.T) {
 	if !reflect.DeepEqual(pixels, expected) {
 		t.Errorf("Expected pixels %v; got %v", expected, pixels)
 	}
+}
+
+func TestAlgoRotate(t *testing.T) {
+	spec := NewImageSpecSize(16, 16, 3, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	red := []float32{1, 0, 0}
+	blue := []float32{0, 0, 1}
+
+	checkFatalError(t, Checker2D(buf, 4, 4, red, blue, 0, 0))
+
+	dst := NewImageBuf()
+
+	checkFatalError(t, Rotate90(dst, buf))
+	checkFatalError(t, Rotate180(dst, buf))
+	checkFatalError(t, Rotate270(dst, buf))
+	checkFatalError(t, Rotate(dst, buf, 60, "", 0, true))
 }
 
 func TestAlgoTranspose(t *testing.T) {

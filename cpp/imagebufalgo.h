@@ -36,8 +36,6 @@ bool flip(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
-
 bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 // bool circular_shift(ImageBuf *dst, const ImageBuf *src, int xshift, int yshift,
@@ -79,8 +77,13 @@ bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads
 
 // bool rangeexpand(ImageBuf *dst, const ImageBuf *src, bool useluma=false, ROI* roi, int nthreads);
 
-bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
-				   bool unpremult, ROI* roi, int nthreads);
+bool colorconvert(ImageBuf* dst, const ImageBuf* src,
+	                const char* from, const char* to,
+	                bool unpremult,
+	                const char* context_key,
+	                const char* context_value,
+	                ColorConfig *colorconfig,
+	                ROI* roi, int nthreads);
 
 // bool ociolook(ImageBuf *dst, const ImageBuf *src, const char *looks, const char *from,
 // 			   const char *to, bool unpremult=false, bool inverse=false, const char *key=NULL,
@@ -123,7 +126,6 @@ bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads);
 const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 								  ROI* roi, int blocksize, int nthreads);
 
-/* OIIO >= 1.5.x
 // bool warp (ImageBuf *dst, const ImageBuf *src,
 //                     const Imath::M33f &M,
 //                     const char* filtername,
@@ -141,14 +143,14 @@ const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 
 // bool reorient(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool rotate90(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool rotate90(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool rotate180(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool rotate180(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool rotate270(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+bool rotate270(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
-// bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, const char* filtername, 
-// 				float filterwidth, bool recompute_roi, ROI *roi, int nthreads);
+bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, const char* filtername, 
+				float filterwidth, bool recompute_roi, ROI *roi, int nthreads);
 
 // bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, Filter2D *filter,
 //              bool recompute_roi, ROI *rot, int nthreads);
@@ -160,7 +162,6 @@ const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 // bool rotate (ImageBuf *dst, const ImageBuf *src, float angle, float center_x, 
 // 			 float center_y, Filter2D *filter, bool recompute_roi = false, 
 // 			 ROI *rot, int nthreads);
-*/
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads);

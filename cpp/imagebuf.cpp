@@ -196,20 +196,10 @@ int ImageBuf_nchannels(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->nchannels();
 }
 
-bool ImageBuf_get_pixel_channels(ImageBuf* buf, 
-								 int xbegin, int xend, 
-								 int ybegin, int yend, 
-								 int zbegin, int zend, 
-								 int chbegin, int chend, 
-								 TypeDesc format, 
-								 void *result)
-{
-	return static_cast<OIIO::ImageBuf*>(buf)->get_pixel_channels(xbegin, xend,
-														 		 ybegin, yend, 
-														 		 zbegin, zend, 
-														 		 chbegin, chend, 
-														 		 fromTypeDesc(format), 
-														 		 result );	
+bool ImageBuf_get_pixels(ImageBuf* buf, ROI* roi, TypeDesc format, void *result) {
+	return static_cast<OIIO::ImageBuf*>(buf)->get_pixels(*(static_cast<OIIO::ROI*>(roi)),
+														 fromTypeDesc(format), 
+														 result );		
 }
 
 int ImageBuf_orientation(ImageBuf* buf) {

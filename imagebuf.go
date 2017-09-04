@@ -414,14 +414,12 @@ func (i *ImageBuf) GetFloatPixels() ([]float32, error) {
 
 	roi := i.ROI()
 
-	ok := bool(C.ImageBuf_get_pixel_channels(
+	ok := bool(C.ImageBuf_get_pixels(
 		i.ptr,
-		C.int(roi.XBegin()), C.int(roi.XEnd()),
-		C.int(roi.YBegin()), C.int(roi.YEnd()),
-		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
-		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		roi.ptr,
 		(C.TypeDesc)(TypeFloat), ptr),
 	)
+	runtime.KeepAlive(roi)
 
 	if !ok {
 		return nil, i.LastError()
@@ -465,14 +463,12 @@ func (i *ImageBuf) GetPixels(format TypeDesc) (interface{}, error) {
 
 	roi := i.ROI()
 
-	ok := bool(C.ImageBuf_get_pixel_channels(
+	ok := bool(C.ImageBuf_get_pixels(
 		i.ptr,
-		C.int(roi.XBegin()), C.int(roi.XEnd()),
-		C.int(roi.YBegin()), C.int(roi.YEnd()),
-		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
-		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		roi.ptr,
 		(C.TypeDesc)(format), ptr),
 	)
+	runtime.KeepAlive(roi)
 
 	if !ok {
 		return nil, i.LastError()
@@ -514,12 +510,9 @@ func (i *ImageBuf) GetPixelRegion(roi *ROI, format TypeDesc) (interface{}, error
 		return nil, err
 	}
 
-	ok := bool(C.ImageBuf_get_pixel_channels(
+	ok := bool(C.ImageBuf_get_pixels(
 		i.ptr,
-		C.int(roi.XBegin()), C.int(roi.XEnd()),
-		C.int(roi.YBegin()), C.int(roi.YEnd()),
-		C.int(roi.ZBegin()), C.int(roi.ZEnd()),
-		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
+		roi.ptr,
 		(C.TypeDesc)(format), ptr),
 	)
 	runtime.KeepAlive(roi)

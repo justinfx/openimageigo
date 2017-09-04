@@ -10,6 +10,7 @@ import "C"
 
 import (
 	"errors"
+	"log"
 	"runtime"
 	"unsafe"
 )
@@ -62,9 +63,9 @@ func (i *ImageCache) LastError() error {
 }
 
 // Close everything, free resources, start from scratch.
+// Deprecated [oiio 1.7]
 func (i *ImageCache) Clear() {
-	C.ImageCache_clear(i.ptr)
-	runtime.KeepAlive(i)
+	log.Println("Deprecated ImageCache.Clear() [oiio 1.7]")
 }
 
 // Return the statistics output as a huge string.

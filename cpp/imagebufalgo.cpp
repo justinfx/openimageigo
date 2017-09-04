@@ -116,14 +116,6 @@ bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			nthreads);
 }
 
-bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
-	return OIIO::ImageBufAlgo::flipflop(
-			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*(static_cast<const OIIO::ImageBuf*>(src)),
-			*(static_cast<OIIO::ROI*>(roi)),
-			nthreads);
-}
-
 bool transpose(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 	return OIIO::ImageBufAlgo::transpose(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
@@ -213,15 +205,24 @@ bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads
 			nthreads);
 }
 
-bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
-				   bool unpremult, ROI* roi, int nthreads) 
+bool colorconvert(ImageBuf* dst, const ImageBuf* src,
+	                const char* from, 
+	                const char* to,
+	                bool unpremult,
+	                const char* context_key,
+	                const char* context_value,
+	                ColorConfig *colorconfig,
+	                ROI* roi, int nthreads) 
 {
 	return OIIO::ImageBufAlgo::colorconvert(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
-			from,
+			from, 
 			to,
 			unpremult,
+			context_key,
+			context_value,
+			static_cast<OIIO::ColorConfig*>(colorconfig),
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 
@@ -288,6 +289,44 @@ const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 							blocksize,
 							nthreads);		
 	return aHash.c_str();
+}
+
+bool rotate90(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::rotate90(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool rotate180(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::rotate180(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool rotate270(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
+	return OIIO::ImageBufAlgo::rotate270(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool rotate(ImageBuf *dst, const ImageBuf *src, float angle, const char* filtername, 
+				float filterwidth, bool recompute_roi, ROI *roi, int nthreads) 
+{
+	return OIIO::ImageBufAlgo::rotate(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			angle,
+			filtername,
+			filterwidth,
+			recompute_roi,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,

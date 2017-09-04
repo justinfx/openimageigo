@@ -6,11 +6,10 @@ import (
 
 func TestCreateImageCache(t *testing.T) {
 	private := CreateImageCache(false)
-	private.Clear()
 	private.Destroy(true)
 
-	shared := CreateImageCache(true)
-	shared.Clear()
+	CreateImageCache(true)
+
 }
 
 func TestImageCacheStats(t *testing.T) {
