@@ -203,7 +203,20 @@ func TestAlgoChannelAppend(t *testing.T) {
 		t.Fatal(err.Error())
 	}
 
-	a, err := NewImageBufSpec(NewImageSpecSize(32, 32, 1, TypeFloat))
+	// Has right number of channels
+	if rgb.NumChannels() != 3 {
+		t.Errorf("Expected 3 channels; got %d", rgb.NumChannels())
+	}
+
+	expected := []string{"R", "G", "B"}
+	actual := rgb.Spec().ChannelNames()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected names %v; got %v", expected, actual)
+	}
+
+	spec := NewImageSpecSize(32, 32, 1, TypeFloat)
+	spec.SetChannelNames([]string{"A"})
+	a, err := NewImageBufSpec(spec)
 	if err != nil {
 		t.Fatal(err.Error())
 	}
@@ -211,6 +224,17 @@ func TestAlgoChannelAppend(t *testing.T) {
 	fill = []float32{1}
 	if err = Fill(a, fill); err != nil {
 		t.Fatal(err.Error())
+	}
+
+	// Has right number of channels
+	if a.NumChannels() != 1 {
+		t.Errorf("Expected 1 channels; got %d", a.NumChannels())
+	}
+
+	expected = []string{"A"}
+	actual = a.Spec().ChannelNames()
+	if !reflect.DeepEqual(actual, expected) {
+		t.Errorf("Expected names %v; got %v", expected, actual)
 	}
 
 	dst := NewImageBuf()
@@ -222,8 +246,8 @@ func TestAlgoChannelAppend(t *testing.T) {
 		t.Errorf("Expected 4 channels; got %d", dst.NumChannels())
 	}
 
-	expected := []string{"R", "G", "B", "A"}
-	actual := dst.Spec().ChannelNames()
+	expected = []string{"R", "G", "B", "A"}
+	actual = dst.Spec().ChannelNames()
 	if !reflect.DeepEqual(actual, expected) {
 		t.Errorf("Expected names %v; got %v", expected, actual)
 	}
