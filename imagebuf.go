@@ -197,6 +197,7 @@ func (i *ImageBuf) ReadFormatCallback(force bool, convert TypeDesc, progress *Pr
 	if !bool(ok) {
 		return i.LastError()
 	}
+	runtime.KeepAlive(i)
 
 	return nil
 }
@@ -233,6 +234,7 @@ func (i *ImageBuf) WriteFileProgress(filepath, fileformat string, progress *Prog
 	if !bool(ok) {
 		return i.LastError()
 	}
+	runtime.KeepAlive(i)
 
 	return nil
 }
@@ -426,6 +428,7 @@ func (i *ImageBuf) GetFloatPixels() ([]float32, error) {
 	if !ok {
 		return nil, i.LastError()
 	}
+	runtime.KeepAlive(i)
 
 	return pixels, nil
 }
@@ -477,6 +480,7 @@ func (i *ImageBuf) GetPixels(format TypeDesc) (interface{}, error) {
 	if !ok {
 		return nil, i.LastError()
 	}
+	runtime.KeepAlive(i)
 
 	return pixel_iface, nil
 }
