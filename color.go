@@ -55,7 +55,7 @@ func newColorConfig(i unsafe.Pointer) *ColorConfig {
 
 func deleteColorConfig(i *ColorConfig) {
 	if i.ptr != nil {
-		C.free(i.ptr)
+		C.deleteColorConfig(i.ptr)
 		i.ptr = nil
 	}
 	runtime.KeepAlive(i)

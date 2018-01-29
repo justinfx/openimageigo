@@ -13,6 +13,8 @@ typedef void ColorConfig;
 ColorConfig* New_ColorConfig();
 ColorConfig* New_ColorConfigPath(const char * filename);
 
+void deleteColorConfig(ColorConfig* c);
+
 bool ColorConfig_error(ColorConfig* c);
 
 const char* ColorConfig_geterror(ColorConfig* c);

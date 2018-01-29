@@ -27,7 +27,7 @@ func newImageOutput(i unsafe.Pointer) *ImageOutput {
 
 func deleteImageOutput(i *ImageOutput) {
 	if i.ptr != nil {
-		C.free(i.ptr)
+		C.deleteImageOutput(i.ptr)
 		i.ptr = nil
 	}
 	runtime.KeepAlive(i)

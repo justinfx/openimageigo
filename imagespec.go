@@ -28,7 +28,7 @@ func newImageSpec(i unsafe.Pointer) *ImageSpec {
 
 func deleteImageSpec(i *ImageSpec) {
 	if i.ptr != nil {
-		C.free(i.ptr)
+		C.deleteImageSpec(i.ptr)
 		i.ptr = nil
 	}
 	runtime.KeepAlive(i)
