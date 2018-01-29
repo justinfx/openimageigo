@@ -118,13 +118,25 @@ func NewImageBufSpec(spec *ImageSpec) (*ImageBuf, error) {
 
 // Is this ImageBuf object initialized?
 func (i *ImageBuf) Initialized() bool {
+	if i.ptr == nil {
+		return false
+	}
 	ret := bool(C.ImageBuf_initialized(i.ptr))
 	runtime.KeepAlive(i)
 	return ret
 }
 
+// Destroy the object immediately instead of waiting for GC.
+func (i *ImageBuf) Destroy() {
+	runtime.SetFinalizer(i, nil)
+	deleteImageBuf(i)
+}
+
 // Restore the ImageBuf to an uninitialized state.
 func (i *ImageBuf) Clear() {
+	if i.ptr == nil {
+		return
+	}
 	C.ImageBuf_clear(i.ptr)
 	runtime.KeepAlive(i)
 }

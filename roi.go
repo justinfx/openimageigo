@@ -82,6 +82,12 @@ func NewROIRegion3D(xbegin, xend, ybegin, yend, zbegin, zend, chbegin, chend int
 	return newROI(ptr)
 }
 
+// Destroy the object immediately instead of waiting for GC.
+func (r *ROI) Destroy() {
+	runtime.SetFinalizer(r, nil)
+	deleteROI(r)
+}
+
 func (r *ROI) validOrAllPtr() unsafe.Pointer {
 	if r == nil || r.ptr == nil {
 		return roi_all.ptr

@@ -34,6 +34,12 @@ func deleteColorProcessor(i *ColorProcessor) {
 	runtime.KeepAlive(i)
 }
 
+// Destroy the object immediately instead of waiting for GC.
+func (c *ColorProcessor) Destroy() {
+	runtime.SetFinalizer(c, nil)
+	deleteColorProcessor(c)
+}
+
 // Represents the set of all color transformations that are allowed.
 // If OpenColorIO is enabled at build time, this configuration is loaded
 // at runtime, allowing the user to have complete control of all color
@@ -86,6 +92,12 @@ func NewColorConfigPath(path string) (*ColorConfig, error) {
 	defer C.free(unsafe.Pointer(c_str))
 	c := newColorConfig(C.New_ColorConfigPath(c_str))
 	return c, c.error()
+}
+
+// Destroy the object immediately instead of waiting for GC.
+func (c *ColorConfig) Destroy() {
+	runtime.SetFinalizer(c, nil)
+	deleteColorConfig(c)
 }
 
 // Get the number of ColorSpace(s) defined in this configuration
@@ -191,7 +203,7 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 // was called, it will return an empty string.
 func (c *ColorConfig) error() error {
 	isError := C.ColorConfig_error(c.ptr)
-	if C.bool(isError) {
+	if bool(isError) {
 		return errors.New(C.GoString(C.ColorConfig_geterror(c.ptr)))
 	}
 	runtime.KeepAlive(c)

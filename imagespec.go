@@ -46,6 +46,12 @@ func NewImageSpecSize(x, y, chans int, format TypeDesc) *ImageSpec {
 	return newImageSpec(spec)
 }
 
+// Destroy the object immediately instead of waiting for GC.
+func (s *ImageSpec) Destroy() {
+	runtime.SetFinalizer(s, nil)
+	deleteImageSpec(s)
+}
+
 // Set the channelnames to reasonable defaults ("R", "G", "B", "A"),
 // and alpha_channel, based on the number of channels.
 func (s *ImageSpec) DefaultChannelNames() {
