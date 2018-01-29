@@ -45,7 +45,7 @@ func newImageBuf(i unsafe.Pointer) *ImageBuf {
 func deleteImageBuf(i *ImageBuf) {
 	if i.ptr != nil {
 		C.ImageBuf_clear(i.ptr)
-		C.free(i.ptr)
+		C.deleteImageBuf(i.ptr)
 		i.ptr = nil
 	}
 	runtime.KeepAlive(i)

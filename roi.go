@@ -35,7 +35,7 @@ func newROI(i unsafe.Pointer) *ROI {
 
 func deleteROI(i *ROI) {
 	if i.ptr != nil {
-		C.free(i.ptr)
+		C.deleteROI(i.ptr)
 		i.ptr = nil
 	}
 	runtime.KeepAlive(i)

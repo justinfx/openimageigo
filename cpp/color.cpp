@@ -11,6 +11,10 @@ ColorConfig* New_ColorConfigPath(const char * filename) {
 	return static_cast<ColorConfig*>(new OIIO::ColorConfig(filename));
 }
 
+void deleteColorConfig(ColorConfig* c) {
+	delete static_cast<OIIO::ColorConfig*>(c);
+}
+
 bool supportsOpenColorIO() {
 	return OIIO::ColorConfig::supportsOpenColorIO();
 }
