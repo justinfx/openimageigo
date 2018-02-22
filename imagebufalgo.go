@@ -73,6 +73,9 @@ func Zero(dst *ImageBuf, opts ...AlgoOpts) error {
 	}
 
 	ok := bool(C.zero(dst.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads)))
+
+	runtime.KeepAlive(dst)
+
 	if !ok {
 		return dst.LastError()
 	}
@@ -92,6 +95,10 @@ func Fill(dst *ImageBuf, values []float32, opts ...AlgoOpts) error {
 
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 	ok := bool(C.fill(dst.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads)))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(values)
+
 	if !ok {
 		return dst.LastError()
 	}
@@ -136,6 +143,9 @@ func Checker(dst *ImageBuf, width, height, depth int, color1, color2 []float32,
 		c1_ptr, c2_ptr, C.int(xoffset), C.int(yoffset), C.int(zoffset),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads)),
 	)
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(color1)
+	runtime.KeepAlive(color2)
 
 	if !ok {
 		return dst.LastError()
@@ -215,7 +225,11 @@ func Channels(dst, src *ImageBuf, nchannels int, opts ...*ChannelOpts) error {
 	}
 
 	ok := C.channels(dst.ptr, src.ptr, C.int(nchannels), order, values, newNames, shuffle)
+
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(opts)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -230,8 +244,12 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.channel_append(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(a)
 	runtime.KeepAlive(b)
+	runtime.KeepAlive(opts)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -263,7 +281,11 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.crop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -283,7 +305,11 @@ func Cut(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.cut(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -299,7 +325,10 @@ func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(0), C.int(0),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -315,7 +344,10 @@ func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...Algo
 	ok := C.paste(dst.ptr, C.int(xbegin), C.int(ybegin), C.int(zbegin), C.int(chbegin),
 		src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -329,7 +361,11 @@ func Flip(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.flip(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -343,7 +379,11 @@ func Flop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.flop(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -459,6 +499,8 @@ func Rotate(dst, src *ImageBuf, angle float32,
 		C.int(opt.Threads))
 
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -471,7 +513,11 @@ func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.transpose(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -485,8 +531,12 @@ func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.add(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(a)
 	runtime.KeepAlive(b)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -500,7 +550,11 @@ func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.add_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -516,7 +570,12 @@ func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.add_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(values)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -530,8 +589,12 @@ func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.sub(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(a)
 	runtime.KeepAlive(b)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -545,7 +608,11 @@ func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.sub_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -561,7 +628,12 @@ func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.sub_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(values)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -576,8 +648,12 @@ func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.mul(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(a)
 	runtime.KeepAlive(b)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -592,7 +668,11 @@ func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.mul_value(dst.ptr, src.ptr, C.float(value), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -609,7 +689,12 @@ func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.mul_values(dst.ptr, src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(values)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -645,7 +730,10 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 		nil, // ColorConfig*
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -665,8 +753,11 @@ func ColorConvertProcessor(dst, src *ImageBuf, cp *ColorProcessor, unpremult boo
 	ok := C.colorconvert_processor(dst.ptr, src.ptr, cp.ptr, C.bool(unpremult),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(cp)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -682,7 +773,11 @@ func Premult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.premult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -701,7 +796,11 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.unpremult(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -714,7 +813,10 @@ func Unpremult(dst, src *ImageBuf, opts ...AlgoOpts) error {
 func IsConstantColor(src *ImageBuf, opts ...AlgoOpts) bool {
 	opt := flatAlgoOpts(opts)
 	ok := C.is_constant_color(src.ptr, nil, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	return bool(ok)
 }
 
@@ -739,7 +841,11 @@ func ConstantColors(src *ImageBuf, opts ...AlgoOpts) []float32 {
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 
 	ok := C.is_constant_color(src.ptr, c_ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(values)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return nil
 	}
@@ -752,7 +858,10 @@ func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts
 	opt := flatAlgoOpts(opts)
 	ok := C.is_constant_channel(src.ptr, C.int(channel), C.float(val),
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	return bool(ok)
 }
 
@@ -764,7 +873,10 @@ func IsConstantChannel(src *ImageBuf, channel int, val float32, opts ...AlgoOpts
 func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
 	opt := flatAlgoOpts(opts)
 	ok := C.is_monochrome(src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	return bool(ok)
 }
 
@@ -789,6 +901,8 @@ func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts .
 		opt.ROI.validOrAllPtr(), C.int(blockSize), C.int(opt.Threads))
 
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	return C.GoString(c_str)
 }
 
@@ -810,7 +924,11 @@ func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	defer C.free(unsafe.Pointer(c_filtname))
 
 	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(0.0), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -840,7 +958,11 @@ func ResizeFilter(dst, src *ImageBuf, filter string, filterWidth float32, opts .
 	defer C.free(unsafe.Pointer(c_filtname))
 
 	ok := C.resize(dst.ptr, src.ptr, c_filtname, C.float(filterWidth), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -859,7 +981,11 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.resample(dst.ptr, src.ptr, C.bool(interpolate), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -902,8 +1028,12 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 func Over(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 	ok := C.over(dst.ptr, a.ptr, b.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
 	runtime.KeepAlive(a)
 	runtime.KeepAlive(b)
+	runtime.KeepAlive(opt)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -934,6 +1064,10 @@ func RenderTextColor(dst *ImageBuf, x, y int, text string, fontSize int, fontNam
 	}
 
 	ok := C.render_text(dst.ptr, C.int(x), C.int(y), c_text, C.int(fontSize), c_fontName, color_ptr)
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(color)
+
 	if !bool(ok) {
 		return dst.LastError()
 	}
