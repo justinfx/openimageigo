@@ -409,6 +409,8 @@ func Rotate90(dst, src *ImageBuf, opts ...AlgoOpts) error {
 
 	ok := C.rotate90(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(opt)
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -434,6 +436,8 @@ func Rotate180(dst, src *ImageBuf, opts ...AlgoOpts) error {
 
 	ok := C.rotate180(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(opt)
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -459,6 +463,8 @@ func Rotate270(dst, src *ImageBuf, opts ...AlgoOpts) error {
 
 	ok := C.rotate270(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 	runtime.KeepAlive(src)
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(opt)
 	if !bool(ok) {
 		return dst.LastError()
 	}
@@ -722,12 +728,12 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 	defer C.free(unsafe.Pointer(c_empty))
 
 	ok := C.colorconvert(
-		dst.ptr, src.ptr, 
-		c_from, c_to, 
+		dst.ptr, src.ptr,
+		c_from, c_to,
 		C.bool(unpremult),
 		c_empty, // context_key
 		c_empty, // context_value
-		nil, // ColorConfig*
+		nil,     // ColorConfig*
 		opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
 	runtime.KeepAlive(dst)
