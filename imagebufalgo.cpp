@@ -288,9 +288,7 @@ char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 							blocksize,
 							nthreads);
 
-    char* c = (char*)(malloc(aHash.length()));
-    strcpy(c, aHash.c_str());
-    return c;
+    return strdup(aHash.c_str());
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,

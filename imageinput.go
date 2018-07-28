@@ -63,6 +63,7 @@ func (i *ImageInput) LastError() error {
 		return nil
 	}
 	err := C.GoString(c_str)
+	C.free(unsafe.Pointer(c_str))
 	if err == "" {
 		return nil
 	}

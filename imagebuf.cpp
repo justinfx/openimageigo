@@ -22,11 +22,12 @@ IBStorage toIBStorage(OIIO::ImageBuf::IBStorage s) {
 
 extern "C" {
 
-const char* ImageBuf_geterror(ImageBuf* buf) {
+char* ImageBuf_geterror(ImageBuf* buf) {
 	if (!static_cast<OIIO::ImageBuf*>(buf)->has_error()) {
 		return NULL;
 	}
-	return static_cast<OIIO::ImageBuf*>(buf)->geterror().c_str();
+	std::string err = static_cast<OIIO::ImageBuf*>(buf)->geterror();
+	return strdup(err.c_str());
 }
 
 void deleteImageBuf(ImageBuf *buf) {

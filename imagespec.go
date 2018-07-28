@@ -411,7 +411,9 @@ func (s *ImageSpec) SetChannelNames(names []string) {
 
 // Convert ImageSpec class into XML string.
 func (s *ImageSpec) ToXml() string {
-	ret := C.GoString(C.ImageSpec_to_xml(s.ptr))
+	c_str := C.ImageSpec_to_xml(s.ptr)
+	ret := C.GoString(c_str)
+	C.free(unsafe.Pointer(c_str))
 	runtime.KeepAlive(s)
 	return ret
 }

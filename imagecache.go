@@ -55,6 +55,7 @@ func (i *ImageCache) LastError() error {
 		return nil
 	}
 	err := C.GoString(c_str)
+	C.free(unsafe.Pointer(c_str))
 	if err == "" {
 		return nil
 	}
@@ -73,6 +74,7 @@ func (i *ImageCache) GetStats(level int) string {
 	c_stats := C.ImageCache_getstats(i.ptr, C.int(level))
 	runtime.KeepAlive(i)
 	stats := C.GoString(c_stats)
+	C.free(unsafe.Pointer(c_stats))
 	return stats
 }
 

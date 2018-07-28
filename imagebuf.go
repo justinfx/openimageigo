@@ -60,6 +60,7 @@ func (i *ImageBuf) LastError() error {
 	}
 	runtime.KeepAlive(i)
 	err := C.GoString(c_str)
+	C.free(unsafe.Pointer(c_str))
 	if err == "" {
 		return nil
 	}
