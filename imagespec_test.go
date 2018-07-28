@@ -216,7 +216,7 @@ func TestImageSpecEraseAttribute(t *testing.T) {
 	}
 
 	if actual := spec.AttributeString("STR_VALUE"); actual != str {
-		t.Fatalf("STR_VALUE attribute not set properly. Expected %d, got %d", str, actual)
+		t.Fatalf("STR_VALUE attribute not set properly. Expected %s, got %s", str, actual)
 	}
 
 	spec.EraseAttribute("StR_VaLUe", true) // case-sensitive
