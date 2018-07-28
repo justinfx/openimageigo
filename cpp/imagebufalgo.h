@@ -123,8 +123,8 @@ bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads);
 
 // ROI* nonzero_region(const ImageBuf *src, ROI* roi, int nthreads);
 
-const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
-								  ROI* roi, int blocksize, int nthreads);
+char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
+						   ROI* roi, int blocksize, int nthreads);
 
 // bool warp (ImageBuf *dst, const ImageBuf *src,
 //                     const Imath::M33f &M,

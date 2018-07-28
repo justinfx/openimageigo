@@ -896,20 +896,23 @@ func IsMonochrome(src *ImageBuf, opts ...AlgoOpts) bool {
 func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts ...AlgoOpts) string {
 	opt := flatAlgoOpts(opts)
 
-	c_extraInfo := C.CString(extraInfo)
-	defer C.free(unsafe.Pointer(c_extraInfo))
+	cExtraInfo := C.CString(extraInfo)
+	defer C.free(unsafe.Pointer(cExtraInfo))
 
 	if blockSize < 0 {
 		blockSize = 0
 	}
 
-	c_str := C.computePixelHashSHA1(src.ptr, c_extraInfo,
+	cStr := C.computePixelHashSHA1(src.ptr, cExtraInfo,
 		opt.ROI.validOrAllPtr(), C.int(blockSize), C.int(opt.Threads))
+
+	str := C.GoString(cStr)
+	C.free(unsafe.Pointer(cStr))
 
 	runtime.KeepAlive(src)
 	runtime.KeepAlive(opt)
 
-	return C.GoString(c_str)
+	return str
 }
 
 // Set dst, over the region of interest, to be a resized version of the
