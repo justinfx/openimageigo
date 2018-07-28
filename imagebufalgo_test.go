@@ -684,11 +684,14 @@ func TestAlgoComputeHash(t *testing.T) {
 	}
 
 	aHash2 := ComputePixelHashSHA1(src, "extra", 4)
+	err = src.LastError()
+	if err != nil {
+		t.Fatal(err.Error())
+	}
 
 	if aHash == "" || aHash2 == "" || aHash != aHash2 {
-		t.Fatal("Computed pixel hash was either empty or inconsistent across multiple runs")
+		t.Fatalf("Computed pixel hash %q != %q", aHash, aHash2)
 	}
-	t.Logf("Pixel hash: %v", aHash)
 }
 
 func TestAlgoResize(t *testing.T) {

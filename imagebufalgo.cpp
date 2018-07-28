@@ -279,15 +279,18 @@ bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads) {
 				nthreads);	
 }
 
-const char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
-								  ROI* roi, int blocksize, int nthreads) {
+char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
+						   ROI* roi, int blocksize, int nthreads) {
 	std::string aHash = OIIO::ImageBufAlgo::computePixelHashSHA1(
 							*(static_cast<const OIIO::ImageBuf*>(src)),
 							extrainfo,
 							*(static_cast<OIIO::ROI*>(roi)),
 							blocksize,
-							nthreads);		
-	return aHash.c_str();
+							nthreads);
+
+    char* c = (char*)(malloc(aHash.length()));
+    strcpy(c, aHash.c_str());
+    return c;
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
