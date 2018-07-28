@@ -295,8 +295,9 @@ void ImageSpec_set_deep(ImageSpec *spec, bool val) {
 	static_cast<OIIO::ImageSpec*>(spec)->deep = val;
 }
 
-const char* ImageSpec_to_xml(ImageSpec *spec) {
-	return static_cast<OIIO::ImageSpec*>(spec)->to_xml().c_str();
+char* ImageSpec_to_xml(ImageSpec *spec) {
+	std::string s = static_cast<OIIO::ImageSpec*>(spec)->to_xml();
+	return strdup(s.c_str());
 }
 
 void ImageSpec_attribute_type_data(ImageSpec *spec, const char* name, TypeDesc type, const void *value) {

@@ -115,7 +115,7 @@ bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, v
 // int ImageInput_send_to_input(ImageInput *in, const char *format,...);
 // int ImageInput_send_to_client(ImageInput *in, const char *format,...);
 
-const char* ImageInput_geterror(ImageInput *in);
+char* ImageInput_geterror(ImageInput *in);
 
 // ImageOutput
 //
@@ -127,7 +127,7 @@ const char* ImageOutput_format_name(ImageOutput *out);
 const ImageSpec* ImageOutput_spec(ImageOutput *out);
 bool ImageOutput_supports(ImageOutput *out, const char* feature);
 
-const char* ImageOutput_geterror(ImageOutput *out);
+char* ImageOutput_geterror(ImageOutput *out);
 
 // ImageSpec
 //
@@ -151,7 +151,7 @@ imagesize_t	ImageSpec_image_bytes(ImageSpec *spec, bool native);
 bool ImageSpec_size_safe(ImageSpec *spec);
 
 // std::string metadata_val(const ImageIOParameter &p, bool human=false);
-const char* ImageSpec_to_xml(ImageSpec *spec);
+char* ImageSpec_to_xml(ImageSpec *spec);
 // void from_xml(const char *xml)
 // bool valid_tile_range(int xbegin, int xend, int ybegin, int yend, int zbegin, int zend)
 
@@ -248,7 +248,7 @@ void ImageBuf_copy_metadata(ImageBuf* dst, const ImageBuf* src);
 bool ImageBuf_copy_pixels(ImageBuf* dst, const ImageBuf* src);
 bool ImageBuf_copy(ImageBuf* dst, const ImageBuf* src);
 void ImageBuf_swap(ImageBuf* buf, ImageBuf* other);
-const char* ImageBuf_geterror(ImageBuf* buf);
+char* ImageBuf_geterror(ImageBuf* buf);
 const ImageSpec* ImageBuf_spec(ImageBuf* buf);
 ImageSpec* ImageBuf_specmod(ImageBuf* buf);
 const ImageSpec* ImageBuf_nativespec(ImageBuf* buf);
@@ -402,8 +402,8 @@ void ImageCache_clear(ImageCache *x);
 // 		                 int x, int y, int z, TypeDesc format, const void *buffer,
 // 		                 stride_t xstride=AutoStride, stride_t ystride=AutoStride,
 // 		                 stride_t zstride=AutoStride);
-const char* ImageCache_geterror(ImageCache *x);
-const char* ImageCache_getstats(ImageCache *x, int level);
+char* ImageCache_geterror(ImageCache *x);
+char* ImageCache_getstats(ImageCache *x, int level);
 void ImageCache_reset_stats(ImageCache *x);
 void ImageCache_invalidate(ImageCache *x, const char *filename);
 void ImageCache_invalidate_all(ImageCache *x, bool force);
