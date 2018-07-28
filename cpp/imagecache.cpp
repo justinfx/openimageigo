@@ -1,6 +1,7 @@
 #include <OpenImageIO/imagebuf.h>
 
 #include "oiio.h"
+#include <string>
 
 extern "C" {
 
@@ -12,16 +13,17 @@ void ImageCache_Destroy(ImageCache *x, bool teardown) {
 	OIIO::ImageCache::destroy(static_cast<OIIO::ImageCache*>(x), teardown);
 }
 
-const char* ImageCache_geterror(ImageCache* x) {
+char* ImageCache_geterror(ImageCache* x) {
 	std::string sstring = static_cast<OIIO::ImageCache*>(x)->geterror();
 	if (sstring.empty()) {
 		return NULL;
 	}
-	return sstring.c_str();
+	return strdup(sstring.c_str());
 }
 
-const char* ImageCache_getstats(ImageCache *x, int level) {
-	return static_cast<OIIO::ImageCache*>(x)->getstats(level).c_str();
+char* ImageCache_getstats(ImageCache *x, int level) {
+	std::string str = static_cast<OIIO::ImageCache*>(x)->getstats(level);
+	return strdup(str.c_str());
 }
 
 void ImageCache_reset_stats(ImageCache *x) {

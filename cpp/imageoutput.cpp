@@ -16,12 +16,12 @@ ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchp
 	return (ImageOutput*) OIIO::ImageOutput::create(s_filename, s_path);
 }
 
-const char* ImageOutput_geterror(ImageOutput *out) {
+char* ImageOutput_geterror(ImageOutput *out) {
 	std::string sstring = static_cast<OIIO::ImageOutput*>(out)->geterror();
 	if (sstring.empty()){
 		return NULL;
 	}
-	return sstring.c_str();
+	return strdup(sstring.c_str());
 }
 
 const char* ImageOutput_format_name(ImageOutput *out) {
