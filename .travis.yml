@@ -7,6 +7,7 @@ services:
 
 env:
   global:
+  - DOCKER_IMAGE=openimageigo:latest-oiio_1.7
   - CACHE_DIR=$HOME/.cache
   - DOCKER_CACHE_DIR=$CACHE_DIR/docker
 
@@ -19,10 +20,10 @@ before_install:
 - if [[ -d $DOCKER_CACHE_DIR ]]; then ls $DOCKER_CACHE_DIR/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-- docker build --cache-from openimageigo:latest-oiio_1.7 -t openimageigo:latest-oiio_1.7 .
+- docker build --cache-from $DOCKER_IMAGE -t $DOCKER_IMAGE .
 
 script:
-- docker run -it --rm -v $PWD:/home/go/src/github.com/justinfx/openimageigo openimageigo:latest-oiio_1.7
+- docker run -it --rm -v $PWD:/home/go/src/github.com/justinfx/openimageigo $DOCKER_IMAGE
 
 before_cache:
 # save tagged Docker images
