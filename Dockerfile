@@ -15,9 +15,8 @@ RUN cd /home && wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_V
 RUN apt-get install --no-install-recommends -y -q \
     g++ \
     make \
-    wget \
     cmake \
-    golang-1.10 \
+    golang-1.10-go \
     fonts-freefont-ttf \
     libboost-thread-dev \
     libboost-system-dev \
