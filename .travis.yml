@@ -19,7 +19,7 @@ before_install:
 - if [[ -d $DOCKER_CACHE_DIR ]]; then ls $DOCKER_CACHE_DIR/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-- docker build -t openimageigo:latest-oiio_1.7 .
+- docker build --cache-from openimageigo:latest-oiio_1.7 -t openimageigo:latest-oiio_1.7 .
 
 script:
 - docker run -it --rm -v $PWD:/home/go/src/github.com/justinfx/openimageigo openimageigo:latest-oiio_1.7
