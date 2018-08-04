@@ -389,10 +389,10 @@ func (s *ImageSpec) ChannelNames() []string {
 	c_names := make([]*C.char, s.NumChannels())
 	c_names_ptr := (**C.char)(unsafe.Pointer(&c_names[0]))
 	C.ImageSpec_channelnames(s.ptr, c_names_ptr)
-	runtime.KeepAlive(s)
 	for i, c := range c_names {
 		names[i] = C.GoString(c)
 	}
+	runtime.KeepAlive(s)
 	return names
 }
 
@@ -402,10 +402,12 @@ func (s *ImageSpec) SetChannelNames(names []string) {
 	c_names := make([]*C.char, len(names))
 	for i, n := range names {
 		c_names[i] = C.CString(n)
-		defer C.free(unsafe.Pointer(c_names[i]))
 	}
 	c_names_ptr := (**C.char)(unsafe.Pointer(&c_names[0]))
 	C.ImageSpec_set_channelnames(s.ptr, c_names_ptr)
+	for i, _ := range names {
+		C.free(unsafe.Pointer(c_names[i]))
+	}
 	runtime.KeepAlive(s)
 }
 
