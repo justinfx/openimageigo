@@ -1,22 +1,12 @@
-FROM ubuntu:xenial
+FROM ubuntu:xenial as builder
 
-ARG OIIO_VER
 ENV OIIO_VER 1.7.19
 
-ARG PKGNAME
-ENV PKGNAME github.com/justinfx/openimageigo
-
-RUN apt-get update && apt-get install -y wget
-
-RUN cd /home && wget https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VER.tar.gz \
-	&& tar zxf Release-$OIIO_VER.tar.gz \
-	&& rm -f Release-$OIIO_VER.tar.gz
-
-RUN apt-get install --no-install-recommends -y -q \
+RUN apt-get update && apt-get install --no-install-recommends -y -q \
+    wget \
     g++ \
     make \
     cmake \
-    golang-1.10-go \
     fonts-freefont-ttf \
     libboost-thread-dev \
     libboost-system-dev \
@@ -30,17 +20,43 @@ RUN apt-get install --no-install-recommends -y -q \
     libfreetype6-dev \
     libopencolorio-dev
 
+RUN cd /home \
+    && wget --no-check-certificate https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VER.tar.gz \
+	&& tar zxf Release-$OIIO_VER.tar.gz \
+	&& rm -f Release-$OIIO_VER.tar.gz
+
 RUN cd /home/oiio-Release-$OIIO_VER \
     && make USE_OPENGL=0 USE_QT=0 USE_PYTHON=0 USE_PYTHON3=0 VERBOSE=1
 
-ENV PATH /usr/lib/go-1.10/bin:$PATH
+
+FROM golang:1.10-stretch
+
+ENV OIIO_VER 1.7.19
 ENV GOPATH /home/go
-ENV GOCACHE=off
+ENV PKGNAME github.com/justinfx/openimageigo
 
-ENV CGO_CXXFLAGS="-I/home/oiio-Release-$OIIO_VER/dist/linux64/include"
-ENV CGO_LDFLAGS="-L/home/oiio-Release-$OIIO_VER/dist/linux64/lib"
-ENV LD_LIBRARY_PATH="/home/oiio-Release-$OIIO_VER/dist/linux64/lib"
+ENV CGO_CXXFLAGS="-I/home/oiio-Release-${OIIO_VER}/dist/linux64/include"
+ENV CGO_LDFLAGS="-L/home/oiio-Release-${OIIO_VER}/dist/linux64/lib"
+ENV LD_LIBRARY_PATH="/home/oiio-Release-${OIIO_VER}/dist/linux64/lib"
 
-ADD . /home/go/src/$PKGNAME
+COPY --from=builder \
+    /lib/x86_64-linux-gnu/libz.* \
+    /lib/x86_64-linux-gnu/libpng12.* \
+    /lib/x86_64-linux-gnu/liblzma.* \
+    /lib/x86_64-linux-gnu/
+COPY --from=builder /usr/include /usr/include
+COPY --from=builder /usr/lib/x86_64-linux-gnu /usr/lib/x86_64-linux-gnu
+COPY --from=builder /usr/lib/libOpenColorIO.* /usr/lib/
+COPY --from=builder /usr/share/fonts /usr/share/fonts
+COPY --from=builder \
+    /home/oiio-Release-${OIIO_VER}/dist/linux64/include/ \
+    /home/oiio-Release-${OIIO_VER}/dist/linux64/include
+COPY --from=builder \
+    /home/oiio-Release-${OIIO_VER}/dist/linux64/lib/ \
+    /home/oiio-Release-${OIIO_VER}/dist/linux64/lib/
 
-CMD go test -v $PKGNAME
+#ADD . /home/go/src/$PKGNAME
+
+WORKDIR ${GOPATH}/src/${PKGNAME}
+
+CMD go test -count 1 -v $PKGNAME

@@ -20,7 +20,7 @@ before_install:
 - if [[ -d $DOCKER_CACHE_DIR ]]; then ls $DOCKER_CACHE_DIR/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-- docker build --cache-from $DOCKER_IMAGE -t $DOCKER_IMAGE .
+- docker build --compress --cache-from $DOCKER_IMAGE -t $DOCKER_IMAGE .
 
 script:
 - docker run -it --rm -v $PWD:/home/go/src/github.com/justinfx/openimageigo $DOCKER_IMAGE
@@ -30,4 +30,4 @@ before_cache:
 # https://github.com/travis-ci/travis-ci/issues/5358#issuecomment-248915326
 - >
   mkdir -p $DOCKER_CACHE_DIR && docker images -a --filter='dangling=false' --format '{{.Repository}}:{{.Tag}} {{.ID}}'
-  | xargs -n 2 -t sh -c 'test -e $DOCKER_CACHE_DIR/$1.tar.gz || docker save $0 | gzip -2 > $DOCKER_CACHE_DIR/$1.tar.gz'
+  | xargs -n 2 -t sh -c 'test -e $DOCKER_CACHE_DIR/$1.tar.gz || docker save $0 | gzip -5 > $DOCKER_CACHE_DIR/$1.tar.gz'
