@@ -20,7 +20,7 @@ before_install:
 - if [[ -d $DOCKER_CACHE_DIR ]]; then ls $DOCKER_CACHE_DIR/*.tar.gz | xargs -I {file} sh -c "zcat {file} | docker load"; fi
 
 install:
-- docker build --compress --cache-from $DOCKER_IMAGE -t $DOCKER_IMAGE .
+- docker build --cache-from $DOCKER_IMAGE -t $DOCKER_IMAGE .
 
 script:
 - docker run -it --rm -v $PWD:/home/go/src/github.com/justinfx/openimageigo $DOCKER_IMAGE
