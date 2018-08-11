@@ -3,7 +3,7 @@ package oiio
 /*
 #include "stdlib.h"
 
-#include "cpp/color.h"
+#include "color.h"
 */
 import "C"
 import (

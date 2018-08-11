@@ -3,11 +3,7 @@
 #include <string>
 
 #include "oiio.h"
-
-
-extern OIIO::TypeDesc fromTypeDesc(TypeDesc fmt);
-extern TypeDesc toTypeDesc(OIIO::TypeDesc fmt);
-
+#include "imagespec.h"
 
 
 extern "C" {

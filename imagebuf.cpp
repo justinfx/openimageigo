@@ -1,6 +1,7 @@
 #include <OpenImageIO/imagebuf.h>
 
 #include "oiio.h"
+#include "imagespec.h"
 
 OIIO::ImageBuf::IBStorage fromIBStorage(IBStorage s) {
 	switch (s) {
@@ -17,6 +18,7 @@ IBStorage toIBStorage(OIIO::ImageBuf::IBStorage s) {
 	if (s == OIIO::ImageBuf::IMAGECACHE)  return IBSTORAGE_IMAGECACHE;
 	return IBSTORAGE_UNINITIALIZED;
 }
+
 
 extern "C" {
 

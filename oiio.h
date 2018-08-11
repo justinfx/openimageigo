@@ -39,6 +39,7 @@ typedef void Tile;
 
 typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
 
+extern bool image_progress_callback(void* goCallback, float done);
 
 
 // Enums
