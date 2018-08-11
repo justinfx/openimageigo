@@ -1,5 +1,6 @@
 #include <OpenImageIO/color.h>
 
+#include "color.h"
 
 extern "C" {
 

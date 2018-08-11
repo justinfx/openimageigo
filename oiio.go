@@ -14,15 +14,12 @@ also incorporated into several commercial products.
 package oiio
 
 /*
-#cgo CPPFLAGS: -I./cpp
 #cgo CPPFLAGS: -I/usr/local/include
 #cgo LDFLAGS: -lstdc++
 
 #include "stdlib.h"
 
-#include "cpp/oiio.h"
-
-extern bool image_progress_callback(void* goCallback, float done);
+#include "oiio.h"
 
 */
 import "C"

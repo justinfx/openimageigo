@@ -3,7 +3,7 @@ package oiio
 /*
 #include "stdlib.h"
 
-#include "cpp/imagebufalgo.h"
+#include "imagebufalgo.h"
 
 */
 import "C"

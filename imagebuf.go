@@ -3,7 +3,7 @@ package oiio
 /*
 #include "stdlib.h"
 
-#include "cpp/oiio.h"
+#include "oiio.h"
 
 */
 import "C"
@@ -86,7 +86,7 @@ func NewImageBufPath(path string) (*ImageBuf, error) {
 // The image will actually be read when other methods need to access the spec and/or pixels,
 // or when an explicit call to init_spec() or read() is made, whichever comes first.
 //
-// Uses an explicitely passed ImageCache
+// Uses an explicitly passed ImageCache
 func NewImageBufPathCache(path string, cache *ImageCache) (*ImageBuf, error) {
 	c_str := C.CString(path)
 	defer C.free(unsafe.Pointer(c_str))
@@ -185,6 +185,7 @@ func (i *ImageBuf) Read(force bool) error {
 func (i *ImageBuf) ReadCallback(force bool, progress *ProgressCallback) error {
 	ret := i.ReadFormatCallback(force, TypeUnknown, progress)
 	runtime.KeepAlive(i)
+	runtime.KeepAlive(progress)
 	return ret
 }
 
@@ -211,6 +212,7 @@ func (i *ImageBuf) ReadFormatCallback(force bool, convert TypeDesc, progress *Pr
 		return i.LastError()
 	}
 	runtime.KeepAlive(i)
+	runtime.KeepAlive(progress)
 
 	return nil
 }
@@ -248,6 +250,7 @@ func (i *ImageBuf) WriteFileProgress(filepath, fileformat string, progress *Prog
 		return i.LastError()
 	}
 	runtime.KeepAlive(i)
+	runtime.KeepAlive(progress)
 
 	return nil
 }
@@ -256,6 +259,7 @@ func (i *ImageBuf) WriteFileProgress(filepath, fileformat string, progress *Prog
 // It does NOT close the file when it's done (and so may be called in a loop to write a multi-image file).
 func (i *ImageBuf) WriteImageOutput(output *ImageOutput) error {
 	ret := i.WriteImageOutputProgress(output, nil)
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(output)
 	return ret
 }
@@ -278,7 +282,9 @@ func (i *ImageBuf) WriteImageOutputProgress(output *ImageOutput, progress *Progr
 	if !bool(ok) {
 		return i.LastError()
 	}
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(output)
+	runtime.KeepAlive(progress)
 
 	return nil
 }
@@ -299,6 +305,7 @@ func (i *ImageBuf) SetWriteTiles(width, height, depth int) {
 // channel information, and data format).
 func (i *ImageBuf) CopyMetadata(src *ImageBuf) error {
 	C.ImageBuf_copy_metadata(i.ptr, src.ptr)
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(src)
 	return i.LastError()
 }
@@ -309,6 +316,7 @@ func (i *ImageBuf) CopyMetadata(src *ImageBuf) error {
 // that do not exist in this will not be copied.
 func (i *ImageBuf) CopyPixels(src *ImageBuf) error {
 	ok := bool(C.ImageBuf_copy_pixels(i.ptr, src.ptr))
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(src)
 	if !ok {
 		return i.LastError()
@@ -329,6 +337,7 @@ func (i *ImageBuf) CopyPixels(src *ImageBuf) error {
 // type of the app buffer.
 func (i *ImageBuf) Copy(src *ImageBuf) error {
 	ok := bool(C.ImageBuf_copy(i.ptr, src.ptr))
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(src)
 	if !ok {
 		return i.LastError()
@@ -340,6 +349,7 @@ func (i *ImageBuf) Copy(src *ImageBuf) error {
 func (i *ImageBuf) Swap(other *ImageBuf) error {
 	C.ImageBuf_swap(i.ptr, other.ptr)
 	runtime.KeepAlive(other)
+	runtime.KeepAlive(i)
 	return i.LastError()
 }
 
@@ -539,6 +549,7 @@ func (i *ImageBuf) GetPixelRegion(roi *ROI, format TypeDesc) (interface{}, error
 		C.int(roi.ChannelsBegin()), C.int(roi.ChannelsEnd()),
 		(C.TypeDesc)(format), ptr),
 	)
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(roi)
 
 	if !ok {
@@ -726,6 +737,7 @@ func (i *ImageBuf) ROIFull() *ROI {
 // regardless of newroi.
 func (i *ImageBuf) SetROIFull(roi *ROI) error {
 	C.ImageBuf_set_roi_full(i.ptr, roi.ptr)
+	runtime.KeepAlive(i)
 	runtime.KeepAlive(roi)
 	return i.LastError()
 }
