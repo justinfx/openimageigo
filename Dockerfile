@@ -1,6 +1,6 @@
 FROM ubuntu:xenial as builder
 
-ENV OIIO_VER 1.7.19
+ENV OIIO_VER 1.6.18
 
 RUN apt-get update && apt-get install --no-install-recommends -y -q \
     wget \
