@@ -3,7 +3,7 @@ package oiio
 /*
 #include "stdlib.h"
 
-#include "cpp/oiio.h"
+#include "oiio.h"
 
 */
 import "C"
