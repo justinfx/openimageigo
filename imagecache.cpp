@@ -13,6 +13,14 @@ void ImageCache_Destroy(ImageCache *x, bool teardown) {
 	OIIO::ImageCache::destroy(static_cast<OIIO::ImageCache*>(x), teardown);
 }
 
+void ImageCache_close(ImageCache *x, const char *filename) {
+	static_cast<OIIO::ImageCache*>(x)->close(OIIO::ustring(filename));
+}
+
+void ImageCache_close_all(ImageCache *x) {
+	static_cast<OIIO::ImageCache*>(x)->close_all();
+}
+
 char* ImageCache_geterror(ImageCache* x) {
 	std::string sstring = static_cast<OIIO::ImageCache*>(x)->geterror();
 	if (sstring.empty()) {

@@ -355,8 +355,6 @@ void ROI_set_chend(ROI* roi, int val);
 ImageCache* ImageCache_Create(bool shared);
 void ImageCache_Destroy(ImageCache *x, bool teardown);
 
-void ImageCache_clear(ImageCache *x);
-
 // bool ImageCache_attribute(ImageCache *x, const char *name, TypeDesc type, const void *val);
 
 // bool ImageCache_attribute_int(ImageCache *x, const char *name, int val);
@@ -408,7 +406,8 @@ char* ImageCache_getstats(ImageCache *x, int level);
 void ImageCache_reset_stats(ImageCache *x);
 void ImageCache_invalidate(ImageCache *x, const char *filename);
 void ImageCache_invalidate_all(ImageCache *x, bool force);
-
+void ImageCache_close(ImageCache *x, const char *filename);
+void ImageCache_close_all(ImageCache *x);
 
 #ifdef __cplusplus
 }

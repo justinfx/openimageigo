@@ -69,6 +69,30 @@ func (i *ImageCache) Clear() {
 	log.Println("Deprecated ImageCache.Clear() [oiio 1.7]")
 }
 
+// Close any open file handles associated with a named file,
+// or for all files, but do not invalidate any image spec
+// information or pixels associated with the files.
+// A client might do this in order to release OS file handle
+// resources, or to make it safe for other processes to modify
+// cached files.
+func (i *ImageCache) Close(filename string) {
+	str := C.CString(filename)
+	C.ImageCache_close(i.ptr, str)
+	C.free(unsafe.Pointer(str))
+	runtime.KeepAlive(i)
+}
+
+// Close any open file handles for all files, but do not
+// invalidate any image spec information or pixels associated
+// with the files.
+// A client might do this in order to release OS file handle
+// resources, or to make it safe for other processes to modify
+// cached files.
+func (i *ImageCache) CloseAll() {
+	C.ImageCache_close_all(i.ptr)
+	runtime.KeepAlive(i)
+}
+
 // Return the statistics output as a huge string.
 // Suitable default for level == 1
 func (i *ImageCache) GetStats(level int) string {

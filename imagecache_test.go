@@ -22,4 +22,7 @@ func TestImageCacheStats(t *testing.T) {
 	cache.ResetStats()
 	cache.Invalidate("test")
 	cache.InvalidateAll(true)
+
+	cache.Close("test")
+	cache.CloseAll()
 }
