@@ -391,6 +391,7 @@ func (s *ImageSpec) ChannelNames() []string {
 	C.ImageSpec_channelnames(s.ptr, c_names_ptr)
 	for i, c := range c_names {
 		names[i] = C.GoString(c)
+		C.free(unsafe.Pointer(c))
 	}
 	runtime.KeepAlive(s)
 	return names
