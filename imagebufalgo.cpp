@@ -375,6 +375,42 @@ bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize,
 			textcolor);
 }
 
+bool render_box(ImageBuf *dst, int x1, int y1, int x2, int y2,
+                const float* color, size_t ncolors, bool fill, ROI* roi, int nthreads) {
+
+	return OIIO::ImageBufAlgo::render_box(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			x1, y1, x2, y2,
+            OIIO::array_view<const float>(color, ncolors),
+			fill,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool render_line(ImageBuf *dst, int x1, int y1, int x2, int y2,
+                 const float* color, size_t ncolors, bool skip_first_point,
+                 ROI* roi, int nthreads) {
+
+	return OIIO::ImageBufAlgo::render_line(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			x1, y1, x2, y2,
+            OIIO::array_view<const float>(color, ncolors),
+			skip_first_point,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool render_point(ImageBuf *dst, int x, int y, const float* color, size_t ncolors,
+                  ROI* roi, int nthreads) {
+
+	return OIIO::ImageBufAlgo::render_point(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			x, y,
+            OIIO::array_view<const float>(color, ncolors),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
 } // extern "C"
 
 

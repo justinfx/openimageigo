@@ -200,6 +200,17 @@ bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nth
 bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize,
 				  const char *fontname, const float *textcolor);
 
+bool render_box(ImageBuf *dst, int x1, int y1, int x2, int y2,
+                const float* color, size_t ncolors, bool fill,
+                ROI* roi, int nthreads);
+
+bool render_line(ImageBuf *dst, int x1, int y1, int x2, int y2,
+                 const float* color, size_t ncolors, bool skip_first_point,
+                 ROI* roi, int nthreads);
+
+bool render_point(ImageBuf *dst, int x, int y,
+                  const float* color, size_t ncolors, ROI* roi, int nthreads);
+
 // bool histogram(const ImageBuf *src, int channel, std::vector< imagesize_t > *histogram, int bins=256,
 // 				float min=0, float max=1, imagesize_t *submin=NULL, imagesize_t *supermax=NULL, ROI* roi);
 

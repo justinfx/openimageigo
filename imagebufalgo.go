@@ -1082,3 +1082,93 @@ func RenderTextColor(dst *ImageBuf, x, y int, text string, fontSize int, fontNam
 	}
 	return nil
 }
+
+// Render an a filled or unfilled box with corners (x1,y1) and (x2,y2)
+// of the given color "over" the existing image dst.
+// If there is no alpha channel, the color will be written unconditionally
+// (as if the alpha is 1.0). The color array view must contain at least as
+// many values as channels in the image.
+func RenderBox(dst *ImageBuf, x1, y1, x2, y2 int, color []float32, fill bool, opts ...AlgoOpts) error {
+	var colorPtr *C.float
+	if color != nil && len(color) > 0 {
+		colorPtr = (*C.float)(unsafe.Pointer(&color[0]))
+	}
+
+	opt := flatAlgoOpts(opts)
+
+	ok := C.render_box(
+		dst.ptr,
+		C.int(x1), C.int(y1), C.int(x2), C.int(y2),
+		colorPtr, C.size_t(len(color)),
+		C.bool(fill),
+		opt.ROI.validOrAllPtr(), C.int(opt.Threads),
+	)
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(color)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
+// Render a line from (x1,y1) to (x2,y2) of the given color "over" the
+// existing image dst. If there is no alpha channel, the color will be
+// written unconditionally (as if the alpha is 1.0). The color array
+// view must contain at least as many values as channels in the image.
+// If skip_first_point is true, the very first point (x1,y1) will not
+// be rendered; this can be useful for rendering segments of poly-lines
+// to avoid double-rendering the vertex positions.
+func RenderLine(dst *ImageBuf, x1, y1, x2, y2 int, color []float32, skipFirstPoint bool, opts ...AlgoOpts) error {
+	var colorPtr *C.float
+	if color != nil && len(color) > 0 {
+		colorPtr = (*C.float)(unsafe.Pointer(&color[0]))
+	}
+
+	opt := flatAlgoOpts(opts)
+
+	ok := C.render_line(
+		dst.ptr,
+		C.int(x1), C.int(y1), C.int(x2), C.int(y2),
+		colorPtr, C.size_t(len(color)),
+		C.bool(skipFirstPoint),
+		opt.ROI.validOrAllPtr(), C.int(opt.Threads),
+	)
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(color)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
+// Render a single point at (x,y) of the given color "over" the existing image dst.
+// If there is no alpha channel, the color will be written unconditionally
+// (as if the alpha is 1.0). The color array view must contain at least as many
+// values as channels in the image.
+func RenderPoint(dst *ImageBuf, x, y int, color []float32, opts ...AlgoOpts) error {
+	var colorPtr *C.float
+	if color != nil && len(color) > 0 {
+		colorPtr = (*C.float)(unsafe.Pointer(&color[0]))
+	}
+
+	opt := flatAlgoOpts(opts)
+
+	ok := C.render_point(
+		dst.ptr,
+		C.int(x), C.int(y),
+		colorPtr, C.size_t(len(color)),
+		opt.ROI.validOrAllPtr(), C.int(opt.Threads),
+	)
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(color)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}

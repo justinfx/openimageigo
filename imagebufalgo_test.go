@@ -880,3 +880,32 @@ func TestAlgoRenderText(t *testing.T) {
 	}
 	buf.WriteFile("/tmp/text.png", "png")
 }
+
+func TestAlgoRenderX(t *testing.T) {
+	spec := NewImageSpecSize(256, 256, 3, TypeFloat)
+	buf, err := NewImageBufSpec(spec)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	Fill(buf, []float32{.9, .9, .9})
+
+	err = RenderBox(buf, 50, 50, 100, 100, []float32{1.0, .1, .2}, true)
+	if err != nil {
+		t.Fatalf("Failed to render box: %s", err)
+	}
+
+	err = RenderLine(buf, 0, 50, 256, 50, []float32{.1, 1.0, .2}, false)
+	if err != nil {
+		t.Fatalf("Failed to render line: %s", err)
+	}
+
+	for i := 0; i < 10; i++ {
+		err = RenderPoint(buf, 128+i, 128, []float32{.2, .1, 1.0})
+		if err != nil {
+			t.Fatalf("Failed to render point: %s", err)
+		}
+	}
+
+	buf.WriteFile("/tmp/out.png", "png")
+}
