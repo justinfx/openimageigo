@@ -258,7 +258,7 @@ void ImageSpec_set_channelformats(ImageSpec *spec, TypeDesc* formats){
 void ImageSpec_channelnames(ImageSpec *spec, char** out) {
 	std::vector<std::string> vec = static_cast<OIIO::ImageSpec*>(spec)->channelnames;
 	for (std::vector<std::string>::size_type i = 0; i != vec.size(); i++) {
-		out[i] = (char*)vec[i].c_str();
+		out[i] = strdup(vec[i].c_str());
 	}
 }
 
