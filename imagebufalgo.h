@@ -25,7 +25,11 @@ bool channel_append(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* ro
 
 bool flatten(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
+bool deep_merge(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, bool occlusion_cull, ROI *roi, int nthreads);
+
 bool cut (ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
+
+bool copy(ImageBuf *dst, const ImageBuf *src, TypeDesc convert, ROI *roi, int nthreads);
 
 bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
@@ -177,6 +181,8 @@ bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, in
 
 // bool unsharp_mask(ImageBuf *dst, const ImageBuf *src, const char *kernel="gaussian", float width=3.0f,
 // 				   float contrast=1.0f, float threshold=0.0f, ROI* roi, int nthreads);
+
+bool laplacian (ImageBuf *dst, const ImageBuf *src, ROI *roi, int nthreads);
 
 // bool fft(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 

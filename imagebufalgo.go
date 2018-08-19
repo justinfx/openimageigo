@@ -273,6 +273,73 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 // 	return nil
 // }
 
+// Set dst to the deep merge of the samples of deep images A and B, overwriting
+// any existing samples of dst in the ROI. If occlusionCull is true, any samples
+// occluded by an opaque sample will be deleted.
+//
+// 'roi' specifies the region of dst's pixels which will be computed; existing
+// pixels outside this range will not be altered. If not specified, the default
+// ROI value will be the pixel data window of src.
+//
+// The nthreads parameter specifies how many threads (potentially) may be used,
+// but it's not a guarantee. If nthreads == 0, it will use the global OIIO
+// attribute "nthreads". If nthreads == 1, it guarantees that it will not launch
+// any new threads.
+func DeepMerge(dst, a, b *ImageBuf, occlusionCull bool, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.deep_merge(
+		dst.ptr,
+		a.ptr, b.ptr,
+		C.bool(occlusionCull),
+		opt.ROI.validOrAllPtr(),
+		C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(a)
+	runtime.KeepAlive(b)
+	runtime.KeepAlive(opts)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
+// Copy the specified region of pixels of src into dst at the same locations,
+// without changing any existing pixels of dst outside the region.
+// If dst is not already initialized, it will be set to the same size as roi
+// (defaulting to all of src), optionally with the pixel type overridden by
+// convert (if it is not Unknown).
+//
+// The nthreads parameter specifies how many threads (potentially) may be
+// used, but it's not a guarantee. If nthreads == 0, it will use the global
+// OIIO attribute "nthreads". If nthreads == 1, it guarantees that it will
+// not launch any new threads.
+//
+// Works on all pixel data types.
+func Copy(dst, src *ImageBuf, convert TypeDesc, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.copy(
+		dst.ptr,
+		src.ptr,
+		C.TypeDesc(convert),
+		opt.ROI.validOrAllPtr(),
+		C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Crop resets dst to be the specified region of src.
 // Note that the crop operation does not actually move the pixels on the image plane or
 // adjust the full/display window; it merely restricts which pixels are copied from src to
@@ -990,6 +1057,31 @@ func Resample(dst, src *ImageBuf, interpolate bool, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
 
 	ok := C.resample(dst.ptr, src.ptr, C.bool(interpolate), opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
+// Replace the given ROI of dst with the Laplacian of the corresponding region of src.
+// This is approximated by convolving src with the discrete 3x3 Laplacian kernel,
+// [ 0 1 0 ] [ 1 -4 1 ] [ 0 1 0 ]
+//
+// If roi is not defined, it defaults to the full size of dst (or src, if dst was undefined).
+// If dst is uninitialized, it will be allocated to be the size specified by roi.
+//
+// The nthreads parameter specifies how many threads (potentially) may be used, but it's
+// not a guarantee. If nthreads == 0, it will use the global OIIO attribute "nthreads".
+// If nthreads == 1, it guarantees that it will not launch any new threads.
+func Laplacian(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.laplacian(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
 
 	runtime.KeepAlive(dst)
 	runtime.KeepAlive(src)

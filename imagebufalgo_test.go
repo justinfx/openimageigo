@@ -285,6 +285,59 @@ func TestAlgoChannelAppend(t *testing.T) {
 // 	}
 // }
 
+func TestAlgoDeepMerge(t *testing.T) {
+	srcA, err := NewImageBufSpec(NewImageSpecSize(10, 10, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	srcB, err := NewImageBufSpec(NewImageSpecSize(10, 10, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	dst := NewImageBuf()
+
+	err = DeepMerge(dst, srcA, srcB, true)
+	expect := `deep_merge can only be performed on deep images`
+	if err == nil || err.Error() != expect {
+		t.Fatalf("expected error %q, got %v", expect, err)
+	}
+}
+
+func TestAlgoCopy(t *testing.T) {
+	src, err := NewImageBufSpec(NewImageSpecSize(100, 100, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err)
+	}
+	Fill(src, []float32{1, 0, 0})
+
+	dst, err := NewImageBufSpec(NewImageSpecSize(100, 100, 3, TypeFloat))
+	if err != nil {
+		t.Fatal(err)
+	}
+	Fill(dst, []float32{0, 0, 0})
+
+	roi := NewROIRegion2D(0, 100, 40, 60)
+	checkFatalError(t, Copy(dst, src, TypeUnknown, AlgoOpts{ROI: roi}))
+
+	roi.SetXEnd(1)
+	roi.SetYBegin(39)
+	roi.SetYEnd(41)
+	roi.SetChannelsEnd(3)
+	iface, err := dst.GetPixelRegion(roi, TypeFloat)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pixels := iface.([]float32)
+	if pixels[0] != 0 {
+		t.Fatalf("expected pixel value 0.0, got %0.1f", pixels[0])
+	}
+	if pixels[3] != 1 {
+		t.Fatalf("expected pixel value 1.0, got %0.1f", pixels[3])
+	}
+}
+
 func TestAlgoCrop(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {
@@ -726,13 +779,15 @@ func TestAlgoResize(t *testing.T) {
 	checkError(t, Resize(dst, src, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
-		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
+		t.Logf("Expected width/height == 64/32, but got %v/%v",
+			dst.OrientedWidth(), dst.OrientedHeight())
 	}
 
 	checkError(t, ResizeFilter(dst, src, "lanczos3", 1.0, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
-		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
+		t.Logf("Expected width/height == 64/32, but got %v/%v",
+			dst.OrientedWidth(), dst.OrientedHeight())
 	}
 }
 
@@ -747,8 +802,20 @@ func TestAlgoResample(t *testing.T) {
 	checkError(t, Resample(dst, src, true, AlgoOpts{ROI: roi}))
 
 	if dst.OrientedWidth() != 64 || dst.OrientedHeight() != 32 {
-		t.Logf("Expected width/height == 64/32, but got %v/%v", dst.OrientedWidth(), dst.OrientedHeight())
+		t.Logf("Expected width/height == 64/32, but got %v/%v",
+			dst.OrientedWidth(), dst.OrientedHeight())
 	}
+}
+
+func TestAlgoLaplacian(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	if err != nil {
+		t.Error(err.Error())
+	}
+
+	dst := NewImageBuf()
+	roi := NewROIRegion2D(0, 64, 0, 32)
+	checkError(t, Laplacian(dst, src, AlgoOpts{ROI: roi}))
 }
 
 func TestAlgoOver(t *testing.T) {

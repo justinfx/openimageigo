@@ -6,6 +6,7 @@
 
 #include "oiio.h"
 #include "color.h"
+#include "imagespec.h"
 
 extern "C" {
 
@@ -68,6 +69,26 @@ bool flatten(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 			*(static_cast<const OIIO::ImageBuf*>(src)),
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);	
+}
+
+bool deep_merge (ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, bool occlusion_cull, ROI *roi, int nthreads) {
+	return OIIO::ImageBufAlgo::deep_merge(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			*(static_cast<const OIIO::ImageBuf*>(B)),
+			occlusion_cull,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+
+}
+
+bool copy (ImageBuf *dst, const ImageBuf *src, TypeDesc convert, ROI *roi, int nthreads) {
+	return OIIO::ImageBufAlgo::copy(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			fromTypeDesc(convert),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
 }
 
 bool crop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
@@ -348,6 +369,14 @@ bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, in
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
 			interpolate,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool laplacian (ImageBuf *dst, const ImageBuf *src, ROI *roi, int nthreads) {
+	return OIIO::ImageBufAlgo::laplacian(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
