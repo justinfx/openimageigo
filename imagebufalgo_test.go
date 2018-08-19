@@ -253,37 +253,31 @@ func TestAlgoChannelAppend(t *testing.T) {
 	}
 }
 
-// TODO: Flatten does not seem to work as expected
-//
-// func TestAlgoFlatten(t *testing.T) {
-// 	// Create a source image
-// 	src, err := NewImageBufSpec(NewImageSpecSize(32, 32, 1, TypeFloat))
-// 	if err != nil {
-// 		t.Fatal(err.Error())
-// 	}
-//
-// 	fill := []float32{0.5}
-// 	if err = Fill(src, fill); err != nil {
-// 		t.Fatal(err.Error())
-// 	}
-//
-// 	dst, _ := NewImageBufSpec(src.Spec())
-// 	if err = Flatten(dst, src); err != nil {
-// 		t.Fatal(err.Error())
-// 	}
-//
-// 	// Check that the pixels for the region are correct
-// 	firstPixel := NewROIRegion2D(0, 1, 0, 1)
-// 	firstPixel.SetChannelsEnd(1)
-// 	iface, err := dst.GetPixelRegion(firstPixel, TypeFloat)
-// 	if err != nil {
-// 		t.Fatal(err.Error())
-// 	}
-// 	pixels := iface.([]float32)
-// 	if !reflect.DeepEqual(pixels, fill[:1]) {
-// 		t.Errorf("Expected pixels %v;  got %v", fill[:1], pixels)
-// 	}
-// }
+func TestAlgoFlatten(t *testing.T) {
+	// Create a source image
+	src, err := NewImageBufSpec(NewImageSpecSize(32, 32, 1, TypeFloat))
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+
+	fill := []float32{0.5}
+	checkFatalError(t, Fill(src, fill))
+
+	dst, _ := NewImageBufSpec(src.Spec())
+	checkFatalError(t, Flatten(dst, src))
+
+	// Check that the pixels for the region are correct
+	firstPixel := NewROIRegion2D(0, 1, 0, 1)
+	firstPixel.SetChannelsEnd(1)
+	iface, err := dst.GetPixelRegion(firstPixel, TypeFloat)
+	if err != nil {
+		t.Fatal(err.Error())
+	}
+	pixels := iface.([]float32)
+	if !reflect.DeepEqual(pixels, fill[:1]) {
+		t.Errorf("Expected pixels %v;  got %v", fill[:1], pixels)
+	}
+}
 
 func TestAlgoDeepMerge(t *testing.T) {
 	srcA, err := NewImageBufSpec(NewImageSpecSize(10, 10, 3, TypeFloat))

@@ -257,21 +257,22 @@ func ChannelAppend(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// TODO: Flatten does not seem to work as expected
-//
 // Flatten copies pixels from deep image src into non-deep dst, compositing the depth samples
 // within each pixel to yield a single "flat" value per pixel. If src is not deep, it just copies
 // the pixels without alteration.
-// func Flatten(dst, src *ImageBuf, opts ...AlgoOpts) error {
-// 	opt := flatAlgoOpts(opts)
-//
-// 	ok := C.flatten(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
-// 	if !bool(ok) {
-// 		return dst.LastError()
-// 	}
-//
-// 	return nil
-// }
+func Flatten(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.flatten(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opts)
+
+	return nil
+}
 
 // Set dst to the deep merge of the samples of deep images A and B, overwriting
 // any existing samples of dst in the ROI. If occlusionCull is true, any samples
