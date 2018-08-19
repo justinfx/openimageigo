@@ -41,8 +41,8 @@ func NewImageSpec(format TypeDesc) *ImageSpec {
 }
 
 // for simple 2D scanline image with nothing special. If fmt is not supplied, default to unsigned 8-bit data.
-func NewImageSpecSize(x, y, chans int, format TypeDesc) *ImageSpec {
-	spec := C.ImageSpec_New_Size(C.int(x), C.int(y), C.int(chans), (C.TypeDesc)(format))
+func NewImageSpecSize(w, h, chans int, format TypeDesc) *ImageSpec {
+	spec := C.ImageSpec_New_Size(C.int(w), C.int(h), C.int(chans), (C.TypeDesc)(format))
 	return newImageSpec(spec)
 }
 
