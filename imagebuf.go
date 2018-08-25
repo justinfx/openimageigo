@@ -726,13 +726,23 @@ func (i *ImageBuf) ROIFull() *ROI {
 	return ret
 }
 
-// Set full/display window for this ImageBuf to a ROI. Does NOT change the channels of the spec,
+// Set full/display window for this ImageBuf to a ROI.
+// Does NOT change the channels of the spec,
 // regardless of newroi.
 func (i *ImageBuf) SetROIFull(roi *ROI) error {
 	C.ImageBuf_set_roi_full(i.ptr, roi.ptr)
 	runtime.KeepAlive(i)
 	runtime.KeepAlive(roi)
 	return i.LastError()
+}
+
+// Is the specified roi completely contained
+// in the data window of this ImageBuf?
+func (i *ImageBuf) ContainsROI(roi *ROI) bool {
+	ret := bool(C.ImageBuf_contains_roi(i.ptr, roi.ptr))
+	runtime.KeepAlive(i)
+	runtime.KeepAlive(roi)
+	return ret
 }
 
 func (i *ImageBuf) PixelsValid() bool {

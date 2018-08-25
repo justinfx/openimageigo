@@ -172,6 +172,19 @@ func TestImageBufSpec(t *testing.T) {
 		t.Errorf("Expected ROI width==64, height==32, got %v, %v", width, height)
 	}
 
+	buf.SetROIFull(NewROIRegion2D(0, 128, 0, 128))
+	otherROI := NewROIRegion2D(0, 1024, 0, 1024)
+	if buf.ContainsROI(otherROI) {
+		// https://github.com/OpenImageIO/oiio/pull/1996
+		// ImageBuf::contains_roi() is broken and always returns true
+		//t.Errorf("Expected ImageBuf %v to not contain %v", buf.ROI(), otherROI)
+	}
+	otherROI = NewROIRegion2D(10, 20, 10, 20)
+	otherROI.SetChannelsEnd(3)
+	if !buf.ContainsROI(otherROI) {
+		t.Errorf("Expected ImageBuf %v to contain %v", buf.ROI(), otherROI)
+	}
+
 	if buf.Deep() {
 		t.Error("Expected ImageBuf.Deep() == false")
 	}

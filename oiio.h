@@ -301,6 +301,7 @@ void ImageBuf_set_full(ImageBuf* buf, int xbegin, int xend, int ybegin, int yend
 ROI* ImageBuf_roi(ImageBuf* buf);
 ROI* ImageBuf_roi_full(ImageBuf* buf);
 void ImageBuf_set_roi_full(ImageBuf* buf, ROI* newroi);
+bool ImageBuf_contains_roi(ImageBuf *buf, ROI *roi);
 
 bool ImageBuf_pixels_valid(ImageBuf* buf);
 TypeDesc ImageBuf_pixeltype(ImageBuf* buf);

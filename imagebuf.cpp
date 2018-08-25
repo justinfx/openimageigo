@@ -311,6 +311,10 @@ void ImageBuf_set_roi_full(ImageBuf* buf, ROI* newroi) {
 	static_cast<OIIO::ImageBuf*>(buf)->set_roi_full(*(static_cast<OIIO::ROI*>(newroi)));
 }
 
+bool ImageBuf_contains_roi(ImageBuf *buf, ROI *roi) {
+    return static_cast<OIIO::ImageBuf*>(buf)->contains_roi(*(static_cast<OIIO::ROI*>(roi)));
+}
+
 bool ImageBuf_pixels_valid(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->pixels_valid();
 }
