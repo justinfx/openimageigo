@@ -381,6 +381,24 @@ bool laplacian (ImageBuf *dst, const ImageBuf *src, ROI *roi, int nthreads) {
 			nthreads);
 }
 
+bool dilate(ImageBuf *dst, const ImageBuf *src, int width, int height, ROI *roi, int nthreads) {
+	return OIIO::ImageBufAlgo::dilate(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			width, height,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
+bool erode(ImageBuf *dst, const ImageBuf *src, int width, int height, ROI *roi, int nthreads) {
+	return OIIO::ImageBufAlgo::erode(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			*(static_cast<const OIIO::ImageBuf*>(src)),
+			width, height,
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+}
+
 bool over(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads) {
 	return OIIO::ImageBufAlgo::over(
 			*(static_cast<OIIO::ImageBuf*>(dst)),

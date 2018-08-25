@@ -332,6 +332,16 @@ func TestAlgoCopy(t *testing.T) {
 	}
 }
 
+func TestAlgoErodeDilate(t *testing.T) {
+	src, err := NewImageBufPath(TEST_IMAGE)
+	checkFatalError(t, err)
+
+	dst := NewImageBuf()
+
+	checkFatalError(t, Erode(dst, src, 5, 5))
+	checkFatalError(t, Dilate(dst, src, 5, 5))
+}
+
 func TestAlgoCrop(t *testing.T) {
 	src, err := NewImageBufPath(TEST_IMAGE)
 	if err != nil {

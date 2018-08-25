@@ -1094,6 +1094,75 @@ func Laplacian(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
+// Replace the given ROI of dst with the dilated version of the corresponding
+// region of src. Dilation is defined as the maximum value of all pixels
+// under nonzero values of the structuring element (which is taken to be a
+// width x height square). If height is not set, it will default to be the
+// same as width.
+//
+// If roi is not defined, it defaults to the full size of dst (or src, if
+// dst was undefined). If dst is uninitialized, it will be allocated to be
+// the size specified by roi.
+//
+// The nthreads parameter specifies how many threads (potentially) may be used,
+// but it's not a guarantee. If nthreads == 0, it will use the global OIIO
+// attribute "nthreads". If nthreads == 1, it guarantees that it will not
+// launch any new threads.
+func Dilate(dst, src *ImageBuf, width, height int, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.dilate(
+		dst.ptr,
+		src.ptr,
+		C.int(width),
+		C.int(height),
+		opt.ROI.validOrAllPtr(),
+		C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
+// Replace the given ROI of dst with the eroded version of the corresponding
+// region of src. Erosion is defined as the minimum value of all pixels under
+// nonzero values of the structuring element (which is taken to be a width x
+// height square). If height is not set, it will default to be the same as width.
+//
+// If roi is not defined, it defaults to the full size of dst (or src, if dst
+// was undefined). If dst is uninitialized, it will be allocated to be the size
+// specified by roi.
+//
+// he nthreads parameter specifies how many threads (potentially) may be used,
+// but it's not a guarantee. If nthreads == 0, it will use the global OIIO
+// attribute "nthreads". If nthreads == 1, it guarantees that it will not launch
+// any new threads.
+func Erode(dst, src *ImageBuf, width, height int, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.erode(
+		dst.ptr,
+		src.ptr,
+		C.int(width),
+		C.int(height),
+		opt.ROI.validOrAllPtr(),
+		C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+	return nil
+}
+
 // Over sets dst to the composite of A over B using the Porter/Duff definition
 // of "over", returning true upon success and false for any of a
 // variety of failures (as described below).

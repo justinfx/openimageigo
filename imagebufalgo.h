@@ -184,6 +184,10 @@ bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, in
 
 bool laplacian (ImageBuf *dst, const ImageBuf *src, ROI *roi, int nthreads);
 
+bool dilate(ImageBuf *dst, const ImageBuf *src, int width, int height, ROI *roi, int nthreads);
+
+bool erode(ImageBuf *dst, const ImageBuf *src, int width, int height, ROI *roi, int nthreads);
+
 // bool fft(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
 
 // bool ifft(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads);
