@@ -7,7 +7,7 @@ services:
 
 env:
   global:
-  - DOCKER_IMAGE=openimageigo:latest-oiio_1.7
+  - DOCKER_IMAGE=openimageigo:latest-oiio_1.6
   - CACHE_DIR=$HOME/.cache
   - DOCKER_CACHE_DIR=$CACHE_DIR/docker
 
