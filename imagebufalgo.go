@@ -293,6 +293,32 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
+// Set dst to the flattened composite of deep image src. That is, it
+// converts a deep image to a simple flat image by front-to-back
+// compositing the samples within each pixel.  If src is already a non-
+// deep/flat image, it will just copy pixel values from src to dst. If dst
+// is not already an initialized ImageBuf, it will be sized to match src
+// (but made non-deep).
+//
+// 'roi' specifies the region of dst's pixels which will be computed;
+// existing pixels outside this range will not be altered.  If not
+// specified, the default ROI value will be the pixel data window of src.
+func Flatten(dst, src *ImageBuf, opts ...AlgoOpts) error {
+	opt := flatAlgoOpts(opts)
+
+	ok := C.flatten(dst.ptr, src.ptr, opt.ROI.validOrAllPtr(), C.int(opt.Threads))
+
+	runtime.KeepAlive(dst)
+	runtime.KeepAlive(src)
+	runtime.KeepAlive(opt)
+
+	if !bool(ok) {
+		return dst.LastError()
+	}
+
+	return nil
+}
+
 // Cut assigns to dst the designated region of src, but shifted to be at the
 // (0,0) origin, and with the full/display resolution set to be identical
 // to the data region.
