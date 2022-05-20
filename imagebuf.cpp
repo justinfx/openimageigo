@@ -64,10 +64,11 @@ void ImageBuf_clear(ImageBuf* buf) {
 }
 
 void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, 
-							 ImageCache *imagecache) {
+							 ImageCache *imagecache, const ImageSpec* spec) {
 	std::string s_name(name);
 	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, subimage, miplevel, 
-												static_cast<OIIO::ImageCache*>(imagecache));
+												static_cast<OIIO::ImageCache*>(imagecache),
+												static_cast<const OIIO::ImageSpec*>(spec));
 }
 
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache) {

@@ -159,7 +159,85 @@ func (i *ImageBuf) InitSpec(filename string, subimage, miplevel int) error {
 	if !ok {
 		return i.LastError()
 	}
+	runtime.KeepAlive(i)
 	return nil
+}
+
+// Reset forgets all previous info, and resets this ImageBuf to a new image
+// that is uninitialized (no pixel values, no size or spec).
+// 'cache' may be nil, or can be a specific cache to use instead of the global.
+func (i *ImageBuf) Reset(filename string, cache *ImageCache) error {
+	c_str := C.CString(filename)
+	defer C.free(unsafe.Pointer(c_str))
+
+	var cachePtr unsafe.Pointer = nil
+	if cache != nil {
+		cachePtr = cache.ptr
+	}
+
+	C.ImageBuf_reset_name_cache(i.ptr, c_str, cachePtr)
+	err := i.LastError()
+	runtime.KeepAlive(i)
+	return err
+}
+
+// ResetSubImage forgets all previous info, and resets this ImageBuf to a new image
+// that is uninitialized (no pixel values, no size or spec).
+// If 'config' is not nil, it points to an ImageSpec giving requests
+// or special instructions to be passed on to the eventual
+// ImageInput.Open() call.
+// 'cache' may be nil, or can be a specific cache to use instead of the global.
+func (i *ImageBuf) ResetSubImage(filename string, subimage, miplevel int, cache *ImageCache, config *ImageSpec) error {
+	c_str := C.CString(filename)
+	defer C.free(unsafe.Pointer(c_str))
+
+	var cachePtr unsafe.Pointer = nil
+	if cache != nil {
+		cachePtr = cache.ptr
+	}
+
+	var specPtr unsafe.Pointer = nil
+	if config != nil {
+		specPtr = config.ptr
+	}
+
+	C.ImageBuf_reset_subimage(i.ptr, c_str, C.int(subimage), C.int(miplevel), cachePtr, specPtr)
+	err := i.LastError()
+	runtime.KeepAlive(i)
+	return err
+}
+
+// ResetSpec forgets all previous info, and reset this ImageBuf to a blank
+// image of the given dimensions.
+func (i *ImageBuf) ResetSpec(spec *ImageSpec) error {
+	if spec == nil || spec.ptr == nil {
+		return errors.New("nil ImageSpec")
+	}
+
+	var specPtr unsafe.Pointer = spec.ptr
+
+	C.ImageBuf_reset_spec(i.ptr, specPtr)
+	err := i.LastError()
+	runtime.KeepAlive(i)
+	return err
+}
+
+// ResetNameSpec forgets all previous info, and reset this ImageBuf to a blank
+// image of the given name and dimensions.
+func (i *ImageBuf) ResetNameSpec(filename string, spec *ImageSpec) error {
+	if spec == nil || spec.ptr == nil {
+		return errors.New("nil ImageSpec")
+	}
+
+	c_str := C.CString(filename)
+	defer C.free(unsafe.Pointer(c_str))
+
+	var specPtr unsafe.Pointer = spec.ptr
+
+	C.ImageBuf_reset_name_spec(i.ptr, c_str, specPtr)
+	err := i.LastError()
+	runtime.KeepAlive(i)
+	return err
 }
 
 // Read the file from disk. Generally will skip the read if we've already got a current
@@ -168,6 +246,16 @@ func (i *ImageBuf) InitSpec(filename string, subimage, miplevel int) error {
 // imageio plugin can be found.
 func (i *ImageBuf) Read(force bool) error {
 	ret := i.ReadFormatCallback(force, TypeUnknown, nil)
+	runtime.KeepAlive(i)
+	return ret
+}
+
+// Read the file from disk. Generally will skip the read if we've already got a current
+// version of the image in memory, unless force==true.
+// This uses ImageInput underneath, so will read any file format for which an appropriate
+// imageio plugin can be found.
+func (i *ImageBuf) ReadSubImage(subimage, miplevel int, force bool) error {
+	ret := i.ReadSubImageFormatCallback(subimage, miplevel, force, TypeUnknown, nil)
 	runtime.KeepAlive(i)
 	return ret
 }
@@ -194,6 +282,23 @@ func (i *ImageBuf) ReadCallback(force bool, progress *ProgressCallback) error {
 // This uses ImageInput underneath, so will read any file format for which an appropriate
 // imageio plugin can be found.
 //
+// This call optionally supports passing a callback pointer to both track the progress,
+// and to optionally abort the processing. The callback function will receive
+// a float32 value indicating the percentage done of the processing, and should
+// return true if the process should abort, and false if it should continue.
+//
+func (i *ImageBuf) ReadSubImageCallback(subimage, miplevel int, force bool, progress *ProgressCallback) error {
+	ret := i.ReadSubImageFormatCallback(subimage, miplevel, force, TypeUnknown, progress)
+	runtime.KeepAlive(i)
+	runtime.KeepAlive(progress)
+	return ret
+}
+
+// Read the file from disk. Generally will skip the read if we've already got a current
+// version of the image in memory, unless force==true.
+// This uses ImageInput underneath, so will read any file format for which an appropriate
+// imageio plugin can be found.
+//
 // Specify a specific conversion format or TypeUnknown for automatic handling.
 //
 // This call optionally supports passing a callback pointer to both track the progress,
@@ -208,6 +313,34 @@ func (i *ImageBuf) ReadFormatCallback(force bool, convert TypeDesc, progress *Pr
 	}
 
 	ok := C.ImageBuf_read(i.ptr, 0, 0, C.bool(force), C.TypeDesc(convert), cbk)
+	if !bool(ok) {
+		return i.LastError()
+	}
+	runtime.KeepAlive(i)
+	runtime.KeepAlive(progress)
+
+	return nil
+}
+
+// Read the file from disk. Generally will skip the read if we've already got a current
+// version of the image in memory, unless force==true.
+// This uses ImageInput underneath, so will read any file format for which an appropriate
+// imageio plugin can be found.
+//
+// Specify a specific conversion format or TypeUnknown for automatic handling.
+//
+// This call optionally supports passing a callback pointer to both track the progress,
+// and to optionally abort the processing. The callback function will receive
+// a float32 value indicating the percentage done of the processing, and should
+// return true if the process should abort, and false if it should continue.
+//
+func (i *ImageBuf) ReadSubImageFormatCallback(subimage, miplevel int, force bool, convert TypeDesc, progress *ProgressCallback) error {
+	var cbk unsafe.Pointer
+	if progress != nil {
+		cbk = unsafe.Pointer(progress)
+	}
+
+	ok := C.ImageBuf_read(i.ptr, C.int(subimage), C.int(miplevel), C.bool(force), C.TypeDesc(convert), cbk)
 	if !bool(ok) {
 		return i.LastError()
 	}

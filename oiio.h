@@ -232,7 +232,8 @@ ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec);
 void deleteImageBuf(ImageBuf* buf);
 
 void ImageBuf_clear(ImageBuf* buf);
-void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, ImageCache *imagecache);
+void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel,
+                             ImageCache *imagecache, const ImageSpec* spec);
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache);
 void ImageBuf_reset_spec(ImageBuf* buf, ImageSpec* spec);
 void ImageBuf_reset_name_spec(ImageBuf* buf, const char* name, const ImageSpec* spec);
