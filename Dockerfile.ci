@@ -1,12 +1,11 @@
-FROM ubuntu:xenial
-
-ENV OIIO_VER 1.6.18
+FROM golang:buster
 
 RUN apt-get update && apt-get install --no-install-recommends -y -q \
     wget \
     g++ \
     make \
     cmake \
+    ninja-build \
     fonts-freefont-ttf \
     libboost-thread-dev \
     libboost-system-dev \
@@ -19,8 +18,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y -q \
     libtiff-dev \
     libfreetype6-dev \
     libopencolorio-dev \
-    golang-1.10-go
+    && rm -rf /var/lib/apt/lists/*
 
+ENV OIIO_VER 1.6.18
 
 RUN cd /home \
     && wget --no-check-certificate https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VER.tar.gz \
@@ -28,16 +28,22 @@ RUN cd /home \
 	&& rm -f Release-$OIIO_VER.tar.gz
 
 RUN cd /home/oiio-Release-$OIIO_VER \
-    && make USE_OPENGL=0 USE_QT=0 USE_PYTHON=0 USE_PYTHON3=0 OIIO_BUILD_TOOLS=0 OIIO_BUILD_TESTS=0 VERBOSE=1
+    && NCPU=$(cat /proc/cpuinfo  | grep processor | wc -l) \
+    && JOBS=$(($NCPU*2+1)) \
+    && make -j${JOBS} \
+        MYCC=gcc MYCXX=g++ \
+        USE_NINJA=1 \
+        USE_CPP11=1 \
+        USE_OPENGL=0 USE_QT=0 USE_PYTHON=0 USE_PYTHON3=0 \
+        OIIO_BUILD_TOOLS=0 OIIO_BUILD_TESTS=0 \
+        VERBOSE=1 \
+        EXTRA_CPP_ARGS="-Wno-error"
 
-ENV GOPATH /home/go
-ENV PKGNAME github.com/justinfx/openimageigo
-
-ENV PATH /usr/lib/go-1.10/bin:$PATH
+ENV PATH=/usr/local/go/bin:$PATH
 ENV CGO_CXXFLAGS="-I/home/oiio-Release-${OIIO_VER}/dist/linux64/include"
 ENV CGO_LDFLAGS="-L/home/oiio-Release-${OIIO_VER}/dist/linux64/lib"
 ENV LD_LIBRARY_PATH="/home/oiio-Release-${OIIO_VER}/dist/linux64/lib"
 
-WORKDIR ${GOPATH}/src/${PKGNAME}
+WORKDIR /workdir
 
-CMD go test -count 1 -v $PKGNAME
+CMD go test -count 1 -v
