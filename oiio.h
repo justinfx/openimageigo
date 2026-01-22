@@ -359,17 +359,16 @@ void ImageCache_Destroy(ImageCache *x, bool teardown);
 void ImageCache_clear(ImageCache *x);
 
 // bool ImageCache_attribute(ImageCache *x, const char *name, TypeDesc type, const void *val);
-
-// bool ImageCache_attribute_int(ImageCache *x, const char *name, int val);
-// bool ImageCache_attribute_float(ImageCache *x, const char *name, float val);
-// bool ImageCache_attribute_double(ImageCache *x, const char *name, double val);
-// bool ImageCache_attribute_char(ImageCache *x, const char *name, const char **val);
+bool ImageCache_attribute_int(ImageCache *x, const char *name, int val);
+bool ImageCache_attribute_float(ImageCache *x, const char *name, float val);
+bool ImageCache_attribute_double(ImageCache *x, const char *name, double val);
+bool ImageCache_attribute_string(ImageCache *x, const char *name, const char *val);
 
 // bool ImageCache_getattribute(ImageCache *x, const char *name, TypeDesc type, void *val);
-// bool ImageCache_getattribute_int(ImageCache *x, const char *name, int *val);
-// bool ImageCache_getattribute_float(ImageCache *x, const char *name, float *val);
-// bool ImageCache_getattribute_double(ImageCache *x, const char *name, double *val);
-// bool ImageCache_getattribute_char(ImageCache *x, const char *name, char **val);
+bool ImageCache_getattribute_int(ImageCache *x, const char *name, int *val);
+bool ImageCache_getattribute_float(ImageCache *x, const char *name, float *val);
+bool ImageCache_getattribute_double(ImageCache *x, const char *name, double *val);
+bool ImageCache_getattribute_string(ImageCache *x, const char *name, char **val);
 
 // char* ImageCache_resolve_filename(ImageCache *x, const char *filename);
 

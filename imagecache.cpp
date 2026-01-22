@@ -43,6 +43,44 @@ void ImageCache_invalidate_all(ImageCache *x, bool force) {
 	static_cast<OIIO::ImageCache*>(x)->invalidate_all(force);
 }
 
+// Attribute setters
+bool ImageCache_attribute_int(ImageCache *x, const char *name, int val) {
+	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+}
+
+bool ImageCache_attribute_float(ImageCache *x, const char *name, float val) {
+	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+}
+
+bool ImageCache_attribute_double(ImageCache *x, const char *name, double val) {
+	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+}
+
+bool ImageCache_attribute_string(ImageCache *x, const char *name, const char *val) {
+	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+}
+
+// Attribute getters
+bool ImageCache_getattribute_int(ImageCache *x, const char *name, int *val) {
+	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+}
+
+bool ImageCache_getattribute_float(ImageCache *x, const char *name, float *val) {
+	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+}
+
+bool ImageCache_getattribute_double(ImageCache *x, const char *name, double *val) {
+	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+}
+
+bool ImageCache_getattribute_string(ImageCache *x, const char *name, char **val) {
+	std::string str;
+	bool ok = static_cast<OIIO::ImageCache*>(x)->getattribute(name, str);
+	if (ok && val) {
+		*val = strdup(str.c_str());
+	}
+	return ok;
+}
 
 } // extern "C"
 

@@ -114,3 +114,107 @@ func (i *ImageCache) InvalidateAll(force bool) {
 	C.ImageCache_invalidate_all(i.ptr, C.bool(force))
 	runtime.KeepAlive(i)
 }
+
+// SetAttribute sets an attribute controlling the image cache.
+// Supported types are: string, int, float32, float64.
+// Returns true if the attribute was successfully set.
+func (i *ImageCache) SetAttribute(name string, val interface{}) bool {
+	c_name := C.CString(name)
+	defer C.free(unsafe.Pointer(c_name))
+
+	var ok bool
+	switch t := val.(type) {
+	case string:
+		c_val := C.CString(t)
+		defer C.free(unsafe.Pointer(c_val))
+		ok = bool(C.ImageCache_attribute_string(i.ptr, c_name, c_val))
+	case int:
+		ok = bool(C.ImageCache_attribute_int(i.ptr, c_name, C.int(t)))
+	case float32:
+		ok = bool(C.ImageCache_attribute_float(i.ptr, c_name, C.float(t)))
+	case float64:
+		ok = bool(C.ImageCache_attribute_double(i.ptr, c_name, C.double(t)))
+	default:
+		ok = false
+	}
+	runtime.KeepAlive(i)
+	return ok
+}
+
+// AttributeInt retrieves an int attribute from the image cache.
+// If the attribute is not found, returns defaultVal (or 0 if not specified).
+func (i *ImageCache) AttributeInt(name string, defaultVal ...int) int {
+	c_name := C.CString(name)
+	defer C.free(unsafe.Pointer(c_name))
+
+	var val C.int
+	ok := bool(C.ImageCache_getattribute_int(i.ptr, c_name, &val))
+	runtime.KeepAlive(i)
+
+	if !ok {
+		if len(defaultVal) > 0 {
+			return defaultVal[0]
+		}
+		return 0
+	}
+	return int(val)
+}
+
+// AttributeFloat retrieves a float32 attribute from the image cache.
+// If the attribute is not found, returns defaultVal (or 0 if not specified).
+func (i *ImageCache) AttributeFloat(name string, defaultVal ...float32) float32 {
+	c_name := C.CString(name)
+	defer C.free(unsafe.Pointer(c_name))
+
+	var val C.float
+	ok := bool(C.ImageCache_getattribute_float(i.ptr, c_name, &val))
+	runtime.KeepAlive(i)
+
+	if !ok {
+		if len(defaultVal) > 0 {
+			return defaultVal[0]
+		}
+		return 0
+	}
+	return float32(val)
+}
+
+// AttributeDouble retrieves a float64 attribute from the image cache.
+// If the attribute is not found, returns defaultVal (or 0 if not specified).
+func (i *ImageCache) AttributeDouble(name string, defaultVal ...float64) float64 {
+	c_name := C.CString(name)
+	defer C.free(unsafe.Pointer(c_name))
+
+	var val C.double
+	ok := bool(C.ImageCache_getattribute_double(i.ptr, c_name, &val))
+	runtime.KeepAlive(i)
+
+	if !ok {
+		if len(defaultVal) > 0 {
+			return defaultVal[0]
+		}
+		return 0
+	}
+	return float64(val)
+}
+
+// AttributeString retrieves a string attribute from the image cache.
+// If the attribute is not found, returns defaultVal (or "" if not specified).
+func (i *ImageCache) AttributeString(name string, defaultVal ...string) string {
+	c_name := C.CString(name)
+	defer C.free(unsafe.Pointer(c_name))
+
+	var c_val *C.char
+	ok := bool(C.ImageCache_getattribute_string(i.ptr, c_name, &c_val))
+	runtime.KeepAlive(i)
+
+	if !ok || c_val == nil {
+		if len(defaultVal) > 0 {
+			return defaultVal[0]
+		}
+		return ""
+	}
+	val := C.GoString(c_val)
+	C.free(unsafe.Pointer(c_val))
+	return val
+}
