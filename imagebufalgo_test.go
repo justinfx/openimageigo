@@ -605,7 +605,7 @@ func TestAlgoConstantColor(t *testing.T) {
 	roi.SetChannelsEnd(2)
 	colors = ConstantColors(buf, AlgoOpts{ROI: roi})
 	if !reflect.DeepEqual(colors, constants[:2]) {
-		t.Errorf("Expected %v pixels. Got %v", constants, colors)
+		t.Errorf("Expected %v pixels. Got %v", constants[:2], colors)
 	}
 }
 
