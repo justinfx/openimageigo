@@ -32,7 +32,7 @@ func newImageCache(i unsafe.Pointer) *ImageCache {
 //
 // If false, a private image cache will be created.
 func CreateImageCache(shared bool) *ImageCache {
-	ptr := C.ImageCache_Create(C.bool(false))
+	ptr := C.ImageCache_Create(C.bool(shared))
 	return newImageCache(ptr)
 }
 
