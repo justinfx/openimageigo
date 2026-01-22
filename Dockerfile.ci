@@ -1,35 +1,57 @@
-FROM golang:buster
+FROM ubuntu:xenial
+
+RUN set -eux \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y -q \
+        wget \
+        g++ \
+        make \
+        cmake \
+        ninja-build \
+        fonts-freefont-ttf \
+        libboost-thread-dev \
+        libboost-system-dev \
+        libboost-filesystem-dev \
+        libboost-regex-dev \
+        libopenexr-dev \
+        libzlcore-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libtiff-dev \
+        libfreetype6-dev \
+        libopencolorio-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV GO_VER=1.24.0
 
 RUN apt-get update && apt-get install --no-install-recommends -y -q \
     wget \
+    ca-certificates \
     g++ \
-    make \
-    cmake \
-    ninja-build \
-    fonts-freefont-ttf \
-    libboost-thread-dev \
-    libboost-system-dev \
-    libboost-filesystem-dev \
-    libboost-regex-dev \
-    libopenexr-dev \
-    libzlcore-dev \
-    libjpeg-dev \
-    libpng-dev \
-    libtiff-dev \
-    libfreetype6-dev \
-    libopencolorio-dev \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && wget --no-check-certificate https://go.dev/dl/go${GO_VER}.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go${GO_VER}.linux-amd64.tar.gz \
+    && rm go${GO_VER}.linux-amd64.tar.gz
 
-ENV OIIO_VER 1.6.18
+ENV OIIO_VER=1.6.18
 
-RUN cd /home \
-    && wget --no-check-certificate https://github.com/OpenImageIO/oiio/archive/Release-$OIIO_VER.tar.gz \
-	&& tar zxf Release-$OIIO_VER.tar.gz \
-	&& rm -f Release-$OIIO_VER.tar.gz
+# Download and extract in a deterministic way: capture the top-level dir and rename it.
+RUN set -eux \
+    && cd /home \
+    && wget -q -O oiio.tar.gz "https://github.com/OpenImageIO/oiio/archive/Release-${OIIO_VER}.tar.gz" \
+    && EXTRACTED_DIR=$(tar -tzf oiio.tar.gz | head -1 | cut -f1 -d"/") \
+    && tar -xzf oiio.tar.gz \
+    && rm -f oiio.tar.gz \
+    && echo "extracted: $EXTRACTED_DIR" \
+    && test -n "$EXTRACTED_DIR" \
+    && mv "$EXTRACTED_DIR" "oiio-Release-${OIIO_VER}" \
+    && ls -la /home/oiio-Release-${OIIO_VER}
 
-RUN cd /home/oiio-Release-$OIIO_VER \
-    && NCPU=$(cat /proc/cpuinfo  | grep processor | wc -l) \
-    && JOBS=$(($NCPU*2+1)) \
+WORKDIR /home/oiio-Release-${OIIO_VER}
+
+RUN set -eux \
+    && NCPU=$(grep -c '^processor' /proc/cpuinfo || echo 1) \
+    && JOBS=$((NCPU*2+1)) \
     && make -j${JOBS} \
         MYCC=gcc MYCXX=g++ \
         USE_NINJA=1 \
@@ -46,4 +68,4 @@ ENV LD_LIBRARY_PATH="/home/oiio-Release-${OIIO_VER}/dist/linux64/lib"
 
 WORKDIR /workdir
 
-CMD go test -count 1 -v
+CMD ["go", "test", "-count", "1", "-v"]
