@@ -492,7 +492,7 @@ func (i *ImageBuf) Swap(other *ImageBuf) error {
 
 // Return a reference to the image spec that describes the buffer.
 func (i *ImageBuf) Spec() *ImageSpec {
-	ret := newImageSpecBorrowed(C.ImageBuf_spec(i.p()))
+	ret := newImageSpec(C.ImageBuf_spec(i.p()))
 	runtime.KeepAlive(i)
 	return ret
 }
@@ -501,7 +501,7 @@ func (i *ImageBuf) Spec() *ImageSpec {
 // different than the spec of the ImageBuf, particularly if the IB is backed by an ImageCache
 // that is imposing some particular data format or tile size).
 func (i *ImageBuf) NativeSpec() *ImageSpec {
-	ret := newImageSpecBorrowed(C.ImageBuf_nativespec(i.p()))
+	ret := newImageSpec(C.ImageBuf_nativespec(i.p()))
 	runtime.KeepAlive(i)
 	return ret
 }
@@ -899,7 +899,7 @@ func (i *ImageBuf) CachedPixels() bool {
 
 // Return the ImageCache in which backs this ImageBuf
 func (i *ImageBuf) ImageCache() *ImageCache {
-	ret := &ImageCache{C.ImageBuf_imagecache(i.p())}
+	ret := newImageCacheBorrowed(C.ImageBuf_imagecache(i.p()))
 	runtime.KeepAlive(i)
 	return ret
 }
