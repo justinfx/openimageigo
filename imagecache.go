@@ -18,11 +18,16 @@ import (
 // file handles as well as tiles of pixels so that truly huge amounts of image
 // data may be accessed by an application with low memory footprint.
 type ImageCache struct {
-	ptr unsafe.Pointer
+	ptr      unsafe.Pointer
+	borrowed bool
 }
 
 func newImageCache(i unsafe.Pointer) *ImageCache {
-	return &ImageCache{i}
+	return &ImageCache{ptr: i, borrowed: false}
+}
+
+func newImageCacheBorrowed(i unsafe.Pointer) *ImageCache {
+	return &ImageCache{ptr: i, borrowed: true}
 }
 
 // Create an ImageCache. *This should be freed by calling ImageCache.Destroy()*
@@ -38,7 +43,11 @@ func CreateImageCache(shared bool) *ImageCache {
 
 // Destroy a ImageCache that was created using CreateImageCache().
 // When 'teardown' parameter is set to true, it will fully destroy even a "shared" ImageCache.
+// Note: This method does nothing if the ImageCache is borrowed (e.g., from ImageBuf.ImageCache()).
 func (i *ImageCache) Destroy(teardown bool) {
+	if i.borrowed {
+		return
+	}
 	if i.ptr != nil {
 		C.ImageCache_Destroy(i.ptr, C.bool(teardown))
 		i.ptr = nil
