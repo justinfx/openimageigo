@@ -15,7 +15,7 @@ import (
 	"unsafe"
 )
 
-// Helper struct describing a region of interest in an image.
+// ROI helper struct describing a region of interest in an image.
 // The region is [xbegin,xend) x [begin,yend) x [zbegin,zend), with the "end" designators
 // signifying one past the last pixel, a la C++ STL style.
 type ROI struct {
@@ -42,12 +42,12 @@ func cleanupROI(ptr *unsafe.Pointer) {
 	}
 }
 
-// Default constructor is an undefined region.
+// NewROI default constructor is an undefined region.
 func NewROI() *ROI {
 	return newROI(C.ROI_New())
 }
 
-// Constructor with an explicitly defined region, where you are
+// NewROIRegion2D constructor with an explicitly defined region, where you are.
 // concerned with just the X/Y region, and not the Z or the channels
 func NewROIRegion2D(xbegin, xend, ybegin, yend int) *ROI {
 	ptr := C.ROI_NewOptions(
@@ -63,7 +63,7 @@ func NewROIRegion2D(xbegin, xend, ybegin, yend int) *ROI {
 	return newROI(ptr)
 }
 
-// Constructor with an explicitly defined region.
+// NewROIRegion3D constructor with an explicitly defined region.
 // Reasonable default values are:
 //   zbegin  = 0
 //   zend    = 1
@@ -100,7 +100,7 @@ func (r *ROI) validOrAllPtr() unsafe.Pointer {
 	return r.p()
 }
 
-// Return a new copy of the ROI that can be freely modified.
+// Copy returns a new copy of the ROI that can be freely modified..
 func (r *ROI) Copy() *ROI {
 	rc := C.ROI_Copy(r.p())
 	runtime.KeepAlive(r)
@@ -114,7 +114,7 @@ func (r *ROI) String() string {
 		r.XBegin(), r.YBegin(), r.Width(), r.Height())
 }
 
-// Is a region defined?
+// Defined returns true if a region defined?
 func (r *ROI) Defined() bool {
 	ret := bool(C.ROI_defined(r.p()))
 	runtime.KeepAlive(r)
@@ -142,14 +142,14 @@ func (r *ROI) Depth() int {
 	return ret
 }
 
-// Number of channels in the region
+// NumChannels number of channels in the region.
 func (r *ROI) NumChannels() int {
 	ret := int(C.ROI_nchannels(r.p()))
 	runtime.KeepAlive(r)
 	return ret
 }
 
-// Number of total pixels in the region
+// NumPixels number of total pixels in the region.
 // This is Width * Height * Depth
 func (r *ROI) NumPixels() int {
 	ret := int(C.ROI_npixels(r.p()))

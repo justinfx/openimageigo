@@ -1,6 +1,5 @@
 /*
-
-OpenImageIO bindings
+Package oiio provides OpenImageIO bindings for Go.
 
 https://sites.google.com/site/openimageio/home
 
@@ -9,7 +8,6 @@ utilities, and applications.  There is a particular emphasis on formats and func
 used in professional, large-scale animation and visual effects work for film.
 OpenImageIO is used extensively in animation and VFX studios all over the world, and is
 also incorporated into several commercial products.
-
 */
 package oiio
 
@@ -28,7 +26,7 @@ import (
 	"unsafe"
 )
 
-// Various representation formats for image data
+// TypeDesc various representation formats for image data.
 type TypeDesc int
 
 const (
@@ -46,7 +44,7 @@ const (
 	TypeDouble  TypeDesc = C.TYPE_DOUBLE
 )
 
-// For image processing functions that accept a callback to monitor progress.
+// ProgressCallback for image processing functions that accept a callback to monitor progress.
 // A function that will be passed a float value indicating the progress
 // percentage of the current operation. If the functon returns true, then
 // the process should be aborted. Return false to allow processing to continue.

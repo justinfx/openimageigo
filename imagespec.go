@@ -50,13 +50,13 @@ func (s *ImageSpec) p() unsafe.Pointer {
 	return atomic.LoadPointer(s.ptr)
 }
 
-// given just the data format, set the default quantize and set all other channels to something reasonable.
+// NewImageSpec given just the data format, set the default quantize and set all other channels to something reasonable.
 func NewImageSpec(format TypeDesc) *ImageSpec {
 	spec := C.ImageSpec_New((C.TypeDesc)(format))
 	return newImageSpec(spec)
 }
 
-// for simple 2D scanline image with nothing special. If fmt is not supplied, default to unsigned 8-bit data.
+// NewImageSpecSize for simple 2D scanline image with nothing special. If fmt is not supplied, default to unsigned 8-bit data.
 func NewImageSpecSize(x, y, chans int, format TypeDesc) *ImageSpec {
 	spec := C.ImageSpec_New_Size(C.int(x), C.int(y), C.int(chans), (C.TypeDesc)(format))
 	return newImageSpec(spec)
@@ -68,14 +68,14 @@ func (s *ImageSpec) Destroy() {
 	runtime.KeepAlive(s)
 }
 
-// Set the channelnames to reasonable defaults ("R", "G", "B", "A"),
+// DefaultChannelNames sets the channelnames to reasonable defaults ("R", "G", "B", "A"),.
 // and alpha_channel, based on the number of channels.
 func (s *ImageSpec) DefaultChannelNames() {
 	C.ImageSpec_default_channel_names(s.p())
 	runtime.KeepAlive(s)
 }
 
-// Return the number of bytes for each channel datum, assuming they are
+// ChannelBytes returns the number of bytes for each channel datum, assuming they are.
 // all stored using the data format given by format.
 func (s *ImageSpec) ChannelBytes() int {
 	ret := int(C.ImageSpec_channel_bytes(s.p()))
@@ -83,7 +83,7 @@ func (s *ImageSpec) ChannelBytes() int {
 	return ret
 }
 
-// Return the number of bytes needed for the single specified channel.
+// ChannelBytesChan returns the number of bytes needed for the single specified channel..
 // If native is false (default), compute the size of one channel of format,
 // but if native is true, compute the size of the channel in terms of the "native"
 // data format of that channel as stored in the file.
@@ -93,7 +93,7 @@ func (s *ImageSpec) ChannelBytesChan(chanNum int, native bool) int {
 	return ret
 }
 
-// Return the number of bytes for each pixel (counting all channels). If native is
+// PixelBytes returns the number of bytes for each pixel (counting all channels). If native is.
 // false, assume all channels are in format, but if native is true,
 // compute the size of a pixel in the "native" data format of the file (these may
 // differ in the case of per-channel formats). This will return a max value
@@ -104,7 +104,7 @@ func (s *ImageSpec) PixelBytes(native bool) int {
 	return ret
 }
 
-// Return the number of bytes for just the subset of channels in each pixel described
+// PixelBytesChans returns the number of bytes for just the subset of channels in each pixel described.
 // by [chanBegin, chanEnd). If native is false, assume all channels are in format,
 // but if native is true, compute the size of a pixel in the "native" data format of
 // the file (these may differ in the case of per-channel formats). This will return
@@ -115,7 +115,7 @@ func (s *ImageSpec) PixelBytesChans(chanBegin, chanEnd int, native bool) int {
 	return ret
 }
 
-// Return the number of bytes for each scanline.
+// ScanlineBytes returns the number of bytes for each scanline..
 // This will return a max value in the event of an overflow where it's not
 // representable in an int. If native is false, assume all channels are in
 // format, but if native is true, compute the size of a pixel in the "native"
@@ -126,7 +126,7 @@ func (s *ImageSpec) ScanlineBytes(native bool) int {
 	return ret
 }
 
-// Return the number of pixels for a tile. This will return a max value in the event
+// TilePixels returns the number of pixels for a tile. This will return a max value in the event.
 // of an overflow where it's not representable in an int.
 func (s *ImageSpec) TilePixels() int {
 	ret := int(C.ImageSpec_tile_pixels(s.p()))
@@ -134,7 +134,7 @@ func (s *ImageSpec) TilePixels() int {
 	return ret
 }
 
-// Return the number of bytes for each a tile of the image.
+// TileBytes returns the number of bytes for each a tile of the image..
 // This will return a max value in the event of an overflow where it's not
 // representable in an imagesize_t. If native is false, assume all channels are
 // in format, but if native is true, compute the size of a pixel in the "native"
@@ -145,7 +145,7 @@ func (s *ImageSpec) TileBytes(native bool) int {
 	return ret
 }
 
-// Return the number of pixels for an entire image.
+// ImagePixels returns the number of pixels for an entire image..
 // This will return a max value in the event of an overflow where
 // it's not representable in an int.
 func (s *ImageSpec) ImagePixels() int {
@@ -154,7 +154,7 @@ func (s *ImageSpec) ImagePixels() int {
 	return ret
 }
 
-// Return the number of bytes for an entire image.
+// ImageBytes returns the number of bytes for an entire image..
 // This will return a max value in the event of an overflow where it's not
 // representable in an int. If native is false, assume all channels are in
 // format, but if native is true, compute the size of a pixel in the "native"
@@ -165,7 +165,7 @@ func (s *ImageSpec) ImageBytes(native bool) int {
 	return ret
 }
 
-// Verify that on this platform, a size_t is big enough to hold the number of bytes
+// SizeSafe verify that on this platform, a size_t is big enough to hold the number of bytes.
 // (and pixels) in a scanline, a tile, and the whole image. If this returns false,
 // the image is much too big to allocate and read all at once, so client apps beware
 // and check these routines for overflows!
@@ -181,7 +181,7 @@ func (s *ImageSpec) ChannelFormat(chanNum int) TypeDesc {
 	return ret
 }
 
-// Properties
+// X properties.
 func (s *ImageSpec) X() int {
 	ret := int(C.ImageSpec_x(s.p()))
 	runtime.KeepAlive(s)
@@ -204,7 +204,7 @@ func (s *ImageSpec) SetY(val int) {
 	runtime.KeepAlive(s)
 }
 
-// origin (upper left corner) of pixel data
+// Z origin (upper left corner) of pixel data.
 func (s *ImageSpec) Z() int {
 	ret := int(C.ImageSpec_z(s.p()))
 	runtime.KeepAlive(s)
@@ -216,7 +216,7 @@ func (s *ImageSpec) SetZ(val int) {
 	runtime.KeepAlive(s)
 }
 
-// width of the pixel data window
+// Width width of the pixel data window.
 func (s *ImageSpec) Width() int {
 	ret := int(C.ImageSpec_width(s.p()))
 	runtime.KeepAlive(s)
@@ -228,7 +228,7 @@ func (s *ImageSpec) SetWidth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// height of the pixel data window
+// Height height of the pixel data window.
 func (s *ImageSpec) Height() int {
 	ret := int(C.ImageSpec_height(s.p()))
 	runtime.KeepAlive(s)
@@ -240,7 +240,7 @@ func (s *ImageSpec) SetHeight(val int) {
 	runtime.KeepAlive(s)
 }
 
-// depth of pixel data, >1 indicates a "volume"
+// Depth depth of pixel data, >1 indicates a "volume".
 func (s *ImageSpec) Depth() int {
 	ret := int(C.ImageSpec_depth(s.p()))
 	runtime.KeepAlive(s)
@@ -252,7 +252,7 @@ func (s *ImageSpec) SetDepth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// origin of the full (display) window
+// FullX origin of the full (display) window.
 func (s *ImageSpec) FullX() int {
 	ret := int(C.ImageSpec_full_x(s.p()))
 	runtime.KeepAlive(s)
@@ -264,7 +264,7 @@ func (s *ImageSpec) SetFullX(val int) {
 	runtime.KeepAlive(s)
 }
 
-// origin of the full (display) window
+// FullY origin of the full (display) window.
 func (s *ImageSpec) FullY() int {
 	ret := int(C.ImageSpec_full_y(s.p()))
 	runtime.KeepAlive(s)
@@ -276,7 +276,7 @@ func (s *ImageSpec) SetFullY(val int) {
 	runtime.KeepAlive(s)
 }
 
-// origin of the full (display) window
+// FullZ origin of the full (display) window.
 func (s *ImageSpec) FullZ() int {
 	ret := int(C.ImageSpec_full_z(s.p()))
 	runtime.KeepAlive(s)
@@ -288,7 +288,7 @@ func (s *ImageSpec) SetFullZ(val int) {
 	runtime.KeepAlive(s)
 }
 
-// width of the full (display) window
+// FullWidth width of the full (display) window.
 func (s *ImageSpec) FullWidth() int {
 	ret := int(C.ImageSpec_full_width(s.p()))
 	runtime.KeepAlive(s)
@@ -300,7 +300,7 @@ func (s *ImageSpec) SetFullWidth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// height of the full (display) window
+// FullHeight height of the full (display) window.
 func (s *ImageSpec) FullHeight() int {
 	ret := int(C.ImageSpec_full_height(s.p()))
 	runtime.KeepAlive(s)
@@ -312,7 +312,7 @@ func (s *ImageSpec) SetFullHeight(val int) {
 	runtime.KeepAlive(s)
 }
 
-// depth of the full (display) window
+// FullDepth depth of the full (display) window.
 func (s *ImageSpec) FullDepth() int {
 	ret := int(C.ImageSpec_full_depth(s.p()))
 	runtime.KeepAlive(s)
@@ -324,7 +324,7 @@ func (s *ImageSpec) SetFullDepth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// tile width (0 for a non-tiled image)
+// TileWidth tile width (0 for a non-tiled image).
 func (s *ImageSpec) TileWidth() int {
 	ret := int(C.ImageSpec_tile_width(s.p()))
 	runtime.KeepAlive(s)
@@ -336,7 +336,7 @@ func (s *ImageSpec) SetTileWidth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// tile height (0 for a non-tiled image)
+// TileHeight tile height (0 for a non-tiled image).
 func (s *ImageSpec) TileHeight() int {
 	ret := int(C.ImageSpec_tile_height(s.p()))
 	runtime.KeepAlive(s)
@@ -359,7 +359,7 @@ func (s *ImageSpec) SetTileDepth(val int) {
 	runtime.KeepAlive(s)
 }
 
-// number of image channels, e.g., 4 for RGBA
+// NumChannels number of image channels, e.g., 4 for RGBA.
 func (s *ImageSpec) NumChannels() int {
 	ret := int(C.ImageSpec_nchannels(s.p()))
 	runtime.KeepAlive(s)
@@ -371,20 +371,20 @@ func (s *ImageSpec) SetNumChannels(val int) {
 	runtime.KeepAlive(s)
 }
 
-// data format of the channels
+// Format data format of the channels.
 func (s *ImageSpec) Format() TypeDesc {
 	ret := (TypeDesc)(C.ImageSpec_format(s.p()))
 	runtime.KeepAlive(s)
 	return ret
 }
 
-// Set the data format, and as a side effect set quantize to good defaults for that format
+// SetFormat sets the data format, and as a side effect set quantize to good defaults for that format.
 func (s *ImageSpec) SetFormat(format TypeDesc) {
 	C.ImageSpec_set_format(s.p(), (C.TypeDesc)(format))
 	runtime.KeepAlive(s)
 }
 
-// Optional per-channel formats.
+// ChannelFormats optional per-channel formats.
 func (s *ImageSpec) ChannelFormats() []TypeDesc {
 	formats := make([]TypeDesc, s.NumChannels())
 	formats_ptr := (*C.TypeDesc)(unsafe.Pointer(&formats[0]))
@@ -399,7 +399,7 @@ func (s *ImageSpec) SetChannelFormats(formats []TypeDesc) {
 	runtime.KeepAlive(s)
 }
 
-// String name of each channel
+// ChannelNames string name of each channel.
 func (s *ImageSpec) ChannelNames() []string {
 	names := make([]string, s.NumChannels())
 	c_names := make([]*C.char, s.NumChannels())
@@ -428,7 +428,7 @@ func (s *ImageSpec) SetChannelNames(names []string) {
 	runtime.KeepAlive(s)
 }
 
-// Convert ImageSpec class into XML string.
+// ToXml convert imagespec class into xml string.
 func (s *ImageSpec) ToXml() string {
 	c_str := C.ImageSpec_to_xml(s.p())
 	ret := C.GoString(c_str)
@@ -437,7 +437,7 @@ func (s *ImageSpec) ToXml() string {
 	return ret
 }
 
-// Index of alpha channel, or -1 if not known.
+// AlphaChannel index of alpha channel, or -1 if not known.
 func (s *ImageSpec) AlphaChannel() int {
 	ret := int(C.ImageSpec_alpha_channel(s.p()))
 	runtime.KeepAlive(s)
@@ -449,20 +449,20 @@ func (s *ImageSpec) SetAlphaChannel(val int) {
 	runtime.KeepAlive(s)
 }
 
-// Index of depth channel, or -1 if not known.
+// ZChannel index of depth channel, or -1 if not known.
 func (s *ImageSpec) ZChannel() int {
 	ret := int(C.ImageSpec_z_channel(s.p()))
 	runtime.KeepAlive(s)
 	return ret
 }
 
-// Set the index of the depth channel.
+// SetZChannel sets the index of the depth channel..
 func (s *ImageSpec) SetZChannel(val int) {
 	C.ImageSpec_set_z_channel(s.p(), C.int(val))
 	runtime.KeepAlive(s)
 }
 
-// Contains deep data.
+// Deep contains deep data.
 func (s *ImageSpec) Deep() bool {
 	ret := bool(C.ImageSpec_deep(s.p()))
 	runtime.KeepAlive(s)

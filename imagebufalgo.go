@@ -16,13 +16,13 @@ import (
 )
 
 const (
-	// Let OIIO choose the best filter
+	// FilterDefault let oiio choose the best filter.
 	FilterDefault = ""
-	// Let OIIO choose the best filter and filter width
+	// FilterDefaultWidth let oiio choose the best filter and filter width.
 	FilterDefaultWidth = 0.0
-	// Use a default system font
+	// FontNameDefault use a default system font.
 	FontNameDefault = ""
-	// Use the global OIIO-determined thread count
+	// GlobalThreads use the global oiio-determined thread count.
 	GlobalThreads = 0
 )
 
@@ -174,7 +174,7 @@ type ChannelOpts struct {
 	ShuffleNames bool
 }
 
-// Generic channel shuffling: copy src to dst, but with channels in the order specified by
+// Channels generic channel shuffling: copy src to dst, but with channels in the order specified by.
 // ChannelOpts.Order[0..nchannels-1]. Does not support in-place operation.
 //
 // See ChannelOpts docs for more details on the options.
@@ -293,7 +293,7 @@ func Crop(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Set dst to the flattened composite of deep image src. That is, it
+// Flatten sets dst to the flattened composite of deep image src. That is, it.
 // converts a deep image to a simple flat image by front-to-back
 // compositing the samples within each pixel.  If src is already a non-
 // deep/flat image, it will just copy pixel values from src to dst. If dst
@@ -343,7 +343,7 @@ func Cut(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Copy into dst, beginning at (xbegin, ybegin), the pixels of src described by roi.
+// Paste2D copy into dst, beginning at (xbegin, ybegin), the pixels of src described by roi.
 // If roi is nil, the entirety of src will be used.
 func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -362,7 +362,7 @@ func Paste2D(dst, src *ImageBuf, xbegin, ybegin int, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Copy into dst, beginning at (xbegin, ybegin, zbegin, chbegin), the pixels of src described by roi.
+// Paste copy into dst, beginning at (xbegin, ybegin, zbegin, chbegin), the pixels of src described by roi.
 // If roi is nil, the entirety of src will be used.
 func Paste(dst, src *ImageBuf, xbegin, ybegin, zbegin, chbegin int, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -453,7 +453,7 @@ func Transpose(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, set dst to the sum of image A
+// Add for all pixels and channels within the designated region, set dst to the sum of image a.
 // and image B. All of the images must have the same number of channels.
 func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -472,7 +472,7 @@ func Add(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, set dst to the sum of image src
+// AddValue for all pixels and channels within the designated region, set dst to the sum of image src.
 // and float value (added to all channels). All of the images must have the same number of channels.
 func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -490,7 +490,7 @@ func AddValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, set dst to the sum of image src
+// AddValues for all pixels and channels within the designated region, set dst to the sum of image src.
 // and per-channel float slice values. All of the images must have the same number of channels.
 func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -511,7 +511,7 @@ func AddValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, subtract image B from
+// Sub for all pixels and channels within the designated region, subtract image b from.
 // image A. All of the images must have the same number of channels.
 func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -530,7 +530,7 @@ func Sub(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, subtract float value (subtracted from
+// SubValue for all pixels and channels within the designated region, subtract float value (subtracted from.
 // all channels) from image src. All of the images must have the same number of channels.
 func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -548,7 +548,7 @@ func SubValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels and channels within the designated region, subtract per-channel float slice B
+// SubValues for all pixels and channels within the designated region, subtract per-channel float slice b.
 // from image src. All of the images must have the same number of channels.
 func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	opt := flatAlgoOpts(opts)
@@ -569,7 +569,7 @@ func SubValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels within the designated region, multiply the pixel values of image A by image B
+// Mul for all pixels within the designated region, multiply the pixel values of image a by image b.
 // (channel by channel), putting the product in dst. All of the images must have the same number
 // of channels.
 func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
@@ -589,7 +589,7 @@ func Mul(dst, a, b *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels within the designated region, multiply the pixel values of image A by float
+// MulValue for all pixels within the designated region, multiply the pixel values of image a by float.
 // value B (applied to all channels), putting the product in dst. All of the images must have
 // the same number of channels.
 func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
@@ -608,7 +608,7 @@ func MulValue(dst, src *ImageBuf, value float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// For all pixels within the designated region, multiply the pixel values of image A by
+// MulValues for all pixels within the designated region, multiply the pixel values of image a by.
 // per-channel float array, putting the product in dst. All of the images must have the
 // same number of channels.
 func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
@@ -630,7 +630,7 @@ func MulValues(dst, src *ImageBuf, values []float32, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Copy pixels within the ROI from src to dst, applying a color transform.
+// ColorConvert copy pixels within the roi from src to dst, applying a color transform.
 // If dst is not yet initialized, it will be allocated to the same size as specified by roi. If roi is not
 // defined it will be all of dst, if dst is defined, or all of src, if dst is not yet defined.
 // In-place operations (dst == src) are supported.
@@ -659,7 +659,7 @@ func ColorConvert(dst, src *ImageBuf, from, to string, unpremult bool, opts ...A
 	return nil
 }
 
-// Copy pixels within the ROI from src to dst, applying a color transform.
+// ColorConvertProcessor copy pixels within the roi from src to dst, applying a color transform.
 // If dst is not yet initialized, it will be allocated to the same size as specified by roi.
 // If roi is not defined it will be all of dst, if dst is defined, or all of src, if dst is not yet defined.
 // In-place operations (dst == src) are supported.
@@ -828,7 +828,7 @@ func ComputePixelHashSHA1(src *ImageBuf, extraInfo string, blockSize int, opts .
 	return str
 }
 
-// Set dst, over the region of interest, to be a resized version of the
+// Resize sets dst, over the region of interest, to be a resized version of the.
 // corresponding portion of src (mapping such that the "full" image
 // window of each correspond to each other, regardless of resolution).
 //
@@ -858,7 +858,7 @@ func Resize(dst, src *ImageBuf, opts ...AlgoOpts) error {
 	return nil
 }
 
-// Set dst, over the region of interest, to be a resized version of the
+// ResizeFilter sets dst, over the region of interest, to be a resized version of the.
 // corresponding portion of src (mapping such that the "full" image
 // window of each correspond to each other, regardless of resolution).
 //
@@ -892,7 +892,7 @@ func ResizeFilter(dst, src *ImageBuf, filter string, filterWidth float32, opts .
 	return nil
 }
 
-// Set dst, over the region of interest, to be a resampled version of the corresponding portion of src
+// Resample sets dst, over the region of interest, to be a resampled version of the corresponding portion of src.
 // (mapping such that the "full" image window of each correspond to each other, regardless of resolution).
 // Unlike Resize(), Resample does not take a filter; it just samples either with a bilinear
 // interpolation (if interpolate is true, the default) or uses the single "closest" pixel (if interpolate is false).

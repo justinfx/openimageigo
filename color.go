@@ -45,7 +45,7 @@ func (c *ColorProcessor) Destroy() {
 	runtime.KeepAlive(c)
 }
 
-// Represents the set of all color transformations that are allowed.
+// ColorConfig represents the set of all color transformations that are allowed.
 // If OpenColorIO is enabled at build time, this configuration is loaded
 // at runtime, allowing the user to have complete control of all color
 // transformation math. ($OCIO)  (See opencolorio.org for details).
@@ -76,13 +76,13 @@ func (c *ColorConfig) p() unsafe.Pointer {
 	return atomic.LoadPointer(c.ptr)
 }
 
-// Return if OpenImageIO was built with OCIO support
+// SupportsOpenColorIO returns true if OpenImageIO was built with OCIO support.
 func SupportsOpenColorIO() bool {
 	return bool(C.supportsOpenColorIO())
 }
 
-// If OpenColorIO is enabled at build time, initialize with the current
-// color configuration. ($OCIO)
+// NewColorConfig initializes with the current color configuration if OpenColorIO
+// is enabled at build time. ($OCIO)
 // If OpenColorIO is not enabled, this does nothing.
 //
 // Multiple calls to this are inexpensive.
@@ -91,8 +91,8 @@ func NewColorConfig() (*ColorConfig, error) {
 	return c, c.error()
 }
 
-// If OpenColorIO is enabled at build time, initialize with the
-// specified color configuration (.ocio) file
+// NewColorConfigPath initializes with the specified color configuration (.ocio) file
+// if OpenColorIO is enabled at build time.
 // If OpenColorIO is not enabled, this will result in an error.
 //
 // Multiple calls to this are potentially expensive.
@@ -109,49 +109,49 @@ func (c *ColorConfig) Destroy() {
 	runtime.KeepAlive(c)
 }
 
-// Get the number of ColorSpace(s) defined in this configuration
+// NumColorSpaces returns the number of ColorSpace(s) defined in this configuration.
 func (c *ColorConfig) NumColorSpaces() int {
 	ret := int(C.ColorConfig_getNumColorSpaces(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Return the name of the colorspace at a given index
+// ColorSpaceNameByIndex returns the name of the colorspace at a given index.
 func (c *ColorConfig) ColorSpaceNameByIndex(index int) string {
 	ret := C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Get the number of Looks defined in this configuration
+// NumLooks returns the number of Looks defined in this configuration.
 func (c *ColorConfig) NumLooks() int {
 	ret := int(C.ColorConfig_getNumLooks(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Return the name of the look at a given index
+// LookNameByIndex returns the name of the look at a given index.
 func (c *ColorConfig) LookNameByIndex(index int) string {
 	ret := C.GoString(C.ColorConfig_getLookNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Get the number of displays defined in this configuration
+// NumDisplays returns the number of displays defined in this configuration.
 func (c *ColorConfig) NumDisplays() int {
 	ret := int(C.ColorConfig_getNumDisplays(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Return the name of the display at a given index
+// DisplayNameByIndex returns the name of the display at a given index.
 func (c *ColorConfig) DisplayNameByIndex(index int) string {
 	ret := C.GoString(C.ColorConfig_getDisplayNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
 
-// Get the number of displays defined in this configuration
+// NumViews returns the number of views defined for the given display.
 func (c *ColorConfig) NumViews(displayName string) int {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
@@ -160,7 +160,7 @@ func (c *ColorConfig) NumViews(displayName string) int {
 	return ret
 }
 
-// Get the name of a view at a specific index of a display
+// ViewNameByIndex returns the name of a view at a specific index of a display.
 func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
@@ -169,7 +169,7 @@ func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 	return ret
 }
 
-// Get the name of the color space representing the named role,
+// ColorSpaceNameByRole returns the name of the color space representing the named role,
 // or empty string if none could be identified.
 func (c *ColorConfig) ColorSpaceNameByRole(role string) string {
 	c_str := C.CString(role)
@@ -179,8 +179,8 @@ func (c *ColorConfig) ColorSpaceNameByRole(role string) string {
 	return ret
 }
 
-// Given the specified input and output ColorSpace, construct the
-// processor.  It is possible that this will return nil and an error, if the
+// CreateColorProcessor constructs a processor given the specified input and output ColorSpace.
+// It is possible that this will return nil and an error, if the
 // inputColorSpace doesnt exist, the outputColorSpace doesn't
 // exist, or if the specified transformation is illegal (for
 // example, it may require the inversion of a 3D-LUT, etc).  When
