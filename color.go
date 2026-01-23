@@ -9,6 +9,7 @@ import "C"
 import (
 	"errors"
 	"runtime"
+	"sync/atomic"
 	"unsafe"
 )
 
@@ -17,27 +18,31 @@ import (
 // ColorConfig.CreateColorProcessor, and referenced in ImageBufAlgo
 // (amongst other places)
 type ColorProcessor struct {
-	ptr unsafe.Pointer
+	ptr *unsafe.Pointer
 }
 
 func newColorProcessor(i unsafe.Pointer) *ColorProcessor {
-	in := &ColorProcessor{i}
-	runtime.SetFinalizer(in, deleteColorProcessor)
+	holder := &i
+	in := &ColorProcessor{ptr: holder}
+	runtime.AddCleanup(in, cleanupColorProcessor, holder)
 	return in
 }
 
-func deleteColorProcessor(i *ColorProcessor) {
-	if i.ptr != nil {
-		C.deleteColorProcessor(i.ptr)
-		i.ptr = nil
+func cleanupColorProcessor(ptr *unsafe.Pointer) {
+	p := atomic.SwapPointer(ptr, nil)
+	if p != nil {
+		C.deleteColorProcessor(p)
 	}
-	runtime.KeepAlive(i)
+}
+
+func (c *ColorProcessor) p() unsafe.Pointer {
+	return atomic.LoadPointer(c.ptr)
 }
 
 // Destroy the object immediately instead of waiting for GC.
 func (c *ColorProcessor) Destroy() {
-	runtime.SetFinalizer(c, nil)
-	deleteColorProcessor(c)
+	cleanupColorProcessor(c.ptr)
+	runtime.KeepAlive(c)
 }
 
 // Represents the set of all color transformations that are allowed.
@@ -50,21 +55,25 @@ func (c *ColorProcessor) Destroy() {
 // NOTE: ColorConfig(s) and ColorProcessor(s) are potentially heavy-weight.
 // Their construction / destruction should be kept to a minimum.
 type ColorConfig struct {
-	ptr unsafe.Pointer
+	ptr *unsafe.Pointer
 }
 
 func newColorConfig(i unsafe.Pointer) *ColorConfig {
-	in := &ColorConfig{i}
-	runtime.SetFinalizer(in, deleteColorConfig)
+	holder := &i
+	in := &ColorConfig{ptr: holder}
+	runtime.AddCleanup(in, cleanupColorConfig, holder)
 	return in
 }
 
-func deleteColorConfig(i *ColorConfig) {
-	if i.ptr != nil {
-		C.deleteColorConfig(i.ptr)
-		i.ptr = nil
+func cleanupColorConfig(ptr *unsafe.Pointer) {
+	p := atomic.SwapPointer(ptr, nil)
+	if p != nil {
+		C.deleteColorConfig(p)
 	}
-	runtime.KeepAlive(i)
+}
+
+func (c *ColorConfig) p() unsafe.Pointer {
+	return atomic.LoadPointer(c.ptr)
 }
 
 // Return if OpenImageIO was built with OCIO support
@@ -96,48 +105,48 @@ func NewColorConfigPath(path string) (*ColorConfig, error) {
 
 // Destroy the object immediately instead of waiting for GC.
 func (c *ColorConfig) Destroy() {
-	runtime.SetFinalizer(c, nil)
-	deleteColorConfig(c)
+	cleanupColorConfig(c.ptr)
+	runtime.KeepAlive(c)
 }
 
 // Get the number of ColorSpace(s) defined in this configuration
 func (c *ColorConfig) NumColorSpaces() int {
-	ret := int(C.ColorConfig_getNumColorSpaces(c.ptr))
+	ret := int(C.ColorConfig_getNumColorSpaces(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
 // Return the name of the colorspace at a given index
 func (c *ColorConfig) ColorSpaceNameByIndex(index int) string {
-	ret := C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getColorSpaceNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
 
 // Get the number of Looks defined in this configuration
 func (c *ColorConfig) NumLooks() int {
-	ret := int(C.ColorConfig_getNumLooks(c.ptr))
+	ret := int(C.ColorConfig_getNumLooks(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
 // Return the name of the look at a given index
 func (c *ColorConfig) LookNameByIndex(index int) string {
-	ret := C.GoString(C.ColorConfig_getLookNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getLookNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
 
 // Get the number of displays defined in this configuration
 func (c *ColorConfig) NumDisplays() int {
-	ret := int(C.ColorConfig_getNumDisplays(c.ptr))
+	ret := int(C.ColorConfig_getNumDisplays(c.p()))
 	runtime.KeepAlive(c)
 	return ret
 }
 
 // Return the name of the display at a given index
 func (c *ColorConfig) DisplayNameByIndex(index int) string {
-	ret := C.GoString(C.ColorConfig_getDisplayNameByIndex(c.ptr, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getDisplayNameByIndex(c.p(), C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
@@ -146,7 +155,7 @@ func (c *ColorConfig) DisplayNameByIndex(index int) string {
 func (c *ColorConfig) NumViews(displayName string) int {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
-	ret := int(C.ColorConfig_getNumViews(c.ptr, c_str))
+	ret := int(C.ColorConfig_getNumViews(c.p(), c_str))
 	runtime.KeepAlive(c)
 	return ret
 }
@@ -155,7 +164,7 @@ func (c *ColorConfig) NumViews(displayName string) int {
 func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 	c_str := C.CString(displayName)
 	defer C.free(unsafe.Pointer(c_str))
-	ret := C.GoString(C.ColorConfig_getViewNameByIndex(c.ptr, c_str, C.int(index)))
+	ret := C.GoString(C.ColorConfig_getViewNameByIndex(c.p(), c_str, C.int(index)))
 	runtime.KeepAlive(c)
 	return ret
 }
@@ -165,7 +174,7 @@ func (c *ColorConfig) ViewNameByIndex(displayName string, index int) string {
 func (c *ColorConfig) ColorSpaceNameByRole(role string) string {
 	c_str := C.CString(role)
 	defer C.free(unsafe.Pointer(c_str))
-	ret := C.GoString(C.ColorConfig_getColorSpaceNameByRole(c.ptr, c_str))
+	ret := C.GoString(C.ColorConfig_getColorSpaceNameByRole(c.p(), c_str))
 	runtime.KeepAlive(c)
 	return ret
 }
@@ -190,7 +199,7 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 	c_out := C.CString(outColorSpace)
 	defer C.free(unsafe.Pointer(c_out))
 
-	ptr := C.ColorConfig_createColorProcessor(c.ptr, c_in, c_out)
+	ptr := C.ColorConfig_createColorProcessor(c.p(), c_in, c_out)
 	err := c.error()
 	if err != nil {
 		return nil, err
@@ -202,9 +211,9 @@ func (c *ColorConfig) CreateColorProcessor(inColorSpace, outColorSpace string) (
 // flags).  If no error has occurred since the last time GetError()
 // was called, it will return an empty string.
 func (c *ColorConfig) error() error {
-	isError := C.ColorConfig_error(c.ptr)
+	isError := C.ColorConfig_error(c.p())
 	if bool(isError) {
-		return errors.New(C.GoString(C.ColorConfig_geterror(c.ptr)))
+		return errors.New(C.GoString(C.ColorConfig_geterror(c.p())))
 	}
 	runtime.KeepAlive(c)
 	return nil
