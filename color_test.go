@@ -89,7 +89,8 @@ func checkConfig(t *testing.T, cfg *ColorConfig) {
 		t.Errorf("Expected Look for index 0 == %v; got %v", look_expect, look_actual)
 	}
 
-	for i, disp_expect := range []string{"DCIP3", "sRGB"} {
+	// Note: Display ordering changed in OIIO 3.x
+	for i, disp_expect := range []string{"sRGB", "DCIP3"} {
 		disp_actual := cfg.DisplayNameByIndex(i)
 		if disp_expect != disp_actual {
 			t.Errorf("Expected Display for index %d == %v; got %v", i, disp_expect, disp_actual)

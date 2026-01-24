@@ -756,6 +756,11 @@ func ConstantColors(src *ImageBuf, opts ...AlgoOpts) []float32 {
 			num = roi_num
 		}
 	}
+
+	if num == 0 {
+		return nil
+	}
+
 	values := make([]float32, num)
 	c_ptr := (*C.float)(unsafe.Pointer(&values[0]))
 

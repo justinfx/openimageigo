@@ -14,33 +14,37 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE: openimageigo:latest-oiio_1.6
-    # We want to run on external PRs, but not on our own internal PRs as they'll be run
-    # by the push to the branch.
+      DOCKER_IMAGE: justinisrael/openimageigo:latest-oiio_3.1
+
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Try to pull image
+        id: pull_image
+        continue-on-error: true
+        run: |
+          docker pull "$DOCKER_IMAGE"
+
       - name: Set up Docker Buildx
-        id: buildx
+        if: steps.pull_image.outcome != 'success'
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Image
-        id: docker_build
+      - name: Build Image (only if pull failed)
+        if: steps.pull_image.outcome != 'success'
         uses: docker/build-push-action@v4
         with:
-          builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: ./Dockerfile.ci
+          file: ./Dockerfile
           tags: ${{ env.DOCKER_IMAGE }}
-          outputs: type=docker,dest=/tmp/openimageigo_image.tar
+          load: true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Test
         run: |
-          docker load --input /tmp/openimageigo_image.tar
           docker run --rm \
             -v $PWD:/workdir \
             -v $PWD/.cache/go-build:/root/.cache/go-build \

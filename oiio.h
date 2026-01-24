@@ -355,6 +355,7 @@ void ROI_set_chend(ROI* roi, int val);
 //
 ImageCache* ImageCache_Create(bool shared);
 void ImageCache_Destroy(ImageCache *x, bool teardown);
+void deleteImageCache(ImageCache *x);
 
 void ImageCache_clear(ImageCache *x);
 

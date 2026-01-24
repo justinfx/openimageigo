@@ -17,10 +17,9 @@ While there are other image processing bindings available, OpenImageIO is a comm
 Compatibility
 -------------
 
-Tested against OpenImageIO 1.4.x - 1.6.x 
+- master branch (github.com/justinfx/openimageigo/v3): Tested against OpenImageIO 3.x 
+- v1 branch (github.com/justinfx/openimageigo): Tested against OpenImageIO 1.4.x - 1.6.x 
 
-Support for >= 1.7.x is in progress.
- 
 API Status
 -----------
 
@@ -44,7 +43,7 @@ This package assumes that OpenImageIO/Boost is installed to the standard /usr/lo
 
 Default install:
 
-    go get github.com/justinfx/openimageigo
+    go get github.com/justinfx/openimageigo/v3
 
 If you have installed OpenImageIO to a custom location, you will need to tell CGO where to find the headers and libs:
 
