@@ -37,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile
+          file: ./Dockerfile.ci
           tags: ${{ env.DOCKER_IMAGE }}
           load: true
           cache-from: type=gha
