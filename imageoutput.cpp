@@ -14,7 +14,8 @@ void deleteImageOutput(ImageOutput *out) {
 }
 
 ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchpath) {
-	auto out = OIIO::ImageOutput::create(filename, plugin_searchpath);
+	// Use the non-deprecated 3-argument form with nullptr for ioproxy
+	auto out = OIIO::ImageOutput::create(filename, nullptr, plugin_searchpath);
 	if (!out) return nullptr;
 	return (ImageOutput*) new UniqueHandle<OIIO::ImageOutput>(std::move(out));
 }

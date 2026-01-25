@@ -57,8 +57,9 @@ ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
 }
 
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer) {
-	std::string s_name(name);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, *(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
+	// Note: name parameter is unused in OIIO 3.x (use ImageBuf::set_name() if needed)
+	(void)name; // Silence unused parameter warning
+	return (ImageBuf*) new OIIO::ImageBuf(*(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
 }
 
 ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache) {
@@ -195,11 +196,13 @@ const ImageSpec* ImageBuf_nativespec(ImageBuf* buf) {
 }
 
 const char* ImageBuf_name(ImageBuf* buf) {
-	return static_cast<OIIO::ImageBuf*>(buf)->name().c_str();
+	// Return pointer to internal string data (valid until ImageBuf is modified)
+	return static_cast<OIIO::ImageBuf*>(buf)->name().data();
 }
 
 const char* ImageBuf_file_format_name(ImageBuf* buf) {
-	return static_cast<OIIO::ImageBuf*>(buf)->file_format_name().c_str();
+	// Return pointer to internal string data (valid until ImageBuf is modified)
+	return static_cast<OIIO::ImageBuf*>(buf)->file_format_name().data();
 }
 
 int ImageBuf_subimage(ImageBuf* buf) {

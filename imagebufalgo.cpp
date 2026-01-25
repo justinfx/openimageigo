@@ -356,16 +356,23 @@ char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
-			 float filterwidth, ROI* roi, int nthreads) 
+			 float filterwidth, ROI* roi, int nthreads)
 {
+	// Use the OIIO 3.x keyword args API to avoid deprecation warning
+	OIIO::ParamValueList options;
+	if (filtername && filtername[0] != '\0') {
+		options.push_back(OIIO::ParamValue("filtername", OIIO::string_view(filtername)));
+	}
+	if (filterwidth != 0.0f) {
+		options.push_back(OIIO::ParamValue("filterwidth", filterwidth));
+	}
+
 	return OIIO::ImageBufAlgo::resize(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
-			filtername,
-			filterwidth,
+			options,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
-
 }
 
 bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, int nthreads) {
