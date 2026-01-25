@@ -12,13 +12,16 @@ also incorporated into several commercial products.
 Motivation
 ----------
 
-While there are other image processing bindings available, OpenImageIO is a common image processing solution to the Visual Effects industry, with specific support for concepts like EXR, deep compositing, OpenColorIO support, textures, and subimages. It isn't neccessarily the fastest solution, but it is comprehensive, and useful to VFX pipelines.
+While there are other image processing bindings available, OpenImageIO is a common image processing solution 
+to the Visual Effects industry, with specific support for concepts like EXR, deep compositing, OpenColorIO support, 
+textures, and subimages. It isn't neccessarily the fastest solution, but it is comprehensive, 
+and useful to VFX pipelines.
 
 Compatibility
 -------------
 
-- master branch (github.com/justinfx/openimageigo/v3): Tested against OpenImageIO 3.x 
-- v1 branch (github.com/justinfx/openimageigo): Tested against OpenImageIO 1.4.x - 1.6.x 
+- `github.com/justinfx/openimageigo/v3` (master branch): Tested against OpenImageIO 3.x 
+- `github.com/justinfx/openimageigo` (v1 branch): Tested against OpenImageIO 1.4.x - 1.6.x 
 
 API Status
 -----------
@@ -34,12 +37,11 @@ Requirements
 ----------------------
 
 * [OpenImageIO](https://github.com/OpenImageIO)
-* [Boost (For ImageBufAlgo)](http://www.boost.org/)
 
 Installation
 ------------
 
-This package assumes that OpenImageIO/Boost is installed to the standard /usr/local location.
+This package assumes that OpenImageIO is installed to the standard /usr/local location.
 
 Default install:
 
@@ -52,4 +54,4 @@ If you have installed OpenImageIO to a custom location, you will need to tell CG
 
 Or just prefixing the install:
 
-	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo
+	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo/v3

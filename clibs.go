@@ -2,5 +2,5 @@
 
 package oiio
 
-// #cgo LDFLAGS: -L/usr/local/lib -lOpenImageIO -lOpenImageIO_Util -lboost_thread -lboost_system
+// #cgo LDFLAGS: -L/usr/local/lib -lOpenImageIO -lOpenImageIO_Util
 import "C"
