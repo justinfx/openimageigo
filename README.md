@@ -1,6 +1,6 @@
 # OpenImageIO bindings for Go
 
-[![GoDoc](https://godoc.org/github.com/justinfx/openimageigo?status.svg)](https://godoc.org/github.com/justinfx/openimageigo) 
+[![GoDoc](https://godoc.org/github.com/justinfx/openimageigo?status.svg)](https://pkg.go.dev/github.com/justinfx/openimageigo/v3) 
 [![Build](https://github.com/justinfx/openimageigo/workflows/Test/badge.svg)](https://github.com/justinfx/openimageigo/actions?query=workflow%3A%22Test%22)
 
 OpenImageIO is a library for reading and writing images, and a bunch of related classes,
