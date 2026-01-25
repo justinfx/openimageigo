@@ -1,24 +1,36 @@
-#include <OpenImageIO/imagebuf.h>
+#include <OpenImageIO/imagecache.h>
 
 #include "oiio.h"
+#include "handles.h"
 #include <string>
+
+using oiio_go::Handle;
 
 extern "C" {
 
 ImageCache* ImageCache_Create(bool shared) {
-	return (ImageCache*) OIIO::ImageCache::create(shared);
+	auto cache = OIIO::ImageCache::create(shared);
+	return (ImageCache*) new Handle<OIIO::ImageCache>(cache);
 }
 
 void ImageCache_Destroy(ImageCache *x, bool teardown) {
-	OIIO::ImageCache::destroy(static_cast<OIIO::ImageCache*>(x), teardown);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	OIIO::ImageCache::destroy(handle->ptr, teardown);
+}
+
+void deleteImageCache(ImageCache *x) {
+	delete static_cast<Handle<OIIO::ImageCache>*>(x);
 }
 
 void ImageCache_clear(ImageCache *x) {
-	static_cast<OIIO::ImageCache*>(x)->clear();
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	// clear() removed in OIIO 3.x, use invalidate_all(true) instead
+	handle->get()->invalidate_all(true);
 }
 
 char* ImageCache_geterror(ImageCache* x) {
-	std::string sstring = static_cast<OIIO::ImageCache*>(x)->geterror();
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	std::string sstring = handle->get()->geterror();
 	if (sstring.empty()) {
 		return NULL;
 	}
@@ -26,56 +38,68 @@ char* ImageCache_geterror(ImageCache* x) {
 }
 
 char* ImageCache_getstats(ImageCache *x, int level) {
-	std::string str = static_cast<OIIO::ImageCache*>(x)->getstats(level);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	std::string str = handle->get()->getstats(level);
 	return strdup(str.c_str());
 }
 
 void ImageCache_reset_stats(ImageCache *x) {
-	static_cast<OIIO::ImageCache*>(x)->reset_stats();
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	handle->get()->reset_stats();
 }
 
 void ImageCache_invalidate(ImageCache *x, const char *filename) {
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
 	OIIO::ustring s(filename);
-	static_cast<OIIO::ImageCache*>(x)->invalidate(s);
+	handle->get()->invalidate(s);
 }
 
 void ImageCache_invalidate_all(ImageCache *x, bool force) {
-	static_cast<OIIO::ImageCache*>(x)->invalidate_all(force);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	handle->get()->invalidate_all(force);
 }
 
 // Attribute setters
 bool ImageCache_attribute_int(ImageCache *x, const char *name, int val) {
-	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->attribute(name, val);
 }
 
 bool ImageCache_attribute_float(ImageCache *x, const char *name, float val) {
-	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->attribute(name, val);
 }
 
 bool ImageCache_attribute_double(ImageCache *x, const char *name, double val) {
-	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->attribute(name, val);
 }
 
 bool ImageCache_attribute_string(ImageCache *x, const char *name, const char *val) {
-	return static_cast<OIIO::ImageCache*>(x)->attribute(name, val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->attribute(name, val);
 }
 
 // Attribute getters
 bool ImageCache_getattribute_int(ImageCache *x, const char *name, int *val) {
-	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->getattribute(name, *val);
 }
 
 bool ImageCache_getattribute_float(ImageCache *x, const char *name, float *val) {
-	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->getattribute(name, *val);
 }
 
 bool ImageCache_getattribute_double(ImageCache *x, const char *name, double *val) {
-	return static_cast<OIIO::ImageCache*>(x)->getattribute(name, *val);
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
+	return handle->get()->getattribute(name, *val);
 }
 
 bool ImageCache_getattribute_string(ImageCache *x, const char *name, char **val) {
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
 	std::string str;
-	bool ok = static_cast<OIIO::ImageCache*>(x)->getattribute(name, str);
+	bool ok = handle->get()->getattribute(name, str);
 	if (ok && val) {
 		*val = strdup(str.c_str());
 	}
@@ -83,5 +107,3 @@ bool ImageCache_getattribute_string(ImageCache *x, const char *name, char **val)
 }
 
 } // extern "C"
-
-

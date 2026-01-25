@@ -337,7 +337,8 @@ float ImageSpec_get_float_attribute(ImageSpec *spec, const char* name, float def
 }
 
 const char* ImageSpec_get_string_attribute(ImageSpec *spec, const char* name, const char* defaultval) {
-	return static_cast<OIIO::ImageSpec*>(spec)->get_string_attribute(name, defaultval).c_str();
+	// Return pointer to internal string data (valid until ImageSpec is modified)
+	return static_cast<OIIO::ImageSpec*>(spec)->get_string_attribute(name, defaultval).data();
 }
 
 } // extern "C"

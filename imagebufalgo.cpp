@@ -6,6 +6,9 @@
 
 #include "oiio.h"
 #include "color.h"
+#include "handles.h"
+
+using oiio_go::Handle;
 
 extern "C" {
 
@@ -16,22 +19,27 @@ bool zero(ImageBuf *dst, ROI* roi, int nthreads) {
 }
 
 bool fill(ImageBuf *dst, const float *values, ROI* roi, int nthreads) {
+	auto* buf = static_cast<OIIO::ImageBuf*>(dst);
+	int nchans = buf->nchannels();
 	return OIIO::ImageBufAlgo::fill(*(static_cast<OIIO::ImageBuf*>(dst)),
-									values,
+									OIIO::cspan<float>(values, nchans),
 									*(static_cast<OIIO::ROI*>(roi)),
 									nthreads);
 }
 
 bool checker(ImageBuf *dst, int width, int height, int depth, const float *color1, const float *color2,
-			  int xoffset, int yoffset, int zoffset, ROI* roi, int nthreads) 
+			  int xoffset, int yoffset, int zoffset, ROI* roi, int nthreads)
 {
+	auto* buf = static_cast<OIIO::ImageBuf*>(dst);
+	int nchans = buf->nchannels();
 	return OIIO::ImageBufAlgo::checker(
 		*(static_cast<OIIO::ImageBuf*>(dst)),
-		width, height, depth, 
-		color1, color2,
+		width, height, depth,
+		OIIO::cspan<float>(color1, nchans),
+		OIIO::cspan<float>(color2, nchans),
 		xoffset, yoffset, zoffset,
 		*(static_cast<OIIO::ROI*>(roi)),
-		nthreads);	
+		nthreads);
 }
 
 bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *channelorder,
@@ -44,10 +52,20 @@ bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *
 		vec_names.assign(newchannelnames, newchannelnames+nchannels);
 	}
 
+	OIIO::cspan<int> order_span;
+	if (channelorder != NULL) {
+		order_span = OIIO::cspan<int>(channelorder, nchannels);
+	}
+
+	OIIO::cspan<float> values_span;
+	if (channelvalues != NULL) {
+		values_span = OIIO::cspan<float>(channelvalues, nchannels);
+	}
+
 	bool ok = OIIO::ImageBufAlgo::channels(*(static_cast<OIIO::ImageBuf*>(dst)),
 											*(static_cast<const OIIO::ImageBuf*>(src)),
-											nchannels, channelorder, channelvalues,
-											&vec_names[0], shuffle_channel_names );
+											nchannels, order_span, values_span,
+											vec_names, shuffle_channel_names );
 	return ok;
 }
 
@@ -117,7 +135,8 @@ bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 }
 
 bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
-	return OIIO::ImageBufAlgo::flipflop(
+	// flipflop removed in OIIO 3.x, implemented as rotate180
+	return OIIO::ImageBufAlgo::rotate180(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
 			*(static_cast<OIIO::ROI*>(roi)),
@@ -142,12 +161,14 @@ bool add(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool add_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
+	int nchans = buf->nchannels();
 	return OIIO::ImageBufAlgo::add(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*(static_cast<const OIIO::ImageBuf*>(A)),
-			B,
+			*buf,
+			OIIO::cspan<float>(B, nchans),
 			*(static_cast<OIIO::ROI*>(roi)),
-			nthreads);		
+			nthreads);
 }
 
 bool add_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads) {
@@ -169,12 +190,14 @@ bool sub(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool sub_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
+	int nchans = buf->nchannels();
 	return OIIO::ImageBufAlgo::sub(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*(static_cast<const OIIO::ImageBuf*>(A)),
-			B,
+			*buf,
+			OIIO::cspan<float>(B, nchans),
 			*(static_cast<OIIO::ROI*>(roi)),
-			nthreads);	
+			nthreads);
 }
 
 bool sub_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads) {
@@ -196,10 +219,12 @@ bool mul(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool mul_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
+	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
+	int nchans = buf->nchannels();
 	return OIIO::ImageBufAlgo::mul(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*(static_cast<const OIIO::ImageBuf*>(A)),
-			B,
+			*buf,
+			OIIO::cspan<float>(B, nchans),
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
@@ -214,26 +239,31 @@ bool mul_value(ImageBuf *dst, const ImageBuf *A, float B, ROI* roi, int nthreads
 }
 
 bool colorconvert(ImageBuf *dst, const ImageBuf *src, const char *from, const char *to,
-				   bool unpremult, ROI* roi, int nthreads) 
+				   bool unpremult, ROI* roi, int nthreads)
 {
+	// OIIO 3.x added context_key, context_value, and colorconfig parameters
 	return OIIO::ImageBufAlgo::colorconvert(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
 			from,
 			to,
 			unpremult,
+			"",  // context_key
+			"",  // context_value
+			nullptr,  // colorconfig
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 
 }
 
 bool colorconvert_processor(ImageBuf *dst, const ImageBuf *src, const ColorProcessor *processor,
-				   			bool unpremult, ROI* roi, int nthreads) 
+				   			bool unpremult, ROI* roi, int nthreads)
 {
+	auto* handle = static_cast<const Handle<OIIO::ColorProcessor>*>(processor);
 	return OIIO::ImageBufAlgo::colorconvert(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
-			static_cast<const OIIO::ColorProcessor*>(processor),
+			handle->ptr.get(),
 			unpremult,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
@@ -256,27 +286,61 @@ bool premult(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 }
 
 bool is_constant_color(const ImageBuf *src, float *color, ROI* roi, int nthreads) {
-	return OIIO::ImageBufAlgo::isConstantColor(
-			*(static_cast<const OIIO::ImageBuf*>(src)),
-			color,
-			*(static_cast<OIIO::ROI*>(roi)),
-			nthreads);	
+	if (!src) {
+		return false;
+	}
+
+	auto* buf = static_cast<const OIIO::ImageBuf*>(src);
+	OIIO::ROI oiio_roi = roi ? *(static_cast<OIIO::ROI*>(roi)) : buf->roi();
+
+	// If ROI doesn't have valid channel bounds, use the buffer's full channel range
+	int chbegin = oiio_roi.chbegin;
+	int chend = oiio_roi.chend;
+	if (chend <= chbegin) {
+		chbegin = 0;
+		chend = buf->nchannels();
+		oiio_roi.chbegin = chbegin;
+		oiio_roi.chend = chend;
+	}
+	int nchans = chend - chbegin;
+
+	// Allocate temp buffer - OIIO writes to indices [chbegin, chend)
+	std::vector<float> temp_color(chend, 0.0f);
+	OIIO::span<float> color_span(temp_color.data(), temp_color.size());
+
+	bool result = OIIO::ImageBufAlgo::isConstantColor(
+			*buf,
+			0.0f,  // threshold
+			color_span,
+			oiio_roi,
+			nthreads);
+
+	// Copy from the span only if caller wants the color values
+	if (result && color) {
+		for (int i = 0; i < nchans; ++i) {
+			color[i] = temp_color[chbegin + i];
+		}
+	}
+
+	return result;
 }
 
 bool is_constant_channel(const ImageBuf *src, int channel, float val, ROI* roi, int nthreads) {
 	return OIIO::ImageBufAlgo::isConstantChannel(
 				*(static_cast<const OIIO::ImageBuf*>(src)),
 				channel,
-				val, 
+				val,
+				0.0f,  // threshold
 				*(static_cast<OIIO::ROI*>(roi)),
-				nthreads);		
+				nthreads);
 }
 
 bool is_monochrome(const ImageBuf *src, ROI* roi, int nthreads) {
 	return OIIO::ImageBufAlgo::isMonochrome(
 				*(static_cast<const OIIO::ImageBuf*>(src)),
+				0.0f,  // threshold
 				*(static_cast<OIIO::ROI*>(roi)),
-				nthreads);	
+				nthreads);
 }
 
 char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
@@ -292,16 +356,23 @@ char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 }
 
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
-			 float filterwidth, ROI* roi, int nthreads) 
+			 float filterwidth, ROI* roi, int nthreads)
 {
+	// Use the OIIO 3.x keyword args API to avoid deprecation warning
+	OIIO::ParamValueList options;
+	if (filtername && filtername[0] != '\0') {
+		options.push_back(OIIO::ParamValue("filtername", OIIO::string_view(filtername)));
+	}
+	if (filterwidth != 0.0f) {
+		options.push_back(OIIO::ParamValue("filterwidth", filterwidth));
+	}
+
 	return OIIO::ImageBufAlgo::resize(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
-			filtername,
-			filterwidth,
+			options,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
-
 }
 
 bool resample(ImageBuf *dst, const ImageBuf *src, bool interpolate, ROI* roi, int nthreads) {
@@ -327,13 +398,25 @@ bool render_text(ImageBuf *dst, int x, int y, const char *text, int fontsize,
 
 	if (fontsize <= 0) fontsize = 16;
 
+	OIIO::cspan<float> color_span;
+	if (textcolor != NULL) {
+		color_span = OIIO::cspan<float>(textcolor, 4);  // RGBA
+	}
+
+	// Use a specific font file path when fontname is empty
+	// OIIO can't find a default font without an explicit path
+	OIIO::string_view font = OIIO::string_view(fontname);
+	if (font.empty()) {
+		font = OIIO::string_view("/usr/share/fonts/truetype/freefont/FreeSans.ttf");
+	}
+
 	return OIIO::ImageBufAlgo::render_text(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			x, y, 
-			OIIO::string_view(text), 
-			fontsize, 
-			OIIO::string_view(fontname),
-			textcolor);
+			x, y,
+			OIIO::string_view(text),
+			fontsize,
+			font,
+			color_span);
 }
 
 } // extern "C"

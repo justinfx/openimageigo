@@ -3,21 +3,26 @@
 #include <string>
 
 #include "oiio.h"
+#include "handles.h"
+
+using oiio_go::UniqueHandle;
 
 extern "C" {
 
 void deleteImageOutput(ImageOutput *out) {
-	delete static_cast<OIIO::ImageOutput*>(out);
+	delete static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
 }
 
 ImageOutput* ImageOutput_Create(const char* filename, const char* plugin_searchpath) {
-	std::string s_filename(filename);
-	std::string s_path(plugin_searchpath);
-	return (ImageOutput*) OIIO::ImageOutput::create(s_filename, s_path);
+	// Use the non-deprecated 3-argument form with nullptr for ioproxy
+	auto out = OIIO::ImageOutput::create(filename, nullptr, plugin_searchpath);
+	if (!out) return nullptr;
+	return (ImageOutput*) new UniqueHandle<OIIO::ImageOutput>(std::move(out));
 }
 
 char* ImageOutput_geterror(ImageOutput *out) {
-	std::string sstring = static_cast<OIIO::ImageOutput*>(out)->geterror();
+	auto* handle = static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
+	std::string sstring = handle->get()->geterror();
 	if (sstring.empty()){
 		return NULL;
 	}
@@ -25,17 +30,19 @@ char* ImageOutput_geterror(ImageOutput *out) {
 }
 
 const char* ImageOutput_format_name(ImageOutput *out) {
-	return static_cast<OIIO::ImageOutput*>(out)->format_name();
+	auto* handle = static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
+	return handle->get()->format_name();
 }
 
 const ImageSpec* ImageOutput_spec(ImageOutput *out) {
-	const OIIO::ImageSpec *spec = &(static_cast<OIIO::ImageOutput*>(out)->spec());
+	auto* handle = static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
+	const OIIO::ImageSpec *spec = &(handle->get()->spec());
 	return (ImageSpec*) spec;
 }
 
 bool ImageOutput_supports(ImageOutput *out, const char* feature){
-	std::string s_feature(feature);
-	return static_cast<OIIO::ImageOutput*>(out)->supports(s_feature);
+	auto* handle = static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
+	return handle->get()->supports(feature);
 }
 
 

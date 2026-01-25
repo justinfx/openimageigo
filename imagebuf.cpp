@@ -2,13 +2,18 @@
 
 #include "oiio.h"
 #include "imagespec.h"
+#include "handles.h"
+
+using oiio_go::Handle;
+using oiio_go::UniqueHandle;
 
 OIIO::ImageBuf::IBStorage fromIBStorage(IBStorage s) {
 	switch (s) {
 	case IBSTORAGE_LOCALBUFFER: return OIIO::ImageBuf::LOCALBUFFER;
 	case IBSTORAGE_APPBUFFER: 	return OIIO::ImageBuf::APPBUFFER;
-	case IBSTORAGE_IMAGECACHE: 	return OIIO::ImageBuf::IMAGECACHE;	
-	case IBSTORAGE_UNINITIALIZED: 	return OIIO::ImageBuf::UNINITIALIZED;	
+	case IBSTORAGE_IMAGECACHE: 	return OIIO::ImageBuf::IMAGECACHE;
+	case IBSTORAGE_UNINITIALIZED: 	return OIIO::ImageBuf::UNINITIALIZED;
+	default: return OIIO::ImageBuf::UNINITIALIZED;
 	}
 }
 
@@ -40,7 +45,11 @@ ImageBuf* ImageBuf_New() {
 
 ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache) {
 	std::string s_name(name);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, static_cast<OIIO::ImageCache*>(imagecache));
+	if (imagecache == nullptr) {
+		return (ImageBuf*) new OIIO::ImageBuf(s_name, 0, 0, nullptr);
+	}
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
+	return (ImageBuf*) new OIIO::ImageBuf(s_name, 0, 0, handle->ptr);
 }
 
 ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
@@ -48,14 +57,18 @@ ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
 }
 
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer) {
-	std::string s_name(name);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, *(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
+	// Note: name parameter is unused in OIIO 3.x (use ImageBuf::set_name() if needed)
+	(void)name; // Silence unused parameter warning
+	return (ImageBuf*) new OIIO::ImageBuf(*(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
 }
 
 ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache) {
 	std::string s_name(name);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, 
-											static_cast<OIIO::ImageCache*>(imagecache));
+	if (imagecache == nullptr) {
+		return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, nullptr);
+	}
+	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
+	return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, handle->ptr);
 }
 
 
@@ -63,17 +76,27 @@ void ImageBuf_clear(ImageBuf* buf) {
 	static_cast<OIIO::ImageBuf*>(buf)->clear();
 }
 
-void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel, 
+void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel,
 							 ImageCache *imagecache, const ImageSpec* spec) {
 	std::string s_name(name);
-	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, subimage, miplevel, 
-												static_cast<OIIO::ImageCache*>(imagecache),
+	std::shared_ptr<OIIO::ImageCache> cache_ptr;
+	if (imagecache != nullptr) {
+		auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
+		cache_ptr = handle->ptr;
+	}
+	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, subimage, miplevel,
+												cache_ptr,
 												static_cast<const OIIO::ImageSpec*>(spec));
 }
 
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache) {
 	std::string s_name(name);
-	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, static_cast<OIIO::ImageCache*>(imagecache));
+	std::shared_ptr<OIIO::ImageCache> cache_ptr;
+	if (imagecache != nullptr) {
+		auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
+		cache_ptr = handle->ptr;
+	}
+	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, 0, 0, cache_ptr);
 }
 
 void ImageBuf_reset_name_spec(ImageBuf* buf, const char* name, const ImageSpec* spec) {
@@ -117,16 +140,16 @@ bool ImageBuf_write_file(ImageBuf* buf, const char* filename, const char* filefo
 	if (cbk_data != NULL) {
 		cbk = &image_progress_callback;
 	}
-	return static_cast<OIIO::ImageBuf*>(buf)->write(filename, fileformat, cbk, cbk_data);
+	return static_cast<OIIO::ImageBuf*>(buf)->write(filename, OIIO::TypeUnknown, fileformat, cbk, cbk_data);
 }
 
 bool ImageBuf_write_output(ImageBuf* buf, ImageOutput *out, void *cbk_data) {
-	OIIO::ImageOutput *out_ptr = static_cast<OIIO::ImageOutput*>(out);
+	auto* handle = static_cast<UniqueHandle<OIIO::ImageOutput>*>(out);
 	ProgressCallback cbk = NULL;
 	if (cbk_data != NULL) {
 		cbk = &image_progress_callback;
 	}
-	return static_cast<OIIO::ImageBuf*>(buf)->write(out_ptr, cbk, cbk_data);
+	return static_cast<OIIO::ImageBuf*>(buf)->write(handle->get(), cbk, cbk_data);
 }
 
 void ImageBuf_set_write_format(ImageBuf* buf, TypeDesc format) {
@@ -173,11 +196,13 @@ const ImageSpec* ImageBuf_nativespec(ImageBuf* buf) {
 }
 
 const char* ImageBuf_name(ImageBuf* buf) {
-	return static_cast<OIIO::ImageBuf*>(buf)->name().c_str();
+	// Return pointer to internal string data (valid until ImageBuf is modified)
+	return static_cast<OIIO::ImageBuf*>(buf)->name().data();
 }
 
 const char* ImageBuf_file_format_name(ImageBuf* buf) {
-	return static_cast<OIIO::ImageBuf*>(buf)->file_format_name().c_str();
+	// Return pointer to internal string data (valid until ImageBuf is modified)
+	return static_cast<OIIO::ImageBuf*>(buf)->file_format_name().data();
 }
 
 int ImageBuf_subimage(ImageBuf* buf) {
@@ -200,20 +225,17 @@ int ImageBuf_nchannels(ImageBuf* buf) {
 	return static_cast<OIIO::ImageBuf*>(buf)->nchannels();
 }
 
-bool ImageBuf_get_pixel_channels(ImageBuf* buf, 
-								 int xbegin, int xend, 
-								 int ybegin, int yend, 
-								 int zbegin, int zend, 
-								 int chbegin, int chend, 
-								 TypeDesc format, 
+bool ImageBuf_get_pixel_channels(ImageBuf* buf,
+								 int xbegin, int xend,
+								 int ybegin, int yend,
+								 int zbegin, int zend,
+								 int chbegin, int chend,
+								 TypeDesc format,
 								 void *result)
 {
-	return static_cast<OIIO::ImageBuf*>(buf)->get_pixel_channels(xbegin, xend,
-														 		 ybegin, yend, 
-														 		 zbegin, zend, 
-														 		 chbegin, chend, 
-														 		 fromTypeDesc(format), 
-														 		 result );	
+	// In OIIO 3.x, get_pixel_channels was removed, use get_pixels with ROI
+	OIIO::ROI roi(xbegin, xend, ybegin, yend, zbegin, zend, chbegin, chend);
+	return static_cast<OIIO::ImageBuf*>(buf)->get_pixels(roi, fromTypeDesc(format), result);
 }
 
 int ImageBuf_orientation(ImageBuf* buf) {
@@ -339,8 +361,8 @@ bool ImageBuf_cachedpixels(ImageBuf* buf) {
 }
 
 ImageCache* ImageBuf_imagecache(ImageBuf* buf) {
-	OIIO::ImageCache *cache = static_cast<OIIO::ImageBuf*>(buf)->imagecache();
-	return static_cast<ImageCache*>(cache);
+	auto cache = static_cast<OIIO::ImageBuf*>(buf)->imagecache();
+	return (ImageCache*) new Handle<OIIO::ImageCache>(cache);
 }
 
 // void* ImageBuf_pixeladdr(ImageBuf* buf, int x, int y);
