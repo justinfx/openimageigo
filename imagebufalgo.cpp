@@ -19,10 +19,9 @@ bool zero(ImageBuf *dst, ROI* roi, int nthreads) {
 }
 
 bool fill(ImageBuf *dst, const float *values, ROI* roi, int nthreads) {
-	auto* buf = static_cast<OIIO::ImageBuf*>(dst);
-	int nchans = buf->nchannels();
+	// OIIO 2.x uses Image_or_Const instead of cspan
 	return OIIO::ImageBufAlgo::fill(*(static_cast<OIIO::ImageBuf*>(dst)),
-									OIIO::cspan<float>(values, nchans),
+									values,
 									*(static_cast<OIIO::ROI*>(roi)),
 									nthreads);
 }
@@ -30,13 +29,12 @@ bool fill(ImageBuf *dst, const float *values, ROI* roi, int nthreads) {
 bool checker(ImageBuf *dst, int width, int height, int depth, const float *color1, const float *color2,
 			  int xoffset, int yoffset, int zoffset, ROI* roi, int nthreads)
 {
-	auto* buf = static_cast<OIIO::ImageBuf*>(dst);
-	int nchans = buf->nchannels();
+	// OIIO 2.x uses Image_or_Const instead of cspan
 	return OIIO::ImageBufAlgo::checker(
 		*(static_cast<OIIO::ImageBuf*>(dst)),
 		width, height, depth,
-		OIIO::cspan<float>(color1, nchans),
-		OIIO::cspan<float>(color2, nchans),
+		color1,
+		color2,
 		xoffset, yoffset, zoffset,
 		*(static_cast<OIIO::ROI*>(roi)),
 		nthreads);
@@ -135,10 +133,16 @@ bool flop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
 }
 
 bool flipflop(ImageBuf *dst, const ImageBuf *src, ROI* roi, int nthreads) {
-	// flipflop removed in OIIO 3.x, implemented as rotate180
-	return OIIO::ImageBufAlgo::rotate180(
-			*(static_cast<OIIO::ImageBuf*>(dst)),
+	// OIIO 2.x doesn't have flipflop or rotate180, implement as flip+flop
+	OIIO::ImageBuf temp;
+	bool ok = OIIO::ImageBufAlgo::flip(temp,
 			*(static_cast<const OIIO::ImageBuf*>(src)),
+			*(static_cast<OIIO::ROI*>(roi)),
+			nthreads);
+	if (!ok) return false;
+	return OIIO::ImageBufAlgo::flop(
+			*(static_cast<OIIO::ImageBuf*>(dst)),
+			temp,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
@@ -161,12 +165,11 @@ bool add(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool add_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
-	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
-	int nchans = buf->nchannels();
+	// OIIO 2.x uses Image_or_Const instead of cspan
 	return OIIO::ImageBufAlgo::add(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*buf,
-			OIIO::cspan<float>(B, nchans),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
@@ -190,12 +193,11 @@ bool sub(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool sub_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
-	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
-	int nchans = buf->nchannels();
+	// OIIO 2.x uses Image_or_Const instead of cspan
 	return OIIO::ImageBufAlgo::sub(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*buf,
-			OIIO::cspan<float>(B, nchans),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
@@ -219,12 +221,11 @@ bool mul(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthr
 }
 
 bool mul_values(ImageBuf *dst, const ImageBuf *A, const float *B, ROI* roi, int nthreads) {
-	auto* buf = static_cast<const OIIO::ImageBuf*>(A);
-	int nchans = buf->nchannels();
+	// OIIO 2.x uses Image_or_Const instead of cspan
 	return OIIO::ImageBufAlgo::mul(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
-			*buf,
-			OIIO::cspan<float>(B, nchans),
+			*(static_cast<const OIIO::ImageBuf*>(A)),
+			B,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }
@@ -358,19 +359,12 @@ char* computePixelHashSHA1(const ImageBuf *src, const char *extrainfo,
 bool resize(ImageBuf *dst, const ImageBuf *src, const char *filtername,
 			 float filterwidth, ROI* roi, int nthreads)
 {
-	// Use the OIIO 3.x keyword args API to avoid deprecation warning
-	OIIO::ParamValueList options;
-	if (filtername && filtername[0] != '\0') {
-		options.push_back(OIIO::ParamValue("filtername", OIIO::string_view(filtername)));
-	}
-	if (filterwidth != 0.0f) {
-		options.push_back(OIIO::ParamValue("filterwidth", filterwidth));
-	}
-
+	// OIIO 2.x uses direct parameters instead of ParamValueList
 	return OIIO::ImageBufAlgo::resize(
 			*(static_cast<OIIO::ImageBuf*>(dst)),
 			*(static_cast<const OIIO::ImageBuf*>(src)),
-			options,
+			filtername,
+			filterwidth,
 			*(static_cast<OIIO::ROI*>(roi)),
 			nthreads);
 }

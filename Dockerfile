@@ -1,6 +1,6 @@
 FROM --platform=linux/amd64 ubuntu:jammy AS builder
 
-ENV OIIO_VER=3.1.9.0
+ENV OIIO_VER=2.2.16.0
 
 RUN apt-get update && apt-get install --no-install-recommends -y -q \
     wget \
@@ -48,7 +48,7 @@ RUN cd /home/OpenImageIO-${OIIO_VER} \
 FROM --platform=linux/amd64 ubuntu:jammy AS tester
 
 ENV GO_VER=1.24.0
-ENV OIIO_VER=3.1.9.0
+ENV OIIO_VER=2.2.16.0
 ENV PATH="/usr/local/go/bin:${PATH}"
 
 # Install Go 1.24 and FreeSans font (required for OIIO text rendering)

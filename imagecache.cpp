@@ -9,13 +9,17 @@ using oiio_go::Handle;
 extern "C" {
 
 ImageCache* ImageCache_Create(bool shared) {
-	auto cache = OIIO::ImageCache::create(shared);
-	return (ImageCache*) new Handle<OIIO::ImageCache>(cache);
+	// OIIO 2.x returns raw pointer from create()
+	auto* cache = OIIO::ImageCache::create(shared);
+	// Wrap in non-owning shared_ptr (destructor doesn't delete - OIIO manages lifetime)
+	std::shared_ptr<OIIO::ImageCache> shared_cache(cache, [](OIIO::ImageCache*){});
+	return (ImageCache*) new Handle<OIIO::ImageCache>(shared_cache);
 }
 
 void ImageCache_Destroy(ImageCache *x, bool teardown) {
 	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
-	OIIO::ImageCache::destroy(handle->ptr, teardown);
+	// OIIO 2.x destroy() takes raw pointer
+	OIIO::ImageCache::destroy(handle->ptr.get(), teardown);
 }
 
 void deleteImageCache(ImageCache *x) {
@@ -24,7 +28,7 @@ void deleteImageCache(ImageCache *x) {
 
 void ImageCache_clear(ImageCache *x) {
 	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(x);
-	// clear() removed in OIIO 3.x, use invalidate_all(true) instead
+	// OIIO 2.x doesn't have clear(), use invalidate_all(true)
 	handle->get()->invalidate_all(true);
 }
 

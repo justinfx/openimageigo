@@ -24,7 +24,8 @@ bool supportsOpenColorIO() {
 }
 
 bool ColorConfig_error(ColorConfig* c) {
-	return static_cast<OIIO::ColorConfig*>(c)->has_error();
+	// OIIO 2.x uses error() instead of has_error()
+	return static_cast<OIIO::ColorConfig*>(c)->error();
 }
 
 const char* ColorConfig_geterror(ColorConfig* c) {

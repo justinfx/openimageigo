@@ -14,7 +14,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE: justinisrael/openimageigo:latest-oiio_3.1
+      DOCKER_IMAGE: justinisrael/openimageigo:latest-oiio_2.2
 
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 

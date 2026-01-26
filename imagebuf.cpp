@@ -48,8 +48,9 @@ ImageBuf* ImageBuf_New_WithCache(const char* name, ImageCache *imagecache) {
 	if (imagecache == nullptr) {
 		return (ImageBuf*) new OIIO::ImageBuf(s_name, 0, 0, nullptr);
 	}
+	// OIIO 2.x uses raw ImageCache* pointers, not shared_ptr
 	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, 0, 0, handle->ptr);
+	return (ImageBuf*) new OIIO::ImageBuf(s_name, 0, 0, handle->ptr.get());
 }
 
 ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
@@ -57,9 +58,9 @@ ImageBuf* ImageBuf_New_Spec(const ImageSpec* spec) {
 }
 
 ImageBuf* ImageBuf_New_WithBuffer(const char* name, const ImageSpec* spec, void *buffer) {
-	// Note: name parameter is unused in OIIO 3.x (use ImageBuf::set_name() if needed)
-	(void)name; // Silence unused parameter warning
-	return (ImageBuf*) new OIIO::ImageBuf(*(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
+	// OIIO 2.x constructor takes name parameter
+	std::string s_name(name);
+	return (ImageBuf*) new OIIO::ImageBuf(s_name, *(static_cast<const OIIO::ImageSpec*>(spec)), buffer);
 }
 
 ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, ImageCache* imagecache) {
@@ -67,8 +68,9 @@ ImageBuf* ImageBuf_New_SubImage(const char* name, int subimage, int miplevel, Im
 	if (imagecache == nullptr) {
 		return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, nullptr);
 	}
+	// OIIO 2.x uses raw ImageCache* pointers, not shared_ptr
 	auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
-	return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, handle->ptr);
+	return (ImageBuf*) new OIIO::ImageBuf(s_name, subimage, miplevel, handle->ptr.get());
 }
 
 
@@ -79,10 +81,11 @@ void ImageBuf_clear(ImageBuf* buf) {
 void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int miplevel,
 							 ImageCache *imagecache, const ImageSpec* spec) {
 	std::string s_name(name);
-	std::shared_ptr<OIIO::ImageCache> cache_ptr;
+	// OIIO 2.x uses raw ImageCache* pointers, not shared_ptr
+	OIIO::ImageCache* cache_ptr = nullptr;
 	if (imagecache != nullptr) {
 		auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
-		cache_ptr = handle->ptr;
+		cache_ptr = handle->ptr.get();
 	}
 	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, subimage, miplevel,
 												cache_ptr,
@@ -91,10 +94,11 @@ void ImageBuf_reset_subimage(ImageBuf* buf, const char* name, int subimage, int 
 
 void ImageBuf_reset_name_cache(ImageBuf* buf, const char* name, ImageCache *imagecache) {
 	std::string s_name(name);
-	std::shared_ptr<OIIO::ImageCache> cache_ptr;
+	// OIIO 2.x uses raw ImageCache* pointers, not shared_ptr
+	OIIO::ImageCache* cache_ptr = nullptr;
 	if (imagecache != nullptr) {
 		auto* handle = static_cast<Handle<OIIO::ImageCache>*>(imagecache);
-		cache_ptr = handle->ptr;
+		cache_ptr = handle->ptr.get();
 	}
 	static_cast<OIIO::ImageBuf*>(buf)->reset(s_name, 0, 0, cache_ptr);
 }
@@ -361,8 +365,12 @@ bool ImageBuf_cachedpixels(ImageBuf* buf) {
 }
 
 ImageCache* ImageBuf_imagecache(ImageBuf* buf) {
-	auto cache = static_cast<OIIO::ImageBuf*>(buf)->imagecache();
-	return (ImageCache*) new Handle<OIIO::ImageCache>(cache);
+	// OIIO 2.x returns raw ImageCache* pointer
+	auto* cache = static_cast<OIIO::ImageBuf*>(buf)->imagecache();
+	if (!cache) return nullptr;
+	// Wrap raw pointer in a non-owning shared_ptr (doesn't delete on destruction)
+	std::shared_ptr<OIIO::ImageCache> shared_cache(cache, [](OIIO::ImageCache*){});
+	return (ImageCache*) new Handle<OIIO::ImageCache>(shared_cache);
 }
 
 // void* ImageBuf_pixeladdr(ImageBuf* buf, int x, int y);

@@ -1,6 +1,6 @@
 # OpenImageIO bindings for Go
 
-[![GoDoc](https://godoc.org/github.com/justinfx/openimageigo?status.svg)](https://pkg.go.dev/github.com/justinfx/openimageigo/v3) 
+[![GoDoc](https://godoc.org/github.com/justinfx/openimageigo?status.svg)](https://pkg.go.dev/github.com/justinfx/openimageigo/v2) 
 [![Build](https://github.com/justinfx/openimageigo/workflows/Test/badge.svg)](https://github.com/justinfx/openimageigo/actions?query=workflow%3A%22Test%22)
 
 OpenImageIO is a library for reading and writing images, and a bunch of related classes,
@@ -20,7 +20,8 @@ and useful to VFX pipelines.
 Compatibility
 -------------
 
-- `github.com/justinfx/openimageigo/v3` (master branch): Tested against OpenImageIO 3.x 
+- `github.com/justinfx/openimageigo/v3` (master branch): Tested against OpenImageIO 3.x
+- `github.com/justinfx/openimageigo/v2` (v2 branch): Tested against OpenImageIO 2.x
 - `github.com/justinfx/openimageigo` (v1 branch): Tested against OpenImageIO 1.4.x - 1.6.x 
 
 API Status
@@ -45,7 +46,7 @@ This package assumes that OpenImageIO is installed to the standard /usr/local lo
 
 Default install:
 
-    go get github.com/justinfx/openimageigo/v3
+    go get github.com/justinfx/openimageigo/v2
 
 If you have installed OpenImageIO to a custom location, you will need to tell CGO where to find the headers and libs:
 
@@ -54,4 +55,4 @@ If you have installed OpenImageIO to a custom location, you will need to tell CG
 
 Or just prefixing the install:
 
-	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo/v3
+	CGO_CPPFLAGS="-I/usr/local/include" CGO_LDFLAGS="-L/usr/local/lib" go get github.com/justinfx/openimageigo/v2

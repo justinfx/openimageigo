@@ -75,13 +75,8 @@ int ImageInput_current_subimage(ImageInput *in) {
 
 bool ImageInput_seek_subimage(ImageInput *in, int subimage, ImageSpec* newspec) {
 	auto* handle = static_cast<UniqueHandle<OIIO::ImageInput>*>(in);
-	// In OIIO 3.x, seek_subimage(int, ImageSpec&) is deprecated
-	// Use seek_subimage(int, int) instead and copy spec afterward
-	bool ok = handle->get()->seek_subimage(subimage, 0);
-	if (ok && newspec) {
-		*(static_cast<OIIO::ImageSpec*>(newspec)) = handle->get()->spec();
-	}
-	return ok;
+	// OIIO 2.x has seek_subimage(int, ImageSpec&) signature
+	return handle->get()->seek_subimage(subimage, *(static_cast<OIIO::ImageSpec*>(newspec)));
 }
 
 int ImageInput_current_miplevel(ImageInput *in) {
@@ -91,20 +86,14 @@ int ImageInput_current_miplevel(ImageInput *in) {
 
 bool ImageInput_seek_subimage_miplevel(ImageInput *in, int subimage, int miplevel, ImageSpec* newspec) {
 	auto* handle = static_cast<UniqueHandle<OIIO::ImageInput>*>(in);
-	// In OIIO 3.x, seek_subimage(int, int, ImageSpec&) is deprecated
-	// Use seek_subimage(int, int) instead and copy spec afterward
-	bool ok = handle->get()->seek_subimage(subimage, miplevel);
-	if (ok && newspec) {
-		*(static_cast<OIIO::ImageSpec*>(newspec)) = handle->get()->spec();
-	}
-	return ok;
+	// OIIO 2.x has seek_subimage(int, int, ImageSpec&) signature
+	return handle->get()->seek_subimage(subimage, miplevel, *(static_cast<OIIO::ImageSpec*>(newspec)));
 }
 
 bool ImageInput_read_image_floats(ImageInput *in, float* data) {
 	auto* handle = static_cast<UniqueHandle<OIIO::ImageInput>*>(in);
-	// OIIO 3.x requires chbegin, chend parameters and stride parameters
-	return handle->get()->read_image(0, 0, 0, -1, OIIO::TypeDesc::FLOAT, data,
-									 OIIO::AutoStride, OIIO::AutoStride, OIIO::AutoStride);
+	// OIIO 2.x has simpler read_image signature
+	return handle->get()->read_image(OIIO::TypeDesc::FLOAT, data);
 }
 
 bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, void* cbk_data)
@@ -115,16 +104,10 @@ bool ImageInput_read_image_format(ImageInput *in, TypeDesc format, void* data, v
 		cbk = &image_progress_callback;
 	}
 
-	return handle->get()->read_image(
-		0, 0,  // subimage, miplevel
-		0, -1,  // chbegin, chend (all channels)
-		fromTypeDesc(format),
-		data,
-		OIIO::AutoStride,
-		OIIO::AutoStride,
-		OIIO::AutoStride,
-		cbk,
-		cbk_data);
+	// OIIO 2.x read_image takes stride parameters before callback parameters
+	return handle->get()->read_image(fromTypeDesc(format), data,
+		OIIO::AutoStride, OIIO::AutoStride, OIIO::AutoStride,
+		cbk, cbk_data);
 }
 
 bool ImageInput_read_scanline_floats(ImageInput *in, int y, int z, float* data) {
