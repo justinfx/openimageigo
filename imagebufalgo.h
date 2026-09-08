@@ -19,7 +19,8 @@ bool checker(ImageBuf *dst, int width, int height, int depth, const float *color
 			  int xoffset, int yoffset, int zoffset, ROI* roi, int nthreads);
 
 bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *channelorder,
-			   const float *channelvalues, const char **newchannelnames, bool shuffle_channel_names);
+			   const float *channelvalues, const char **newchannelnames, bool shuffle_channel_names,
+			   int nthreads);
 
 bool channel_append(ImageBuf *dst, const ImageBuf *A, const ImageBuf *B, ROI* roi, int nthreads);
 

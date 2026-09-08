@@ -189,6 +189,14 @@ func TestAlgoChannels(t *testing.T) {
 	if !reflect.DeepEqual(actual, expected_names) {
 		t.Errorf("Expected names %v; got %v", expected_names, actual)
 	}
+
+	// Threads option is accepted and does not change the result
+	dst = NewImageBuf()
+	opts = ChannelOpts{Threads: 1}
+	checkFatalError(t, Channels(dst, src, 3, &opts))
+	if dst.NumChannels() != 3 {
+		t.Errorf("Expected 3 channels; got %d", dst.NumChannels())
+	}
 }
 
 func TestAlgoChannelAppend(t *testing.T) {

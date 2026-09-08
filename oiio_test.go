@@ -61,3 +61,49 @@ func checkFatalError(t *testing.T, err error) {
 		t.Fatal(err.Error())
 	}
 }
+
+func TestGlobalAttributeInt(t *testing.T) {
+	if !SetAttribute("threads", 2) {
+		t.Error("SetAttribute(threads, 2) returned false")
+	}
+	val := AttributeInt("threads")
+	if val != 2 {
+		t.Errorf("AttributeInt(threads) = %d, want 2", val)
+	}
+
+	// restore the hardware default so other tests are unaffected
+	SetAttribute("threads", 0)
+}
+
+func TestGlobalAttributeString(t *testing.T) {
+	if !SetAttribute("plugin_searchpath", "/tmp/oiio_plugins") {
+		t.Error("SetAttribute(plugin_searchpath, /tmp/oiio_plugins) returned false")
+	}
+	val := AttributeString("plugin_searchpath")
+	if val != "/tmp/oiio_plugins" {
+		t.Errorf("AttributeString(plugin_searchpath) = %q, want \"/tmp/oiio_plugins\"", val)
+	}
+}
+
+func TestGlobalAttributeDefault(t *testing.T) {
+	intVal := AttributeInt("nonexistent_int", 42)
+	if intVal != 42 {
+		t.Errorf("AttributeInt with default = %d, want 42", intVal)
+	}
+
+	floatVal := AttributeFloat("nonexistent_float", 3.14)
+	if floatVal != 3.14 {
+		t.Errorf("AttributeFloat with default = %f, want 3.14", floatVal)
+	}
+
+	stringVal := AttributeString("nonexistent_string", "default")
+	if stringVal != "default" {
+		t.Errorf("AttributeString with default = %q, want \"default\"", stringVal)
+	}
+}
+
+func TestGlobalSetAttributeInvalidType(t *testing.T) {
+	if SetAttribute("threads", []int{1, 2, 3}) {
+		t.Error("SetAttribute with invalid type (slice) should return false")
+	}
+}
