@@ -41,6 +41,16 @@ typedef bool(* ProgressCallback)(void *opaque_data, float portion_done);
 
 extern bool image_progress_callback(void* goCallback, float done);
 
+// Global OIIO attributes
+//
+
+bool OIIO_attribute_int(const char* name, int val);
+bool OIIO_attribute_float(const char* name, float val);
+bool OIIO_attribute_string(const char* name, const char* val);
+bool OIIO_getattribute_int(const char* name, int* val);
+bool OIIO_getattribute_float(const char* name, float* val);
+bool OIIO_getattribute_string(const char* name, char** val);
+
 
 // Enums
 //

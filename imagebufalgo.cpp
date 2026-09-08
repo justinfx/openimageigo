@@ -44,7 +44,7 @@ bool checker(ImageBuf *dst, int width, int height, int depth, const float *color
 
 bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *channelorder,
 			   const float *channelvalues, const char **newchannelnames,
-			   bool shuffle_channel_names)
+			   bool shuffle_channel_names, int nthreads)
 {
 	std::vector<std::string> vec_names;
 
@@ -65,7 +65,8 @@ bool channels(ImageBuf *dst, const ImageBuf *src, int nchannels, const int32_t *
 	bool ok = OIIO::ImageBufAlgo::channels(*(static_cast<OIIO::ImageBuf*>(dst)),
 											*(static_cast<const OIIO::ImageBuf*>(src)),
 											nchannels, order_span, values_span,
-											vec_names, shuffle_channel_names );
+											vec_names, shuffle_channel_names,
+											nthreads);
 	return ok;
 }
 

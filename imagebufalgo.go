@@ -22,7 +22,10 @@ const (
 	FilterDefaultWidth = 0.0
 	// FontNameDefault use a default system font.
 	FontNameDefault = ""
-	// GlobalThreads use the global oiio-determined thread count.
+	// GlobalThreads use the global oiio-determined thread count. By default
+	// this resolves to the host's hardware core count (not container/cgroup
+	// aware) via the OIIO "threads" attribute. Use SetAttribute("threads", n)
+	// to override it explicitly, for example when running under a CPU quota.
 	GlobalThreads = 0
 )
 
@@ -34,7 +37,9 @@ type AlgoOpts struct {
 	ROI *ROI
 	// The Threads parameter specifies how many threads (potentially) may
 	// be used, but it's not a guarantee.
-	// If Threads == 0, it will use the global OIIO attribute "threads".
+	// If Threads == 0 (GlobalThreads), it will use the global OIIO attribute
+	// "threads", which defaults to the host's hardware core count and is not
+	// container/cgroup aware. See SetAttribute.
 	// If Threads == 1, it guarantees that it will
 	// not launch any new threads.
 	Threads int
@@ -172,6 +177,12 @@ type ChannelOpts struct {
 	Values       []float32
 	NewNames     []string
 	ShuffleNames bool
+	// The Threads parameter specifies how many threads (potentially) may
+	// be used, but it's not a guarantee.
+	// If Threads == 0, it will use the global OIIO attribute "threads".
+	// If Threads == 1, it guarantees that it will
+	// not launch any new threads.
+	Threads int
 }
 
 // Channels generic channel shuffling: copy src to dst, but with channels in the order specified by.
@@ -224,7 +235,12 @@ func Channels(dst, src *ImageBuf, nchannels int, opts ...*ChannelOpts) error {
 		}
 	}
 
-	ok := C.channels(dst.p(), src.p(), C.int(nchannels), order, values, newNames, shuffle)
+	var threads C.int
+	if opt != nil {
+		threads = C.int(opt.Threads)
+	}
+
+	ok := C.channels(dst.p(), src.p(), C.int(nchannels), order, values, newNames, shuffle, threads)
 
 	runtime.KeepAlive(src)
 	runtime.KeepAlive(dst)

@@ -47,7 +47,7 @@ RUN cd /home/OpenImageIO-${OIIO_VER} \
 
 FROM --platform=linux/amd64 ubuntu:jammy AS tester
 
-ENV GO_VER=1.24.0
+ENV GO_VER=1.27.1
 ENV OIIO_VER=3.1.9.0
 ENV PATH="/usr/local/go/bin:${PATH}"
 
